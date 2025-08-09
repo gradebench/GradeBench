@@ -1,0 +1,35 @@
+name: Build and Push Workflow
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  AWS_REGION: ap-south-1
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::273528188747:role/github-role
+          aws-region: ${{env.AWS_REGION}}
+
+      - name: Create ECR Repository
+        run: |
+          aws ecr describe-repositories --repository-names gb/count || \
+          aws ecr create-repository \
+              --repository-name gb/count \
+              --image-tag-mutability IMMUTABLE \
+              --image-scanning-configuration scanOnPush=true
