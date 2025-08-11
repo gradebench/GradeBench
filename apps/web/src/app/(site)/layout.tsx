@@ -1,4 +1,4 @@
-import { ScreenRootLayout } from "@/components/providers/Screen";
+import { SiteLayout } from "@/features/site-templates/components/Layout";
 import "@gb/ui/globals.css";
 import { Metadata } from "next";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <ScreenRootLayout>{children}</ScreenRootLayout>
+      <SiteLayout>{children}</SiteLayout>
     </>
   );
 };
