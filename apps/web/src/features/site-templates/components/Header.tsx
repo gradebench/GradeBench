@@ -1,15 +1,16 @@
-import Link from "next/link";
-import topNavigationConfig from "../configs/nav";
-import { TopNav } from "./TopNav";
+import { LeftNav, RightNav } from "./TopNav";
+// import { TopNav } from "./TopNav";
 
-export const SiteHeader = ({ navConfig = topNavigationConfig }) => {
+export const SiteHeader = () => {
   return (
     <>
-      <header className="flex items-center p-2">
-        <span className="grid w-16 place-items-center">
-          <Link href={navConfig.index.url}>{navConfig.index.icon}</Link>
-        </span>
-        <TopNav navConfig={topNavigationConfig} />
+      <header className="sticky top-0 border-b px-4 backdrop-blur-3xl md:px-6">
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/* Left side */}
+          <LeftNav />
+          {/* Right side */}
+          <RightNav />
+        </div>
       </header>
     </>
   );

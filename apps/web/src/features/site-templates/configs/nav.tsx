@@ -1,25 +1,33 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
+import {
+  HeaderCTAType,
+  NavigationIndexType,
+  NavigationMenuType,
+} from "../types/nav";
 
-const topNavigationConfig = {
-  index: {
-    icon: <GradeBench className="w-8" />,
-    url: "/site/home",
-  },
-  list: [
+export const navigationIndex: NavigationIndexType = {
+  href: "/",
+  element: <GradeBench />,
+};
+
+export const navigationMenu: NavigationMenuType = {
+  items: [
     {
       label: "Home",
-      url: "/site/home",
+      href: "/site/home",
     },
     {
-      label: "About",
-      url: "/site/about",
-      hasMenu: true,
+      label: "About Us",
+      href: "/site/about",
     },
     {
       label: "Products",
-      url: "/site/products",
+      href: "/site/products",
     },
   ],
 };
 
-export default topNavigationConfig;
+export const headerCTA: HeaderCTAType = {
+  href: "#",
+  label: "Get Started",
+};

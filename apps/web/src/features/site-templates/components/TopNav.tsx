@@ -1,29 +1,165 @@
+import { GradeBench } from "@/components/anim/GradeBench1";
 import { Button } from "@gb/ui/src/components/ui/button";
-import topNavigationConfig from "../configs/nav";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@gb/ui/src/components/ui/navigation-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@gb/ui/src/components/ui/popover";
 import Link from "next/link";
+import { headerCTA, navigationIndex, navigationMenu } from "../configs/nav";
+import {
+  HeaderCTAType,
+  NavigationIndexType,
+  NavigationMenuType,
+} from "../types/nav";
 
-export const TopNav = ({ navConfig = topNavigationConfig }) => {
+// Navigation links array to be used in both desktop and mobile menus
+const navigationLinks = [
+  { href: "#", label: "Home", active: true },
+  { href: "#", label: "Features" },
+  { href: "#", label: "Pricing" },
+  { href: "#", label: "About" },
+];
+
+export default function Navigation() {
+  return (
+    <header className="border-b px-4 md:px-6">
+      <div className="flex h-16 items-center justify-between gap-4">
+        {/* Left side */}
+        <div className="flex items-center gap-2">
+          {/* Mobile menu trigger */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className="group size-8 md:hidden"
+                variant="ghost"
+                size="icon"
+              >
+                <svg
+                  className="pointer-events-none"
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 12L20 12"
+                    className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
+                  />
+                  <path
+                    d="M4 12H20"
+                    className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
+                  />
+                </svg>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-36 p-1 md:hidden">
+              <NavigationMenu className="max-w-none *:w-full">
+                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
+                  {navigationLinks.map((link, index) => (
+                    <NavigationMenuItem key={index} className="w-full">
+                      <NavigationMenuLink
+                        href={link.href}
+                        className="py-1.5"
+                        active={link.active}
+                      >
+                        {link.label}
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </PopoverContent>
+          </Popover>
+          {/* Main nav */}
+          <div className="flex items-center gap-6">
+            <a href="#" className="text-primary hover:text-primary/90">
+              <GradeBench />
+            </a>
+            {/* Navigation menu */}
+            <NavigationMenu className="max-md:hidden">
+              <NavigationMenuList className="gap-2">
+                {navigationLinks.map((link, index) => (
+                  <NavigationMenuItem key={index}>
+                    <NavigationMenuLink
+                      active={link.active}
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+                    >
+                      {link.label}
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
+        </div>
+        {/* Right side */}
+      </div>
+    </header>
+  );
+}
+
+export const LeftNav = ({
+  index = navigationIndex,
+  menu = navigationMenu,
+}: {
+  index?: NavigationIndexType;
+  menu?: NavigationMenuType;
+}) => {
   return (
     <>
-      <nav className="">
-        <ul className="flex space-x-1">
-          <li>
-            <Button size={"sm"} variant={"ghost"}>
-              <Link href={"/site/home"}>Home</Link>
-            </Button>
-          </li>
-          <li>
-            <Button size={"sm"} variant={"ghost"}>
-              <Link href={"/site/about"}>About Us</Link>
-            </Button>
-          </li>
-          <li>
-            <Button size={"sm"} variant={"ghost"}>
-              <Link href={"/site/products"}>Products</Link>
-            </Button>
-          </li>
-        </ul>
-      </nav>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
+          <Link
+            href={index.href}
+            className="text-primary hover:text-primary/90"
+          >
+            {index.element}
+          </Link>
+          <NavigationMenu className="max-md:hidden">
+            <NavigationMenuList className="gap-2">
+              {menu.items.map((item, index) => (
+                <NavigationMenuItem key={index}>
+                  <NavigationMenuLink
+                    href={item.href}
+                    className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+                  >
+                    {item.label}
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export const RightNav = ({ cta = headerCTA }: { cta?: HeaderCTAType }) => {
+  return (
+    <>
+      <div className="flex items-center gap-2">
+        <Button asChild size="sm" className="text-sm">
+          <Link href={cta.href}>{cta.label}</Link>
+        </Button>
+      </div>
     </>
   );
 };
