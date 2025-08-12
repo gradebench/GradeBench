@@ -1,7 +1,7 @@
 import QueryClientProvider from "@/components/providers/ReactQueryProvider";
-import { ScreenProps } from "@/types/screen";
 import NextThemeProvider from "@gb/ui/src/components/providers/NextThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ReactNode } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const ScreenRootLayout = ({ children }: ScreenProps) => {
+export const ScreenRootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <html lang="en" suppressHydrationWarning>
