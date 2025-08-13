@@ -8,9 +8,8 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
     },
     "test:unit": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*"],
-      "outputs": ["coverage/**"]
+      "dependsOn": ["^test:unit"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*"]
     },
     "test:watch": {
       "cache": false,

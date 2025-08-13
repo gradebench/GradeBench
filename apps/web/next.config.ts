@@ -10,10 +10,6 @@ const nextConfig: NextConfig = {
         source: "/",
         destination: "/site/home",
       },
-      {
-        source: "/site",
-        destination: "/site/home",
-      },
     ];
   },
 };
