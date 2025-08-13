@@ -9,7 +9,6 @@ import {
   NavigationIndexType,
   NavigationMenuType,
 } from "../types/nav";
-import { navigationIndex, navigationMenu } from "../configs/nav";
 
 describe("SiteFooter", () => {
   it("renders correctly", () => {
