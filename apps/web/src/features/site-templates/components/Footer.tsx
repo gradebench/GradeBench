@@ -2,7 +2,7 @@ export const SiteFooter = () => {
   return (
     <>
       <footer>
-        <div>THis is Footer</div>
+        <div>This is Footer</div>
       </footer>
     </>
   );

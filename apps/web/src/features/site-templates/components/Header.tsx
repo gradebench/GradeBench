@@ -1,5 +1,4 @@
 import { LeftNav, RightNav } from "./TopNav";
-// import { TopNav } from "./TopNav";
 
 export const SiteHeader = () => {
   return (
