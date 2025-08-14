@@ -1,3 +1,4 @@
+import { ScreenRootLayout } from "@/components/providers/Screen";
 import { Button } from "@gb/ui/src/components/ui/button";
 import {
   NavigationMenu,
@@ -7,19 +8,56 @@ import {
 } from "@gb/ui/src/components/ui/navigation-menu";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { headerCTA, navigationIndex, navigationMenu } from "../configs/nav";
+import { ReactNode } from "react";
+
+import { siteConfig } from "../configs/site";
 import {
   HeaderCTAType,
   NavigationIndexType,
-  NavigationMenuType,
-} from "../types/nav";
+  NavigationMenuItemType
+} from "../types/site";
+
+export const SiteLayout = ({ children }: { children: ReactNode }) => {
+  return (
+    <>
+      <ScreenRootLayout>
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+      </ScreenRootLayout>
+    </>
+  );
+};
+
+export const SitePage = ({ children }: { children: ReactNode }) => {
+  return (
+    <>
+      <main className="min-h-screen">{children}</main>
+    </>
+  );
+};
+
+export const SiteHeader = () => {
+  return (
+    <>
+      <header className="sticky top-0 border-b px-4 backdrop-blur-3xl md:px-6">
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/* Left side */}
+          <LeftNav />
+          {/* Right side */}
+          <RightNav />
+        </div>
+      </header>
+    </>
+  );
+};
 
 export const LeftNav = ({
-  index = navigationIndex,
-  menu = navigationMenu,
+  index = siteConfig.header.navigation.index,
+  menu = siteConfig.header.navigation.menu,
 }: {
   index?: NavigationIndexType;
-  menu?: NavigationMenuType;
+  menu?: NavigationMenuItemType[];
 }) => {
   return (
     <>
@@ -33,7 +71,7 @@ export const LeftNav = ({
           </Link>
           <NavigationMenu className="max-md:hidden">
             <NavigationMenuList className="gap-2">
-              {menu.items.map((item, index) => (
+              {menu.map((item, index) => (
                 <NavigationMenuItem key={index}>
                   <NavigationMenuLink
                     href={item.href}
@@ -51,7 +89,11 @@ export const LeftNav = ({
   );
 };
 
-export const RightNav = ({ cta = headerCTA }: { cta?: HeaderCTAType }) => {
+export const RightNav = ({
+  cta = siteConfig.header.CTA,
+}: {
+  cta?: HeaderCTAType;
+}) => {
   return (
     <>
       <div className="flex items-center gap-2">
@@ -66,10 +108,12 @@ export const RightNav = ({ cta = headerCTA }: { cta?: HeaderCTAType }) => {
   );
 };
 
-export const MobileNavView = () => {
+export const SiteFooter = () => {
   return (
     <>
-      <nav></nav>
+      <footer>
+        <div>This is Footer</div>
+      </footer>
     </>
   );
 };
