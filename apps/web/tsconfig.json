@@ -13,5 +13,5 @@
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
-, "setup.ts"  ],
+, "vitest.setup.ts"  ],
 }

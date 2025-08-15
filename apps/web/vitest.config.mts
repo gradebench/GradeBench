@@ -11,6 +11,7 @@ export default defineConfig({
       "./src/**/*.{test,spec}.{ts,tsx}",
       "./__tests__/**/*.{test,spec}.{ts,tsx}",
     ],
+    setupFiles: ["./vitest.setup.ts"],
     coverage: {
       provider: "v8",
       thresholds: {
