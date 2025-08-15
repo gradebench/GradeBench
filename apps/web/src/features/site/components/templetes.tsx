@@ -14,7 +14,7 @@ import { siteConfig } from "../configs/site";
 import {
   HeaderCTAType,
   NavigationIndexType,
-  NavigationMenuItemType
+  NavigationMenuItemType,
 } from "../types/site";
 
 export const SiteLayout = ({ children }: { children: ReactNode }) => {

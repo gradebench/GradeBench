@@ -15,13 +15,13 @@ export const generateMetadata = async ({
   return page.metadata;
 };
 
+export const revalidate = 86400; // 24 hours
+
 export const generateStaticParams = async () => {
   return Object.keys(siteConfig.pages).map((value) => ({
     p: value,
   }));
 };
-
-export const revalidate = 1 * 60 * 60 * 24;
 
 const Page = async ({ params }: { params: Promise<{ p: string }> }) => {
   const { p } = await params;

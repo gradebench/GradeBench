@@ -79,4 +79,3 @@ export const GradeBench = ({ className }: { className?: string }) => {
     </>
   );
 };
-
