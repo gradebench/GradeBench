@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { 
-  SiteLayout, 
-  SitePage, 
-  SiteHeader, 
-  LeftNav, 
-  RightNav, 
-  SiteFooter 
+import { describe, expect, it, vi } from "vitest";
+import {
+  LeftNav,
+  RightNav,
+  SiteFooter,
+  SiteHeader,
+  SiteLayout,
+  SitePage,
 } from "../components/templetes";
 import { siteConfig } from "../configs/site";
 
@@ -62,9 +62,9 @@ describe("SiteLayout", () => {
     render(
       <SiteLayout>
         <div data-testid="site-content">Content</div>
-      </SiteLayout>
+      </SiteLayout>,
     );
-    
+
     expect(screen.getByTestId("screen-root-layout")).toBeDefined();
     expect(screen.getByTestId("site-content")).toBeDefined();
     expect(screen.getByText("This is Footer")).toBeDefined();
@@ -76,9 +76,9 @@ describe("SitePage", () => {
     render(
       <SitePage>
         <div data-testid="page-content">Page Content</div>
-      </SitePage>
+      </SitePage>,
     );
-    
+
     expect(screen.getByTestId("page-content")).toBeDefined();
     const mainElement = screen.getByRole("main");
     expect(mainElement).toBeDefined();
@@ -89,13 +89,15 @@ describe("SitePage", () => {
 describe("SiteHeader", () => {
   it("renders the header with navigation components", () => {
     render(<SiteHeader />);
-    
+
     const headerElement = screen.getByRole("banner");
     expect(headerElement).toBeDefined();
     expect(headerElement.className).toContain("sticky");
-    
+
     // Check for the default CTA button
-    const ctaLink = screen.getByRole("link", { name: siteConfig.header.CTA.label });
+    const ctaLink = screen.getByRole("link", {
+      name: siteConfig.header.CTA.label,
+    });
     expect(ctaLink).toBeDefined();
   });
 });
@@ -103,12 +105,14 @@ describe("SiteHeader", () => {
 describe("LeftNav", () => {
   it("renders with default navigation items", () => {
     render(<LeftNav />);
-    
+
     // Check for the index link
     const indexLink = screen.getByRole("link", { name: "" }); // GradeBench component doesn't have text
     expect(indexLink).toBeDefined();
-    expect(indexLink.getAttribute("href")).toBe(siteConfig.header.navigation.index.href);
-    
+    expect(indexLink.getAttribute("href")).toBe(
+      siteConfig.header.navigation.index.href,
+    );
+
     // Check for menu items
     siteConfig.header.navigation.menu.forEach((item) => {
       const menuLink = screen.getByRole("link", { name: item.label });
@@ -116,15 +120,15 @@ describe("LeftNav", () => {
       expect(menuLink.getAttribute("href")).toBe(item.href);
     });
   });
-  
+
   it("renders with custom navigation items", () => {
     render(<LeftNav index={mockNavIndex} menu={mockNavMenu} />);
-    
+
     // Check for custom index link
     const indexLink = screen.getByText("Logo").closest("a");
     expect(indexLink).toBeDefined();
     expect(indexLink?.getAttribute("href")).toBe("/test");
-    
+
     // Check for custom menu items
     mockNavMenu.forEach((item) => {
       const menuLink = screen.getByRole("link", { name: item.label });
@@ -140,7 +144,7 @@ describe("RightNav", () => {
     const ctaLink = screen.getByRole("link", { name: /get started/i });
 
     expect(ctaLink).toBeDefined();
-    expect(ctaLink.getAttribute('href')).toBe('/get-started');
+    expect(ctaLink.getAttribute("href")).toBe("/get-started");
   });
 
   it("renders the menu button for mobile", () => {
@@ -153,7 +157,9 @@ describe("RightNav", () => {
     // Spy on siteConfig to check usage
     const { container } = render(<RightNav />);
     // Use container.querySelector to avoid the multiple elements issue
-    const defaultCta = container.querySelector(`a[href="${siteConfig.header.CTA.href}"]`);
+    const defaultCta = container.querySelector(
+      `a[href="${siteConfig.header.CTA.href}"]`,
+    );
     expect(defaultCta).not.toBeNull();
     expect(defaultCta?.textContent).toBe(siteConfig.header.CTA.label);
   });
@@ -162,7 +168,7 @@ describe("RightNav", () => {
 describe("SiteFooter", () => {
   it("renders the footer content", () => {
     render(<SiteFooter />);
-    
+
     const footerElement = screen.getByRole("contentinfo");
     expect(footerElement).toBeDefined();
     expect(screen.getByText("This is Footer")).toBeDefined();
