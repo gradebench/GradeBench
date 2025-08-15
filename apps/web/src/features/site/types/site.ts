@@ -6,6 +6,7 @@ export interface SiteConfigType {
     [key: string]: {
       metadata: Metadata;
       sitemap: MetadataRoute.Sitemap;
+      sections: JSX.Element[];
     };
   };
   header: {

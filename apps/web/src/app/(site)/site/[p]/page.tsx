@@ -1,8 +1,8 @@
 import { SitePage } from "@/features/site/components/templetes";
 import { siteConfig } from "@/features/site/configs/site";
-import { H1 } from "@gb/ui/src/components/ui/typography";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 
 export const generateMetadata = async ({
   params,
@@ -32,7 +32,9 @@ const Page = async ({ params }: { params: Promise<{ p: string }> }) => {
   return (
     <>
       <SitePage>
-        <H1>{p}</H1>
+        {page.sections.map((section, index) => (
+          <Fragment key={index}>{section}</Fragment>
+        ))}
       </SitePage>
     </>
   );

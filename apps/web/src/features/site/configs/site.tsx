@@ -1,4 +1,12 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
+import { AboutOurStory, AboutTheTeam } from "../components/About";
+import { HomeChallenge, HomeHero, HomeSolution } from "../components/Home";
+import {
+  ProductOverView,
+  ProductsHowItWorks,
+  ProductsPricing,
+  ProductsRoadmap,
+} from "../components/Products";
 import { SiteConfigType } from "../types/site";
 
 export const siteConfig: SiteConfigType = {
@@ -17,6 +25,11 @@ export const siteConfig: SiteConfigType = {
           priority: 1,
         },
       ],
+      sections: [
+        <HomeHero key={0} />,
+        <HomeChallenge key={1} />,
+        <HomeSolution key={2} />,
+      ],
     },
     about: {
       metadata: {
@@ -31,6 +44,11 @@ export const siteConfig: SiteConfigType = {
           priority: 1,
         },
       ],
+      sections: [
+        <AboutOurStory key={0} />,
+        <AboutOurStory key={1} />,
+        <AboutTheTeam key={2} />,
+      ],
     },
     products: {
       metadata: {
@@ -44,6 +62,12 @@ export const siteConfig: SiteConfigType = {
           changeFrequency: "weekly",
           priority: 1,
         },
+      ],
+      sections: [
+        <ProductOverView key={0} />,
+        <ProductsHowItWorks key={1} />,
+        <ProductsPricing key={2} />,
+        <ProductsRoadmap key={3} />,
       ],
     },
   },
