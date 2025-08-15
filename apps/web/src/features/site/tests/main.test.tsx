@@ -11,7 +11,13 @@ vi.mock("next/font/google", () => ({
 
 vi.mock("next/link", () => {
   return {
-    default: ({ href, children }: any) => <a href={href}>{children}</a>,
+    default: ({
+      href,
+      children,
+    }: {
+      href: string;
+      children: React.ReactNode;
+    }) => <a href={href}>{children}</a>,
   };
 });
 
