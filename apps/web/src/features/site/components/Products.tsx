@@ -22,12 +22,12 @@ export const ProductsHowItWorks = () => {
       <GradeBench className="w-sm" />
       <P>
         Intuitive Dashboard: Get a clear overview of your progress with metrics
-        like 'Tests Completed' (e.g., 12+) and 'Available Credits' (e.g., 500).
+        like &apos;Tests Completed&apos; (e.g., 12+) and &apos;Available Credits&apos; (e.g., 500).
       </P>
       <GradeBench className="w-sm" />
       <P>
         Track Your Tests: View a list of your tests with their status (e.g.,
-        'Not Started') and timestamps.
+        &apos;Not Started&apos;) and timestamps.
       </P>
       <GradeBench className="w-sm" />
       <P>
@@ -45,11 +45,11 @@ export const ProductsPricing = () => {
       <H2>Pricing</H2>
       <Lead>Flexible Plans for Every Need.</Lead>
       <ul>
-        <li>Pay-as-you-use: "₹25 per answer sheet graded."</li>
-        <li>Unlimited Usage Plan: "A flat rate of ₹3,000 per student."</li>
+        <li>Pay-as-you-use: &apos;₹25 per answer sheet graded.&apos;</li>
+        <li>Unlimited Usage Plan: &apos;A flat rate of ₹3,000 per student.&apos;</li>
         <li>
-          Annual Analytics Dashboard: "For ₹2,00,000, get AI-powered insights on
-          individual student performance for every 100 students."
+          Annual Analytics Dashboard: &apos;For ₹2,00,000, get AI-powered insights on
+          individual student performance for every 100 students.&apos;
         </li>
       </ul>
     </section>
@@ -63,17 +63,17 @@ export const ProductsRoadmap = () => {
       <Lead>Our Vision for the Future.</Lead>
       <ul>
         <li>
-          Multilingual Support: "We are developing our tool to comprehend
+          Multilingual Support: &apos;We are developing our tool to comprehend
           multiple languages, starting with regional Indian languages like
-          Hindi, Marathi, Gujarati, and Tamil, as LLMs advance."
+          Hindi, Marathi, Gujarati, and Tamil, as LLMs advance.&apos;
         </li>
         <li>
-          Product Enhancements: "We are continuously investing in R&D to improve
-          our feedback mechanisms and product capabilities."
+          Product Enhancements: &apos;We are continuously investing in R&D to improve
+          our feedback mechanisms and product capabilities.&apos;
         </li>
         <li>
-          Team Expansion: "We are recruiting top talent in AI, education, and
-          business development to strengthen our team."
+          Team Expansion: &apos;We are recruiting top talent in AI, education, and
+          business development to strengthen our team.&apos;
         </li>
       </ul>
     </section>

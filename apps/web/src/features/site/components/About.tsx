@@ -25,8 +25,8 @@ export const AboutOurVision = () => {
       <P>
         Our vision is to empower faculty with the tools to provide timely,
         unbiased, and personalized feedback that truly enhances student learning
-        outcomes. By automating and standardizing the grading process, we're not
-        just saving time; we're fostering a culture of profound growth and
+        outcomes. By automating and standardizing the grading process, we&apos;re not
+        just saving time; we&apos;re fostering a culture of profound growth and
         understanding.
       </P>
     </section>
@@ -40,18 +40,18 @@ export const AboutTheTeam = () => {
       <Lead>The Minds Behind GradeBench.</Lead>
       <ul>
         <li>
-          Sameer Khan S: Co-Founder, Tech & Operations. "A student at Scaler
-          School of Technology and a Hackathon Winner."
+          Sameer Khan S: Co-Founder, Tech & Operations. &quot;A student at Scaler
+          School of Technology and a Hackathon Winner.&quot;
         </li>
         <li>
-          Rishi Harti: Co-Founder, Lead Technologist & Product Development. "An
+          Rishi Harti: Co-Founder, Lead Technologist & Product Development. &quot;An
           experienced tech enthusiast with a proven track record of building
-          real-world applications."
+          real-world applications.&quot;
         </li>
         <li>
-          Yash Goyal: Co-Founder, Business & Finance. "Brings extensive business
+          Yash Goyal: Co-Founder, Business & Finance. &quot;Brings extensive business
           experience from a Series B fintech company and a strong educational
-          background."
+          background.&quot;
         </li>
       </ul>
     </section>

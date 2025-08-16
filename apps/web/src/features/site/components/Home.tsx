@@ -41,7 +41,7 @@ export const HomeChallenge = () => {
           </li>
           <li>
             82% of students believe personalized feedback would enhance their
-            learning, a crucial element that's often sacrificed due to time
+            learning, a crucial element that&apos;s often sacrificed due to time
             constraints.
           </li>
           <li>
@@ -62,7 +62,7 @@ export const HomeSolution = () => {
         <H2>Our Solution</H2>
         <Lead>GradeBench: Redefining Evaluation</Lead>
         <P>
-          GradeBench offers a revolutionary approach to evaluation that's fast,
+          GradeBench offers a revolutionary approach to evaluation that&apos;s fast,
           cost-effective, and provides personalized, meaningful feedback.
         </P>
         <ul>
