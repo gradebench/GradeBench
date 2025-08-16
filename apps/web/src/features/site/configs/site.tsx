@@ -1,5 +1,9 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
-import { AboutOurStory, AboutTheTeam } from "../components/About";
+import {
+  AboutOurStory,
+  AboutOurVision,
+  AboutTheTeam,
+} from "../components/About";
 import { HomeChallenge, HomeHero, HomeSolution } from "../components/Home";
 import {
   ProductOverView,
@@ -46,7 +50,7 @@ export const siteConfig: SiteConfigType = {
       ],
       sections: [
         <AboutOurStory key={0} />,
-        <AboutOurStory key={1} />,
+        <AboutOurVision key={1} />,
         <AboutTheTeam key={2} />,
       ],
     },

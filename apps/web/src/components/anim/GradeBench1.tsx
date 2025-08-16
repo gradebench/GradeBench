@@ -13,8 +13,8 @@ export const GradeBench = ({ className }: { className?: string }) => {
           viewBox="0 0 256 256"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          initial={{ rotate: 30 }}
-          animate={{ rotate: 0 }}
+          initial={{ rotate: 30, opacity: 0 }}
+          animate={{ rotate: 0, opacity: 10 }}
           transition={{
             type: "spring",
             damping: 100,
@@ -27,8 +27,8 @@ export const GradeBench = ({ className }: { className?: string }) => {
             stroke="#1E40AF"
             strokeWidth="48"
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 10 }}
             transition={{
               delay: 0,
               duration: 1,
@@ -40,8 +40,8 @@ export const GradeBench = ({ className }: { className?: string }) => {
             stroke="#3B82F6"
             strokeWidth="48"
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 10 }}
             transition={{
               delay: 0.1,
               duration: 1,
@@ -53,8 +53,8 @@ export const GradeBench = ({ className }: { className?: string }) => {
             stroke="#3B82F6"
             strokeWidth="48"
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 10 }}
             transition={{
               delay: 0.2,
               duration: 1,
@@ -66,8 +66,8 @@ export const GradeBench = ({ className }: { className?: string }) => {
             stroke="#1E40AF"
             strokeWidth="48"
             strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 10 }}
             transition={{
               delay: 0.4,
               duration: 1,
