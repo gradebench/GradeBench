@@ -48,7 +48,7 @@ jobs:
           path: |
             .turbo
             **/.turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
 
