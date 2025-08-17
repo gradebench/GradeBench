@@ -1,3 +1,4 @@
+import { GradeBench } from "@/components/anim/GradeBench1";
 import { Button } from "@gb/ui/src/components/ui/button";
 import {
   BlockQuote,
@@ -6,6 +7,7 @@ import {
   Lead,
   P,
 } from "@gb/ui/src/components/ui/typography";
+import { ArrowRight } from "lucide-react";
 
 export const Home = () => {
   return (
@@ -20,16 +22,25 @@ export const Home = () => {
 const HomeHero = () => {
   return (
     <>
-      <section className="bg-background relative grid min-h-screen place-items-center">
-        <article className="z-1 flex flex-col items-center gap-8 p-8">
-          <H1 className="text-center text-4xl font-bold lg:text-6xl">
-            GradeBench
+      <section className="bg-background relative flex min-h-screen flex-col-reverse md:flex-row">
+        <article className="flex flex-7 flex-col items-center justify-center gap-12 p-8 md:items-start">
+          <H1 className="text-center md:text-left">
+            Empowering Teachers, Elevating Education
           </H1>
-          <Lead className="text-center">
-            Effortless Evaluation for Educators
+          <Lead className="text-center md:text-left">
+            We are transforming the evaluation space to reduce the cognitive
+            burden on educators and enable them to focus on what matters most:
+            teaching. By providing quick, fair, and meaningful feedback, we help
+            every student grow.
           </Lead>
-          <Button>Get Started</Button>
+          <Button className="group">
+            Learn More
+            <ArrowRight className="transition-transform group-hover:translate-x-1" />
+          </Button>
         </article>
+        <aside className="grid flex-5 place-items-center overflow-hidden p-8">
+          <GradeBench className="w-full max-w-64" />
+        </aside>
       </section>
     </>
   );
