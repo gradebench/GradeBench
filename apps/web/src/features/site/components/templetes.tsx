@@ -39,7 +39,7 @@ export const SitePage = ({ children }: { children: ReactNode }) => {
 export const SiteHeader = () => {
   return (
     <>
-      <header className="sticky top-0 border-b px-4 backdrop-blur-3xl md:px-6">
+      <header className="bg-primary/4 sticky top-0 z-100 border-b px-4 backdrop-blur-lg md:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Left side */}
           <LeftNav />

@@ -7,26 +7,38 @@ import {
   P,
 } from "@gb/ui/src/components/ui/typography";
 
-export const HomeHero = () => {
+export const Home = () => {
   return (
     <>
-      <section className="grid min-h-screen place-items-center">
-        <article className="flex flex-col items-center gap-8 p-8">
-          <H1 className="text-center">We Grade, You Teach!</H1>
+      <HomeHero />
+      <HomeChallenge />
+      <HomeSolution />
+    </>
+  );
+};
+
+const HomeHero = () => {
+  return (
+    <>
+      <section className="bg-background relative grid min-h-screen place-items-center">
+        <article className="z-1 flex flex-col items-center gap-8 p-8">
+          <H1 className="text-center text-4xl font-bold lg:text-6xl">
+            GradeBench
+          </H1>
           <Lead className="text-center">
             Effortless Evaluation for Educators
           </Lead>
-          <Button>Get Started </Button>
+          <Button>Get Started</Button>
         </article>
       </section>
     </>
   );
 };
 
-export const HomeChallenge = () => {
+const HomeChallenge = () => {
   return (
     <>
-      <section>
+      <section className="min-h-screen">
         <H2>The Challenge</H2>
         <Lead>The Burden of Manual Grading</Lead>
         <P>
@@ -55,15 +67,15 @@ export const HomeChallenge = () => {
   );
 };
 
-export const HomeSolution = () => {
+const HomeSolution = () => {
   return (
     <>
-      <section>
+      <section className="min-h-screen">
         <H2>Our Solution</H2>
         <Lead>GradeBench: Redefining Evaluation</Lead>
         <P>
-          GradeBench offers a revolutionary approach to evaluation that&apos;s fast,
-          cost-effective, and provides personalized, meaningful feedback.
+          GradeBench offers a revolutionary approach to evaluation that&apos;s
+          fast, cost-effective, and provides personalized, meaningful feedback.
         </P>
         <ul>
           <li>

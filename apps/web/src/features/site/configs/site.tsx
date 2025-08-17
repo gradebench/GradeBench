@@ -1,15 +1,10 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
 import {
-  AboutOurStory,
-  AboutOurVision,
-  AboutTheTeam,
+  About
 } from "../components/About";
-import { HomeChallenge, HomeHero, HomeSolution } from "../components/Home";
+import { Home } from "../components/Home";
 import {
-  ProductOverView,
-  ProductsHowItWorks,
-  ProductsPricing,
-  ProductsRoadmap,
+  Products
 } from "../components/Products";
 import { SiteConfigType } from "../types/site";
 
@@ -29,11 +24,7 @@ export const siteConfig: SiteConfigType = {
           priority: 1,
         },
       ],
-      sections: [
-        <HomeHero key={0} />,
-        <HomeChallenge key={1} />,
-        <HomeSolution key={2} />,
-      ],
+      content: <Home />,
     },
     about: {
       metadata: {
@@ -48,11 +39,7 @@ export const siteConfig: SiteConfigType = {
           priority: 1,
         },
       ],
-      sections: [
-        <AboutOurStory key={0} />,
-        <AboutOurVision key={1} />,
-        <AboutTheTeam key={2} />,
-      ],
+      content: <About />,
     },
     products: {
       metadata: {
@@ -67,12 +54,7 @@ export const siteConfig: SiteConfigType = {
           priority: 1,
         },
       ],
-      sections: [
-        <ProductOverView key={0} />,
-        <ProductsHowItWorks key={1} />,
-        <ProductsPricing key={2} />,
-        <ProductsRoadmap key={3} />,
-      ],
+      content: <Products />,
     },
   },
   header: {

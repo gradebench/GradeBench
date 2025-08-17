@@ -1,12 +1,12 @@
 import { Metadata, MetadataRoute } from "next";
-import { JSX } from "react";
+import { JSX, ReactNode } from "react";
 
 export interface SiteConfigType {
   pages: {
     [key: string]: {
       metadata: Metadata;
       sitemap: MetadataRoute.Sitemap;
-      sections: JSX.Element[];
+      content: ReactNode;
     };
   };
   header: {

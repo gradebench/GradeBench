@@ -1,6 +1,17 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
 import { H1, H2, Lead, P } from "@gb/ui/src/components/ui/typography";
 
+export const Products = () => {
+  return (
+    <section>
+      <H1>Products</H1>
+      <ProductOverView />
+      <ProductsHowItWorks />
+      <ProductsPricing />
+    </section>
+  );
+};
+
 export const ProductOverView = () => {
   return (
     <section>
@@ -22,7 +33,8 @@ export const ProductsHowItWorks = () => {
       <GradeBench className="w-sm" />
       <P>
         Intuitive Dashboard: Get a clear overview of your progress with metrics
-        like &apos;Tests Completed&apos; (e.g., 12+) and &apos;Available Credits&apos; (e.g., 500).
+        like &apos;Tests Completed&apos; (e.g., 12+) and &apos;Available
+        Credits&apos; (e.g., 500).
       </P>
       <GradeBench className="w-sm" />
       <P>
@@ -46,10 +58,13 @@ export const ProductsPricing = () => {
       <Lead>Flexible Plans for Every Need.</Lead>
       <ul>
         <li>Pay-as-you-use: &apos;₹25 per answer sheet graded.&apos;</li>
-        <li>Unlimited Usage Plan: &apos;A flat rate of ₹3,000 per student.&apos;</li>
         <li>
-          Annual Analytics Dashboard: &apos;For ₹2,00,000, get AI-powered insights on
-          individual student performance for every 100 students.&apos;
+          Unlimited Usage Plan: &apos;A flat rate of ₹3,000 per student.&apos;
+        </li>
+        <li>
+          Annual Analytics Dashboard: &apos;For ₹2,00,000, get AI-powered
+          insights on individual student performance for every 100
+          students.&apos;
         </li>
       </ul>
     </section>
@@ -68,12 +83,12 @@ export const ProductsRoadmap = () => {
           Hindi, Marathi, Gujarati, and Tamil, as LLMs advance.&apos;
         </li>
         <li>
-          Product Enhancements: &apos;We are continuously investing in R&D to improve
-          our feedback mechanisms and product capabilities.&apos;
+          Product Enhancements: &apos;We are continuously investing in R&D to
+          improve our feedback mechanisms and product capabilities.&apos;
         </li>
         <li>
-          Team Expansion: &apos;We are recruiting top talent in AI, education, and
-          business development to strengthen our team.&apos;
+          Team Expansion: &apos;We are recruiting top talent in AI, education,
+          and business development to strengthen our team.&apos;
         </li>
       </ul>
     </section>
