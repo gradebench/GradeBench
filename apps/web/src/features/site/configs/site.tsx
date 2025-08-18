@@ -2,7 +2,7 @@ import { GradeBench } from "@/components/anim/GradeBench1";
 import {
   About
 } from "../components/About";
-import { Home } from "../components/Home";
+import { Home } from "../components/home/Home";
 import {
   Products
 } from "../components/Products";

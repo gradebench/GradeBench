@@ -1,5 +1,5 @@
 // Import Vitest globals
-import { afterEach, expect } from "vitest";
+import { afterEach, expect, vi } from "vitest";
 
 // Import testing-library utilities
 import { cleanup } from "@testing-library/react";
@@ -18,6 +18,8 @@ import {
   toHaveValue,
 } from "@testing-library/jest-dom/matchers";
 
+import "@testing-library/jest-dom/vitest";
+
 // Explicitly extend Vitest's expect with individual matchers
 expect.extend({
   toBeInTheDocument,
@@ -35,6 +37,7 @@ expect.extend({
 // Clean up after each test
 afterEach(() => {
   cleanup();
+  vi.clearAllMocks();
 });
 
 // This file is referenced in vitest.config.mts and will be automatically loaded by Vitest
