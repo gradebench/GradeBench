@@ -13,8 +13,8 @@
 
 - **Headline:** Don't Let Grading Overwhelm Your Institution
 - **Text:** Manual grading is more than just a task; it's a significant operational drain. It consumes thousands of hours, inflates costs, and delays the crucial feedback students need to succeed.
-  - [cite\_start]**Time Sink:** Educators lose over **213 hours annually** to grading—time that could be spent on lesson planning and student mentorship. [cite: 17]
-  - [cite\_start]**Budget Drain:** This lost time costs your institution nearly **27% of an educator's salary**, directly impacting your bottom line. [cite: 17]
+  - [cite\_start]**Time Sink:** Educators lose over **200+ hours annually** to grading—time that could be spent on lesson planning and student mentorship. [cite: 17]
+  - [cite\_start]**Budget Drain:** This lost time costs your institution nearly **25+% of an educator's salary**, directly impacting your bottom line. [cite: 17]
   - [cite\_start]**Missed Opportunity:** **82% of students** confirm that faster, personalized feedback would have dramatically improved their learning outcomes. [cite: 19]
 
 ---
@@ -28,14 +28,15 @@
   - **Cut Costs by 70%:** Slash your evaluation expenses. [cite\_start]Our process is **70% more affordable** than traditional methods, freeing up your budget. [cite: 27, 35]
   - [cite\_start]**Ensure 100% Fairness:** Deliver **unbiased, standardized evaluations** every time, free from human fatigue and subjectivity. [cite: 29, 36]
   - [cite\_start]**Deliver Powerful Feedback:** Empower your educators to provide **customized, high-quality feedback** that helps every student achieve their full potential. [cite: 31]
-
+  - [cite\_start]**Provide Human-Like Annotation:** Offer insightful, natural annotations directly on the answer sheet, guiding students with the clarity of a dedicated teacher.  [cite: 33]
 ---
 
 ## **Social Proof / Traction Section**
 
 - **Headline:** Trusted by Leaders in Competitive Exam Coaching
-- **Text:** Our technology is already delivering results. [cite\_start]We are proud to be working with **Samkalp IAS in Delhi**, helping them streamline their evaluation process and provide superior feedback to their students. [cite: 44]
-- **Logo Area:** [Logo of Samkalp IAS]
+- **Text:** Our technology is already delivering results. [cite\_start]We are proud to be working with **Samkalp IAS in Delhi** and **Primus IAS in Bengaluru**, helping them streamline their evaluation process and provide superior feedback to their students. [cite: 44]
+- **Logo Area:** [Logo of Samkalp IAS][Logo of primus IAS]
+
 
 ---
 
@@ -69,7 +70,7 @@
 - **Founder Profiles:**
   - **Yash Goyal | [cite\_start]Co-Founder (Business & Finance):** Leveraging his experience from the YC W22 fintech company Aspora and his education from NMIMS Mumbai, Yash architects our business strategy for sustainable growth. [cite: 71]
   - **Rishi Harti | [cite\_start]Co-Founder (Lead Technologist & Product):** A passionate builder with a portfolio of successful real-world applications, Rishi leads the technological development of the GradeBench platform. [cite: 74]
-  - **Sameer Khan S | [cite\_start]Co-Founder (Technology & Operations):** As a Tech Lead, Hackathon Winner, and student at the Scaler School of Technology, Sameer masterfully blends technical expertise with strategic development to drive our operations. [cite: 76, 77]
+  - **Sameer Khan S | [cite\_start]Co-Founder (Technology & Operations):** As an experienced Tech Lead and Hackathon Winner, Sameer masterfully blends deep technical expertise with strategic development to drive our operations. [cite: 76, 77]
 
 ---
 
@@ -90,10 +91,13 @@
 - **Feature 2: Deliver Feedback That Drives Improvement**
   - **Title:** Dynamic & Personalized Feedback
   - **Description:** Our platform does more than just score—it teaches. Generate detailed feedback reports identifying errors, recognizing key concepts, and offering actionable advice aligned with your curriculum.
-- **Feature 3: Turn Data into Strategy**
+- **Feature 3: The Personal Touch, Scaled**
+  - **Title:** Human-Like Digital Annotation
+  - **Description:** Go beyond simple checkmarks. Our AI provides nuanced, handwritten-style feedback and annotations directly on the answer sheet, guiding students with the clarity and personal touch of an experienced educator.
+- **Feature 4: Turn Data into Strategy**
   - **Title:** In-Depth Performance Analytics
   - **Description:** Access a comprehensive dashboard to track student and cohort performance. Instantly identify knowledge gaps and learning trends to make data-driven decisions that improve teaching effectiveness.
-- **Feature 4: Achieve Perfect Consistency**
+- **Feature 5: Achieve Perfect Consistency**
   - **Title:** Bias-Free & Standardized Evaluation
   - **Description:** Guarantee every student a fair assessment. [cite\_start]Our technology evaluates every answer against your chosen rubric with zero subjectivity, ensuring consistency across thousands of papers. [cite: 29, 36]
 
@@ -112,7 +116,7 @@
 
 - **Headline:** The Winning Edge for UPSC-CSE Coaching
 - **The Challenge:** Top-tier UPSC institutes must evaluate thousands of subjective answer sheets with speed and precision—a logistical bottleneck that limits growth and delays student progress.
-- **The GradeBench Solution:** We offer a proven platform to eliminate this bottleneck. [cite\_start]**As demonstrated with Samkalp IAS**, GradeBench allows you to drastically reduce turnaround times, deliver higher-quality feedback, and scale your operations without increasing faculty costs. [cite: 44, 47]
+- **The GradeBench Solution:** We offer a proven platform to eliminate this bottleneck. [cite\_start]**As demonstrated with Samkalp IAS and Primus IAS**, GradeBench allows you to drastically reduce turnaround times, deliver higher-quality feedback, and scale your operations without increasing faculty costs. [cite: 44, 47]
 
 ---
 
@@ -124,7 +128,7 @@
   - [cite\_start]K-12 Schools [cite: 54, 491]
   - [cite\_start]Undergraduate & Postgraduate Colleges [cite: 54, 492]
   - [cite\_start]Professional Institutes (CA, CS, LLB, etc.) [cite: 494]
-- [cite\_start]**Growing with India:** We are developing robust multilingual support for Hindi, Marathi, Gujarati, and Tamil to serve institutions across the nation. [cite: 56, 495, 498-501]
+- [cite\_start]**Growing with India:** We are developing robust multilingual support for Hindi, Marathi, Kannada, and many more languages to serve institutions across the nation. [cite: 56, 495, 498-501]
 
 ---
 
