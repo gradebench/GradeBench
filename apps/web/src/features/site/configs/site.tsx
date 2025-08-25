@@ -1,20 +1,19 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
-import {
-  About
-} from "../components/About";
+
 import { Home } from "../components/home/Home";
-import {
-  Products
-} from "../components/Products";
+import { Products } from "../components/Products";
 import { SiteConfigType } from "../types/site";
+import { About } from "../components/about/About";
+import { Features } from "../components/features/Features";
+import { Solutions } from "../components/solutions/Solutions";
 
 export const siteConfig: SiteConfigType = {
   pages: {
     home: {
       metadata: {
-        title: "Home | GradeBench",
+        title: "Automated Grading & AI Evaluation Platform | GradeBench",
         description:
-          "GradeBench is an innovative education technology company dedicated to transforming the evaluation space with cutting-edge tools and solutions.",
+          "GradeBench saves educators 95% of their time with AI-powered grading. Get instant, unbiased feedback and cut evaluation costs by 70%. Transform your institution today.",
       },
       sitemap: [
         {
@@ -28,8 +27,9 @@ export const siteConfig: SiteConfigType = {
     },
     about: {
       metadata: {
-        title: "About Us | GradeBench",
-        description: "-",
+        title: "Our Mission to Empower Educators | About GradeBench",
+        description:
+          "Learn about the GradeBench mission to reduce educator workload and make academic evaluations quick, fair, and meaningful. Meet our dedicated founding team.",
       },
       sitemap: [
         {
@@ -41,14 +41,48 @@ export const siteConfig: SiteConfigType = {
       ],
       content: <About />,
     },
-    products: {
+    features: {
       metadata: {
-        title: "Products | GradeBench",
-        description: "-",
+        title:
+          "AI Grading, Personalized Feedback & Analytics | GradeBench Features",
+        description:
+          "Explore GradeBench's powerful features: Grade in seconds with our AI, deliver personalized student feedback, and unlock performance insights with our analytics dashboard.",
       },
       sitemap: [
         {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/products`,
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/features`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 1,
+        },
+      ],
+      content: <Features />,
+    },
+    solutions: {
+      metadata: {
+        title: "AI Grading for UPSC Coaching Institutes & Schools | GradeBench",
+        description:
+          "GradeBench offers a tailored solution for UPSC institutes to automate answer sheet evaluation, reduce turnaround time, and scale operations. Discover our playbook.",
+      },
+      sitemap: [
+        {
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/solutions`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 1,
+        },
+      ],
+      content: <Solutions />,
+    },
+    /* pricing: {
+      metadata: {
+        title: "Pricing & Plans | GradeBench",
+        description:
+          "Find the right GradeBench plan for your institution. Explore our flexible Pay-As-You-Use, Unlimited, and Enterprise pricing options. Simple and transparent.",
+      },
+      sitemap: [
+        {
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/pricing`,
           lastModified: new Date(),
           changeFrequency: "weekly",
           priority: 1,
@@ -56,6 +90,22 @@ export const siteConfig: SiteConfigType = {
       ],
       content: <Products />,
     },
+    contact: {
+      metadata: {
+        title: "Contact Us | GradeBench",
+        description:
+          "Get in touch with the GradeBench team. Request a free, personalized demo or ask a question about our automated evaluation platform. We're here to help.",
+      },
+      sitemap: [
+        {
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/contact`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 1,
+        },
+      ],
+      content: <Products />,
+    }, */
   },
   header: {
     navigation: {
@@ -73,9 +123,21 @@ export const siteConfig: SiteConfigType = {
           href: "/site/about",
         },
         {
-          label: "Product",
-          href: "/site/products",
+          label: "Features",
+          href: "/site/features",
         },
+        {
+          label: "Solutions",
+          href: "/site/solutions",
+        },
+        /* {
+          label: "Pricing",
+          href: "/site/pricing",
+        },
+        {
+          label: "Contact Us",
+          href: "/site/contact",
+        }, */
       ],
     },
     CTA: {

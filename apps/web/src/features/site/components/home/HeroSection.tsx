@@ -1,51 +1,37 @@
 import { Button } from "@gb/ui/src/components/ui/button";
-import { Separator } from "@gb/ui/src/components/ui/separator";
-import { H1, Large, P } from "@gb/ui/src/components/ui/typography";
-import { HeroGlob } from "./Anim";
+import { H1, Lead } from "@gb/ui/src/components/ui/typography";
+import Link from "next/link";
 
 export const HomeHeroSection = () => {
   return (
     <>
-      <section className="bg-background relative flex min-h-screen flex-col-reverse md:flex-row">
-        <article className="flex flex-7 flex-col items-center justify-center gap-12 p-8 md:items-start">
-          <H1 className="text-center md:text-left" data-testid="hero-headline">
+      <section className="from-primary/20 via-background to-primary/20 grid min-h-screen place-items-center bg-gradient-to-br px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <H1 className="mb-4" data-testid="headline">
             <span className="text-primary">Grade</span>
             <span> in Seconds. </span>
             <span className="text-primary">Teach</span>
             <span> for Hours. </span>
           </H1>
-          <Large
-            className="text-center md:text-left"
-            data-testid="hero-sub-headline"
-          >
+          <Lead className="mb-8 leading-relaxed" data-testid="sub-headline">
             GradeBench automates 95% of your grading workload, delivering fair,
             instant, and personalized feedback so your educators can get back to
             teaching.
-          </Large>
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <P className="flex-1">See GradeBench in Action</P>
-              <Separator orientation="vertical" />
-              <Button className="group" disabled data-testid="hero-primary-cta">
-                Coming Soon
-              </Button>
-            </div>
-            <div className="flex gap-4">
-              <P className="flex-1">Explore the Features</P>
-              <Separator orientation="vertical" />
-              <Button
-                className="group"
-                variant={"outline"}
-                data-testid="hero-secondary-cta"
-              >
-                Features
-              </Button>
-            </div>
+          </Lead>
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <Button size="lg" data-testid="primary-cta">
+              See GradeBench in Action
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              data-testid="secondary-cta"
+              asChild
+            >
+              <Link href={"/site/features"}>Explore the Features</Link>
+            </Button>
           </div>
-        </article>
-        <aside className="grid flex-5 place-items-center overflow-hidden p-8">
-          <HeroGlob />
-        </aside>
+        </div>
       </section>
     </>
   );

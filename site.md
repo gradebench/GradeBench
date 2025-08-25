@@ -14,7 +14,7 @@
 - **Headline:** Don't Let Grading Overwhelm Your Institution
 - **Text:** Manual grading is more than just a task; it's a significant operational drain. It consumes thousands of hours, inflates costs, and delays the crucial feedback students need to succeed.
   - [cite\_start]**Time Sink:** Educators lose over **200+ hours annually** to grading—time that could be spent on lesson planning and student mentorship. [cite: 17]
-  - [cite\_start]**Budget Drain:** This lost time costs your institution nearly **25+% of an educator's salary**, directly impacting your bottom line. [cite: 17]
+  - [cite\_start]**Budget Drain:** This lost time costs your institution nearly **25% of an educator's salary**, directly impacting your bottom line. [cite: 17]
   - [cite\_start]**Missed Opportunity:** **82% of students** confirm that faster, personalized feedback would have dramatically improved their learning outcomes. [cite: 19]
 
 ---
