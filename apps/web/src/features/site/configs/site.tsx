@@ -144,4 +144,24 @@ export const siteConfig: SiteConfigType = {
       href: "#",
     },
   },
+  footer: {
+    quicklinks: [
+      {
+        label: "Home",
+        href: "/site/home",
+      },
+      {
+        label: "About Us",
+        href: "/site/about",
+      },
+      {
+        label: "Features",
+        href: "/site/features",
+      },
+      {
+        label: "Solutions",
+        href: "/site/solutions",
+      },
+    ],
+  },
 };

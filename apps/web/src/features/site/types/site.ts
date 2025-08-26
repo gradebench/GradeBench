@@ -19,6 +19,9 @@ export interface SiteConfigType {
     };
     CTA: HeaderCTAType;
   };
+  footer: {
+    quicklinks: NavigationMenuItemType[];
+  };
 }
 
 export interface NavigationIndexType {

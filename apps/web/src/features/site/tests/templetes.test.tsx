@@ -67,7 +67,6 @@ describe("SiteLayout", () => {
 
     expect(screen.getByTestId("screen-root-layout")).toBeDefined();
     expect(screen.getByTestId("site-content")).toBeDefined();
-    expect(screen.getByText("This is Footer")).toBeDefined();
   });
 });
 
@@ -171,6 +170,5 @@ describe("SiteFooter", () => {
 
     const footerElement = screen.getByRole("contentinfo");
     expect(footerElement).toBeDefined();
-    expect(screen.getByText("This is Footer")).toBeDefined();
   });
 });
