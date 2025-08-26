@@ -5,9 +5,9 @@ import {
   CardTitle,
 } from "@gb/ui/src/components/ui/card";
 import { H2, Lead, P } from "@gb/ui/src/components/ui/typography";
-import { Award, Globe, Target, Users } from "lucide-react";
-import { solutionRoadmap } from "../../configs/cards";
+import { Globe } from "lucide-react";
 import { ReactNode } from "react";
+import { solutionRoadmap } from "../../configs/cards";
 
 export const SolutionRoadmap = () => {
   return (
@@ -15,10 +15,10 @@ export const SolutionRoadmap = () => {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 text-center">
-            <H2 className="mb-6">
+            <H2 className="mb-6" data-testid="headline">
               Expanding to Serve the Entire Education Ecosystem
             </H2>
-            <Lead className="mx-auto max-w-4xl">
+            <Lead className="mx-auto max-w-4xl" data-testid="text">
               We are leveraging our success in the UPSC-CSE segment to build a
               playbook for institutions everywhere.
             </Lead>
@@ -37,7 +37,7 @@ export const SolutionRoadmap = () => {
 
           <Card className="from-secondary to-secondary/64 bg-gradient-to-r shadow-lg">
             <CardHeader className="text-center">
-              <Globe className="mx-auto mb-4 h-12 w-12 text-indigo-500" />
+              <Globe className="mx-auto mb-4 h-16 w-16 text-primary bg-primary/12 p-2 rounded-2xl" />
               <CardTitle className="text-2xl font-bold">
                 Growing with India
               </CardTitle>
@@ -67,7 +67,10 @@ const RoadmapCard = ({
 }) => {
   return (
     <>
-      <Card className="shadow-lg transition-shadow duration-300 hover:shadow-xl">
+      <Card
+        className="shadow-lg transition-shadow duration-300 hover:shadow-xl"
+        data-testid="card"
+      >
         <CardHeader className="text-center">
           {icon}
           <CardTitle className="text-xl font-bold">{title}</CardTitle>

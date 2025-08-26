@@ -1,8 +1,8 @@
 import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
 } from "@gb/ui/src/components/ui/card";
 import { H2, P } from "@gb/ui/src/components/ui/typography";
 
@@ -12,14 +12,19 @@ export const SolutionTargeted = () => {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 text-center">
-            <H2 className="mb-8">The Winning Edge for UPSC-CSE Coaching</H2>
+            <H2 className="mb-8" data-testid="headline">
+              The Winning Edge for UPSC-CSE Coaching
+            </H2>
           </div>
 
           <div className="flex flex-col items-center gap-16">
             <div>
-              <Card className="border-l-destructive h-full border-l-4 shadow-lg">
+              <Card className="border-l-primary/32 h-full border-l-4 shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold">
+                  <CardTitle
+                    className="text-2xl font-bold"
+                    data-testid="challenge"
+                  >
                     The Challenge
                   </CardTitle>
                 </CardHeader>
@@ -35,7 +40,10 @@ export const SolutionTargeted = () => {
             </div>
 
             <div>
-              <Card className="border-l-4 border-l-green-500 shadow-lg">
+              <Card
+                className="border-l-primary/32 border-l-4 shadow-lg"
+                data-testid="solution"
+              >
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold">
                     The GradeBench Solution

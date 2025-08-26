@@ -5,10 +5,10 @@ export const SocialProof = () => {
     <>
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl text-center">
-          <H2 className="mb-6">
+          <H2 className="mb-6" data-testid="headline">
             Trusted by Leaders in Competitive Exam Coaching
           </H2>
-          <Lead className="mx-auto mb-12 max-w-4xl">
+          <Lead className="mx-auto mb-12 max-w-4xl" data-testid="text">
             Our technology is already delivering results. We are proud to be
             working with <span className="font-bold">Samkalp IAS in Delhi</span>{" "}
             and <span className="font-bold">Primus IAS in Bengaluru</span>,

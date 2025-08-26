@@ -12,7 +12,7 @@ export const AboutTeam = () => {
     <>
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <H2 className="mb-16 text-center">
+          <H2 className="mb-16 text-center" data-testid="headline">
             The Team Building the Future of Evaluation
           </H2>
 
@@ -49,16 +49,19 @@ const TeamCard = ({
 }) => {
   return (
     <>
-      <Card className="shadow-lg transition-shadow duration-300 hover:shadow-xl">
+      <Card
+        className="shadow-lg transition-shadow duration-300 hover:shadow-xl"
+        data-testid="card"
+      >
         <CardHeader className="pb-6 text-center">
-          <div className="from-primary/96 to-primary/64 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-gradient-to-br">
+          <div className="from-primary/64 to-primary/80 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-gradient-to-br">
             <span className="text-2xl font-bold text-white">{fallback}</span>
           </div>
           <CardTitle className="text-xl font-bold">{name}</CardTitle>
 
           <div className="flex flex-wrap items-baseline justify-center gap-4">
-            <Muted>{role}</Muted>
-            <P className="bg-primary/64 dark:text-foreground text-background rounded-4xl px-2 leading-relaxed">
+            <Muted className="font-bold">{role}</Muted>
+            <P className="bg-primary dark:text-foreground text-background rounded-4xl px-2 leading-relaxed">
               {expertise}
             </P>
           </div>

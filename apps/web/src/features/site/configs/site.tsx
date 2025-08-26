@@ -1,11 +1,10 @@
 import { GradeBench } from "@/components/anim/GradeBench1";
 
-import { Home } from "../components/home/Home";
-import { Products } from "../components/Products";
-import { SiteConfigType } from "../types/site";
 import { About } from "../components/about/About";
 import { Features } from "../components/features/Features";
+import { Home } from "../components/home/Home";
 import { Solutions } from "../components/solutions/Solutions";
+import { SiteConfigType } from "../types/site";
 
 export const siteConfig: SiteConfigType = {
   pages: {

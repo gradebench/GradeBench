@@ -15,7 +15,9 @@ import {
 
 export const heroProblemCards = [
   {
-    icon: <Clock className="text-primary mx-auto mb-4 h-12 w-12" />,
+    icon: (
+      <Clock className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Time Sink",
     content: (
       <P>
@@ -26,7 +28,9 @@ export const heroProblemCards = [
     ),
   },
   {
-    icon: <DollarSign className="text-primary mx-auto mb-4 h-12 w-12" />,
+    icon: (
+      <DollarSign className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Budget Drain",
     content: (
       <P>
@@ -37,7 +41,9 @@ export const heroProblemCards = [
     ),
   },
   {
-    icon: <Target className="text-primary mx-auto mb-4 h-12 w-12" />,
+    icon: (
+      <Target className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Missed Opportunity",
     content: (
       <P>
@@ -51,7 +57,9 @@ export const heroProblemCards = [
 
 export const heroSolutionCards = [
   {
-    icon: <Zap className="mb-3 h-10 w-10 text-teal-500" />,
+    icon: (
+      <Zap className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Work 95% Faster",
     content: (
       <P>
@@ -62,7 +70,9 @@ export const heroSolutionCards = [
     ),
   },
   {
-    icon: <DollarSign className="mb-3 h-10 w-10 text-green-500" />,
+    icon: (
+      <DollarSign className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Cut Costs by 70%",
     content: (
       <P>
@@ -73,7 +83,9 @@ export const heroSolutionCards = [
     ),
   },
   {
-    icon: <Shield className="mb-3 h-10 w-10 text-blue-500" />,
+    icon: (
+      <Shield className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Ensure 100% Fairness",
     content: (
       <P>
@@ -84,7 +96,9 @@ export const heroSolutionCards = [
     ),
   },
   {
-    icon: <Lightbulb className="mb-3 h-10 w-10 text-yellow-500" />,
+    icon: (
+      <Lightbulb className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Deliver Powerful Feedback",
     content: (
       <P>
@@ -95,7 +109,9 @@ export const heroSolutionCards = [
     ),
   },
   {
-    icon: <Users className="mb-3 h-10 w-10 text-purple-500" />,
+    icon: (
+      <Users className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Provide Human-Like Annotation",
     content: (
       <P>
@@ -135,7 +151,9 @@ export const aboutTeamInfo = [
 
 export const featuresDetailInfo = [
   {
-    icon: <Zap className="mr-4 h-12 w-12 text-indigo-600" />,
+    icon: (
+      <Zap className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Grade in Seconds, Not Days",
     subtitle: "AI-Powered Automated Grading",
     description:
@@ -147,7 +165,9 @@ export const featuresDetailInfo = [
     },
   },
   {
-    icon: <Target className="mr-4 h-12 w-12 text-teal-600" />,
+    icon: (
+      <Target className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Deliver Feedback That Drives Improvement",
     subtitle: "Dynamic & Personalized Feedback",
     description:
@@ -159,7 +179,9 @@ export const featuresDetailInfo = [
     },
   },
   {
-    icon: <Users className="mr-4 h-12 w-12 text-purple-600" />,
+    icon: (
+      <Users className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "The Personal Touch, Scaled",
     subtitle: "Human-Like Digital Annotation",
     description:
@@ -171,7 +193,9 @@ export const featuresDetailInfo = [
     },
   },
   {
-    icon: <BarChart3 className="mr-4 h-12 w-12 text-blue-600" />,
+    icon: (
+      <BarChart3 className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Turn Data into Strategy",
     subtitle: "In-Depth Performance Analytics",
     description:
@@ -183,7 +207,9 @@ export const featuresDetailInfo = [
     },
   },
   {
-    icon: <Shield className="mr-4 h-12 w-12 text-green-600" />,
+    icon: (
+      <Shield className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Achieve Perfect Consistency",
     subtitle: "Bias-Free & Standardized Evaluation",
     description:
@@ -198,19 +224,25 @@ export const featuresDetailInfo = [
 
 export const solutionRoadmap = [
   {
-    icon: <Users className="text-primary mx-auto mb-4 h-12 w-12" />,
+    icon: (
+      <Users className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "K-12 Schools",
     description:
       "Comprehensive grading solutions for primary and secondary education institutions.",
   },
   {
-    icon: <Target className="mx-auto mb-4 h-12 w-12 text-green-500" />,
+    icon: (
+      <Target className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Undergraduate & Postgraduate Colleges",
     description:
       "Advanced evaluation systems for higher education institutions and universities.",
   },
   {
-    icon: <Award className="mx-auto mb-4 h-12 w-12 text-purple-500" />,
+    icon: (
+      <Award className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+    ),
     title: "Professional Institutes",
     description:
       "Specialized solutions for CA, CS, LLB, and other professional certification programs.",

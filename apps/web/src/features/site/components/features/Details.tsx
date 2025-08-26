@@ -1,20 +1,8 @@
 import { Card, CardContent } from "@gb/ui/src/components/ui/card";
 import { H3, Large, P, Small } from "@gb/ui/src/components/ui/typography";
-import {
-  Award,
-  BarChart3,
-  CheckCircle,
-  Clock,
-  Shield,
-  Target,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
-import { featuresDetailInfo } from "../../configs/cards";
-import { ReactNode } from "react";
-import { sub } from "motion/react-client";
 import { cn } from "@gb/ui/src/lib/utils";
+import { ReactNode } from "react";
+import { featuresDetailInfo } from "../../configs/cards";
 
 export const FeatureDetails = () => {
   return (
@@ -79,9 +67,9 @@ const FeatureInfoTab = ({
           </div>
           <P className="leading-relaxed">{description}</P>
         </div>
-        <Card className="flex-1 shadow-xl">
+        <Card className="flex-1 shadow-xl" data-testid="card">
           <CardContent className="p-8">
-            <div className="from-primary rounded-lg bg-gradient-to-br to-blue-400 p-6 text-center text-white">
+            <div className="from-primary/60 rounded-lg bg-gradient-to-br to-blue-400/60 p-6 text-center text-white">
               {cardIcon}
               <Large className="text-2xl font-bold">{cardTitle}</Large>
               <Small>{cardSubtitle}</Small>

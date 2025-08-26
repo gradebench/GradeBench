@@ -13,8 +13,13 @@ export const SolutionSection = () => {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-16 text-center">
-            <H2 className="mb-6">The Future of Evaluation is Here</H2>
-            <Lead className="mx-auto max-w-4xl leading-relaxed">
+            <H2 className="mb-6" data-testid="headline">
+              The Future of Evaluation is Here
+            </H2>
+            <Lead
+              className="mx-auto max-w-4xl leading-relaxed"
+              data-testid="text"
+            >
               GradeBench is the all-in-one solution designed to make your
               evaluation process lightning-fast, remarkably affordable, and
               perfectly fair.
@@ -25,6 +30,7 @@ export const SolutionSection = () => {
               <Card
                 className="shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
                 key={index}
+                data-testid="card"
               >
                 <CardHeader className="pb-4">
                   {card.icon}

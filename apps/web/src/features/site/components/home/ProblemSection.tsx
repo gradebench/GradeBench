@@ -6,6 +6,7 @@ import {
 } from "@gb/ui/src/components/ui/card";
 import { H2, Lead } from "@gb/ui/src/components/ui/typography";
 import { heroProblemCards } from "../../configs/cards";
+import { ReactNode } from "react";
 
 export const ProblemSection = () => {
   return (
@@ -16,7 +17,10 @@ export const ProblemSection = () => {
             <H2 className="mb-6" data-testid="headline">
               Don&apos;t Let Grading Overwhelm Your Institution
             </H2>
-            <Lead className="mx-auto max-w-4xl leading-relaxed">
+            <Lead
+              className="mx-auto max-w-4xl leading-relaxed"
+              data-testid="text"
+            >
               Manual grading is more than just a task; it&apos;s a significant
               operational drain. It consumes thousands of hours, inflates costs,
               and delays the crucial feedback students need to succeed.
@@ -25,24 +29,41 @@ export const ProblemSection = () => {
 
           <div className="grid gap-8 md:grid-cols-3">
             {heroProblemCards.map((card, index) => (
-              <Card
-                className="shadow-lg transition-shadow duration-300 hover:shadow-xl"
+              <HomeProblemCard
                 key={index}
-              >
-                <CardHeader className="pb-4 text-center">
-                  {card.icon}
-                  <CardTitle className="text-xl font-bold">
-                    {card.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  {card.content}
-                </CardContent>
-              </Card>
+                title={card.title}
+                icon={card.icon}
+                content={card.content}
+              />
             ))}
           </div>
         </div>
       </section>
+    </>
+  );
+};
+
+export const HomeProblemCard = ({
+  icon,
+  title,
+  content,
+}: {
+  icon: ReactNode;
+  title: string;
+  content: ReactNode;
+}) => {
+  return (
+    <>
+      <Card
+        className="shadow-lg transition-shadow duration-300 hover:shadow-xl"
+        data-testid="card"
+      >
+        <CardHeader className="pb-4 text-center">
+          <div>{icon}</div>
+          <CardTitle className="text-xl font-bold">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center">{content}</CardContent>
+      </Card>
     </>
   );
 };
