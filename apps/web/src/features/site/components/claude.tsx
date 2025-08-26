@@ -20,7 +20,7 @@ import {
   Target,
   TrendingUp,
   Users,
-  Zap
+  Zap,
 } from "lucide-react";
 
 const GradeBenchWebsite = () => {
@@ -62,10 +62,10 @@ const GradeBenchWebsite = () => {
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <h2 className="mb-6 text-3xl font-bold text-slate-900 md:text-4xl lg:text-5xl">
-              Don't Let Grading Overwhelm Your Institution
+              Don&apos;t Let Grading Overwhelm Your Institution
             </h2>
             <p className="mx-auto max-w-4xl text-lg leading-relaxed text-slate-600 md:text-xl">
-              Manual grading is more than just a task; it's a significant
+              Manual grading is more than just a task; it&apos;s a significant
               operational drain. It consumes thousands of hours, inflates costs,
               and delays the crucial feedback students need to succeed.
             </p>
@@ -102,7 +102,7 @@ const GradeBenchWebsite = () => {
                 <p className="text-slate-600">
                   This lost time costs your institution nearly{" "}
                   <span className="font-bold text-slate-900">
-                    25% of an educator's salary
+                    25% of an educator&apos;s salary
                   </span>
                   , directly impacting your bottom line.
                 </p>
@@ -278,8 +278,8 @@ const GradeBenchWebsite = () => {
             Ready to Revolutionize Your Grading?
           </h2>
           <p className="mb-8 text-lg text-indigo-100 md:text-xl">
-            Reclaim countless hours and empower your educators with the market's
-            leading evaluation platform.
+            Reclaim countless hours and empower your educators with the
+            market&apos;s leading evaluation platform.
           </p>
           <Button
             size="lg"
@@ -298,7 +298,7 @@ const GradeBenchWebsite = () => {
       <section className="bg-gradient-to-br from-indigo-50 via-white to-blue-50 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-8 text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
-            We're on a Mission to Empower Educators
+            We&apos;re on a Mission to Empower Educators
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 md:text-xl">
             GradeBench was founded on a single, powerful idea: technology should
@@ -926,7 +926,7 @@ const GradeBenchWebsite = () => {
                 </h3>
                 <p className="mb-6 text-lg text-slate-600">
                   Our team will help you choose the perfect plan based on your
-                  institution's needs and budget.
+                  institution&apos;s needs and budget.
                 </p>
                 <Button
                   size="lg"
@@ -948,7 +948,7 @@ const GradeBenchWebsite = () => {
       <section className="bg-gradient-to-br from-indigo-50 via-white to-blue-50 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-8 text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
-            Let's Connect
+            Let&apos;s Connect
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 md:text-xl">
             See how GradeBench can transform your institution. Reach out today
