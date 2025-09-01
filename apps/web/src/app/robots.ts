@@ -5,6 +5,10 @@ const robots = (): MetadataRoute.Robots => {
     rules: [
       {
         userAgent: "*",
+        allow: "/",
+      },
+      {
+        userAgent: "*",
         allow: "/site/",
       },
     ],
