@@ -3,6 +3,7 @@ import { GradeBench } from "@/components/anim/GradeBench1";
 import { About } from "../components/about/About";
 import { Features } from "../components/features/Features";
 import { Home } from "../components/home/Home";
+import {Products} from "../components/products/Products"
 import { Solutions } from "../components/solutions/Solutions";
 import { SiteConfigType } from "../types/site";
 
@@ -56,6 +57,22 @@ export const siteConfig: SiteConfigType = {
         },
       ],
       content: <Features />,
+    },
+    products: {
+      metadata: {
+        title: " GradeBench Co-Pilot | GradeBench Catalyst | GradeBench Insights | GradeBench Nexus | GradeBench",
+        description:
+          "GradeBench is the all-in-one AI-powered education platform. From automated grading with GradeBench Co-Pilot™, smart question generation with GradeBench Catalyst™, data-driven progress tracking through GradeBench Insights™, to full academic management via GradeBench Nexus™, we help educators save time, personalize learning, and drive student success across India.",
+      },
+      sitemap: [
+        {
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/site/products`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 1,
+        },
+      ],
+      content: <Products />,
     },
     solutions: {
       metadata: {
