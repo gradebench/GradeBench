@@ -13,6 +13,9 @@ export const siteConfig: SiteConfigType = {
         title: "Automated Grading & AI Evaluation Platform | GradeBench",
         description:
           "GradeBench saves educators 95% of their time with AI-powered grading. Get instant, unbiased feedback and cut evaluation costs by 70%. Transform your institution today.",
+        alternates: {
+          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}`,
+        },
       },
       sitemap: [
         {
@@ -29,6 +32,9 @@ export const siteConfig: SiteConfigType = {
         title: "Our Mission to Empower Educators | About GradeBench",
         description:
           "Learn about the GradeBench mission to reduce educator workload and make academic evaluations quick, fair, and meaningful. Meet our dedicated founding team.",
+        alternates: {
+          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/site/about`,
+        },
       },
       sitemap: [
         {
@@ -46,6 +52,9 @@ export const siteConfig: SiteConfigType = {
           "AI Grading, Personalized Feedback & Analytics | GradeBench Features",
         description:
           "Explore GradeBench's powerful features: Grade in seconds with our AI, deliver personalized student feedback, and unlock performance insights with our analytics dashboard.",
+        alternates: {
+          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/site/features`,
+        },
       },
       sitemap: [
         {
@@ -62,6 +71,9 @@ export const siteConfig: SiteConfigType = {
         title: "AI Grading for UPSC Coaching Institutes & Schools | GradeBench",
         description:
           "GradeBench offers a tailored solution for UPSC institutes to automate answer sheet evaluation, reduce turnaround time, and scale operations. Discover our playbook.",
+        alternates: {
+          canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/site/solutions`,
+        },
       },
       sitemap: [
         {
