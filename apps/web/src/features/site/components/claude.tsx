@@ -593,6 +593,27 @@ const GradeBenchWebsite = () => {
     </main>
   );
 
+  const ProductsPage = () => {
+    return (
+      <>
+  <main className="min-h-screen bg-white">
+    {/* Hero Section */}
+    <section className="bg-gradient-to-br from-indigo-50 via-white to-blue-50 px-4 py-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl text-center">
+        <h1 className="mb-8 text-4xl font-bold text-slate-900 md:text-5xl lg:text-6xl">
+          One Platform, Endless Possibilities for Smarter Learning
+        </h1>
+        <p className="text-lg leading-relaxed text-slate-600 md:text-xl">
+          Discover how GradeBench transforms grading, assessments, analytics, and classroom management—all in one seamless system built for educators.
+        </p>
+      </div>
+    </section>
+  </main>
+      </>
+    )
+}
+
+
   const SolutionsPage = () => (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -1128,6 +1149,12 @@ const GradeBenchWebsite = () => {
               Features
             </button>
             <button
+              onClick={() => setCurrentPage("products")}
+              className={`${currentPage === "products" ? "font-semibold text-indigo-600" : "text-slate-600 hover:text-slate-900"} transition-colors`}
+            >
+              Products
+            </button>
+            <button
               onClick={() => setCurrentPage("solutions")}
               className={`${currentPage === "solutions" ? "font-semibold text-indigo-600" : "text-slate-600 hover:text-slate-900"} transition-colors`}
             >
@@ -1156,6 +1183,7 @@ const GradeBenchWebsite = () => {
               <option value="home">Home</option>
               <option value="about">About</option>
               <option value="features">Features</option>
+              <option value="products">Products</option>
               <option value="solutions">Solutions</option>
               <option value="pricing">Pricing</option>
               <option value="contact">Contact</option>
@@ -1174,6 +1202,8 @@ const GradeBenchWebsite = () => {
         return <AboutPage />;
       case "features":
         return <FeaturesPage />;
+      case "products":
+        return <ProductsPage />;
       case "solutions":
         return <SolutionsPage />;
       case "pricing":
