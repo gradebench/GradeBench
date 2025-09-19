@@ -19,7 +19,7 @@ export const BackedbySection = () => {
           </Lead>
         </div>
         <div className="flex flex-col items-stretch justify-center space-y-8 md:flex-row md:height-full md:space-y-0 md:space-x-8">
-          <Link className="grid flex-1 place-items-center" href="https://www.microsoft.com/en-in/startups">
+          <Link className="grid flex-1 place-items-center" href="https://www.microsoft.com/en-in/startups" target="_blank">
             <ThemedImage
               lightSrc="/assets/Microsoft-for-Startups.jpg"
               darkSrc="/assets/microsoft-startup (2).png"
@@ -28,7 +28,7 @@ export const BackedbySection = () => {
               height={200}
             />
           </Link>
-          <Link className="grid flex-1 place-items-center" href="https://aws.amazon.com/startups">
+          <Link className="grid flex-1 place-items-center" href="https://aws.amazon.com/startups" target="_blank">
             <ThemedImage
               lightSrc="/assets/aws.svg"
               darkSrc="/assets/aws-startup (1).png"
@@ -37,7 +37,7 @@ export const BackedbySection = () => {
               height={200}
             />
           </Link>
-          <Link className="grid flex-1 place-items-center" href="https://startup.google.com/">
+          <Link className="grid flex-1 place-items-center" href="https://startup.google.com/" target="_blank">
             <ThemedImage
               lightSrc="/assets/google_for_startups_logo-light.svg"
               darkSrc="/assets/Google_for_Startups_logo.svg"
@@ -46,7 +46,7 @@ export const BackedbySection = () => {
               height={300}
             />
           </Link>
-          <Link className="grid flex-1 place-items-center" href="https://www.nvidia.com/en-in/startups/">
+          <Link className="grid flex-1 place-items-center" href="https://www.nvidia.com/en-in/startups/" target="_blank">
             <ThemedImage
               lightSrc="/assets/nvidia-inception-program.jpg"
               darkSrc="/assets/nvidia-inception (1).png"
