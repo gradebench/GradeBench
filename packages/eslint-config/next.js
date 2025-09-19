@@ -3,9 +3,9 @@ import pluginNext from "@next/eslint-plugin-next";
 import eslintConfigPrettier from "eslint-config-prettier";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+import sonarjs from "eslint-plugin-sonarjs";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-
 import { config as baseConfig } from "./base.js";
 
 /**
@@ -18,6 +18,7 @@ export const nextJsConfig = [
   js.configs.recommended,
   eslintConfigPrettier,
   ...tseslint.configs.recommended,
+  sonarjs.configs.recommended,
   {
     ...pluginReact.configs.flat.recommended,
     languageOptions: {
