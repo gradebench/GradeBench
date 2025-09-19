@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface ThemedImageProps {
   lightSrc: string;
@@ -12,30 +11,18 @@ interface ThemedImageProps {
   height: number;
 }
 
-export const ThemedImage = ({ lightSrc, darkSrc, alt, width, height }: ThemedImageProps) => {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = resolvedTheme === "dark" || theme === "dark";
-
-  if (!mounted) {
-    return (
-      <Image
-        src={lightSrc}
-        alt={alt}
-        width={width}
-        height={height}
-      />
-    );
-  }
+export const ThemedImage = ({
+  lightSrc,
+  darkSrc,
+  alt,
+  width,
+  height,
+}: ThemedImageProps) => {
+  const { theme } = useTheme();
 
   return (
     <Image
-      src={isDark ? darkSrc : lightSrc}
+      src={theme === "dark" ? lightSrc : darkSrc}
       alt={alt}
       width={width}
       height={height}
