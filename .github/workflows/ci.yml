@@ -167,5 +167,8 @@ jobs:
       - name: 📥 Install Dependencies
         run: npm ci
 
+      - name: Install turbo package
+        run: npm install turbo
+
       - name: 🏗️ Build Applications
         run: npm run build
