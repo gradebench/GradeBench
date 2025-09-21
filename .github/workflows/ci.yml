@@ -19,6 +19,12 @@ jobs:
     name: 🔍 Validate
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    environment: test_env
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v5
@@ -32,7 +38,7 @@ jobs:
           cache: npm
 
       - name: 📥 Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: 🏞️ Setup Biome
         uses: biomejs/setup-biome@v2
@@ -47,6 +53,12 @@ jobs:
     name: 🔒 Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    environment: test_env
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v5
@@ -58,7 +70,7 @@ jobs:
           cache: npm
 
       - name: 📥 Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: 🔍 Audit Dependencies
         run: npm audit --audit-level=high
@@ -71,6 +83,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [validate]
+
+    environment: test_env
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v5
@@ -93,7 +111,7 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: 📥 Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: 🔎 Type Check
         run: npm run check-types
@@ -105,6 +123,11 @@ jobs:
     timeout-minutes: 15
     needs: [validate]
 
+    environment: test_env
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v5
@@ -127,7 +150,7 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: 📥 Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: 🧪 Run Tests
         run: npm run test
@@ -137,11 +160,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [validate, typecheck]
-    environment: production
 
+    environment: test_env
     env:
-      NODE_ENV: staging
-      NEXT_PUBLIC_BASE_URL: https://www.gradebench.com
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
 
     steps:
       - name: ⬇️ Checkout
@@ -165,7 +188,7 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: 📥 Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: 🏗️ Build Applications
         run: npm run build
