@@ -1,17 +1,18 @@
 {
-  "extends": "@gb/typescript-config/nextjs.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@gb/*": ["../../packages/*"]
-    }
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "next-env.d.ts",
-    "next.config.js",
-    ".next/types/**/*.ts"
-, "vitest.setup.ts"  ],
+	"extends": "@gb/typescript-config/nextjs.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@gb/*": ["../../packages/*"]
+		}
+	},
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"next-env.d.ts",
+		"next.config.js",
+		".next/types/**/*.ts",
+		"vitest.setup.ts"
+	]
 }

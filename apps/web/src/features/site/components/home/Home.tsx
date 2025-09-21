@@ -6,14 +6,14 @@ import { SocialProof } from "./SocialProof";
 import { SolutionSection } from "./SolutionSection";
 
 export const Home = () => {
-  return (
-    <>
-      <HomeHeroSection />
-      <BackedbySection />
-      <ProblemSection />
-      <SolutionSection />
-      <SocialProof />
-      <FinalCTA />
-    </>
-  );
+	return (
+		<>
+			<HomeHeroSection />
+			<BackedbySection />
+			<ProblemSection />
+			<SolutionSection />
+			<SocialProof />
+			<FinalCTA />
+		</>
+	);
 };
