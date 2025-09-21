@@ -15,23 +15,21 @@ const geistMono = Geist_Mono({
 
 export const ScreenRootLayout = ({ children }: { children: ReactNode }) => {
 	return (
-		<>
-			<html lang="en" suppressHydrationWarning>
-				<body
-					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-				>
-					<QueryClientProvider>
-						<NextThemeProvider
-							attribute="class"
-							defaultTheme="system"
-							enableSystem
-							disableTransitionOnChange
-						>
-							{children}
-						</NextThemeProvider>
-					</QueryClientProvider>
-				</body>
-			</html>
-		</>
+		<html lang="en" suppressHydrationWarning>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<QueryClientProvider>
+					<NextThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						{children}
+					</NextThemeProvider>
+				</QueryClientProvider>
+			</body>
+		</html>
 	);
 };

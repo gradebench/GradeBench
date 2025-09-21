@@ -28,11 +28,7 @@ const Page = async ({ params }: { params: Promise<{ p: string }> }) => {
 
 	if (!page) return notFound();
 
-	return (
-		<>
-			<SitePage>{page.content}</SitePage>
-		</>
-	);
+	return <SitePage>{page.content}</SitePage>;
 };
 
 export default Page;

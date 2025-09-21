@@ -11,48 +11,46 @@ import { solutionRoadmap } from "../../configs/cards";
 
 export const SolutionRoadmap = () => {
 	return (
-		<>
-			<section className="px-4 py-20 sm:px-6 lg:px-8">
-				<div className="mx-auto max-w-6xl">
-					<div className="mb-16 text-center">
-						<H2 className="mb-6" data-testid="headline">
-							Expanding to Serve the Entire Education Ecosystem
-						</H2>
-						<Lead className="mx-auto max-w-4xl" data-testid="text">
-							We are leveraging our success in the UPSC-CSE segment to build a
-							playbook for institutions everywhere.
-						</Lead>
-					</div>
-
-					<div className="mb-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-						{solutionRoadmap.map((card, index) => (
-							<RoadmapCard
-								key={index}
-								icon={card.icon}
-								title={card.title}
-								description={card.description}
-							/>
-						))}
-					</div>
-
-					<Card className="from-secondary to-secondary/64 bg-gradient-to-r shadow-lg">
-						<CardHeader className="text-center">
-							<Globe className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
-							<CardTitle className="text-2xl font-bold">
-								Growing with India
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="text-center">
-							<P className="leading-relaxed">
-								We are developing robust multilingual support for Hindi,
-								Marathi, Kannada, and many more languages to serve institutions
-								across the nation.
-							</P>
-						</CardContent>
-					</Card>
+		<section className="px-4 py-20 sm:px-6 lg:px-8">
+			<div className="mx-auto max-w-6xl">
+				<div className="mb-16 text-center">
+					<H2 className="mb-6" data-testid="headline">
+						Expanding to Serve the Entire Education Ecosystem
+					</H2>
+					<Lead className="mx-auto max-w-4xl" data-testid="text">
+						We are leveraging our success in the UPSC-CSE segment to build a
+						playbook for institutions everywhere.
+					</Lead>
 				</div>
-			</section>
-		</>
+
+				<div className="mb-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+					{solutionRoadmap.map((card, index) => (
+						<RoadmapCard
+							key={index}
+							icon={card.icon}
+							title={card.title}
+							description={card.description}
+						/>
+					))}
+				</div>
+
+				<Card className="from-secondary to-secondary/64 bg-gradient-to-r shadow-lg">
+					<CardHeader className="text-center">
+						<Globe className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+						<CardTitle className="text-2xl font-bold">
+							Growing with India
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="text-center">
+						<P className="leading-relaxed">
+							We are developing robust multilingual support for Hindi, Marathi,
+							Kannada, and many more languages to serve institutions across the
+							nation.
+						</P>
+					</CardContent>
+				</Card>
+			</div>
+		</section>
 	);
 };
 

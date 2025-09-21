@@ -6,7 +6,6 @@
 		"dev": "turbo run dev",
 		"test": "turbo run test",
 		"lint": "npx @biomejs/biome check --write",
-		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"check-types": "turbo run check-types"
 	},
 	"devDependencies": {
