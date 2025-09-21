@@ -1,0 +1,158 @@
+# ci.yml
+name: CI
+
+# This workflow runs on pushes to the main branch and for any pull request.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+# -----------------------------------------------------------------------------
+# Concurrency and Permissions
+# -----------------------------------------------------------------------------
+concurrency:
+  # Group by workflow, git ref, and PR number if available. This ensures that
+  # pushes to a PR branch cancel any previous runs for that same PR.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}-${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
+
+permissions:
+  # Restrict default permissions to read-only for security.
+  # Jobs that need write access (e.g., to post comments) must have it granted explicitly.
+  contents: read
+
+# -----------------------------------------------------------------------------
+# Jobs
+# -----------------------------------------------------------------------------
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint Job
+  # ---------------------------------------------------------------------------
+  lint:
+    name: 🧹 Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history for all branches and tags.
+          # This is necessary for Turborepo to determine affected packages.
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Pin to the LTS version for stability
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🏞️ Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          # Pin to a specific version to avoid unexpected breaking changes
+          version: '1.7.3'
+
+      - name: 🔎 Run Linter
+        run: biome ci .
+
+  # ---------------------------------------------------------------------------
+  # Type-Check Job
+  # ---------------------------------------------------------------------------
+  type-check:
+    name: 🧐 Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🔎 Run TypeScript Compiler
+        # Use Turborepo to run the 'check-types' script across the monorepo
+        run: npx turbo run check-types
+
+  # ---------------------------------------------------------------------------
+  # Test Job
+  # ---------------------------------------------------------------------------
+  test:
+    name: 🧪 Unit Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🧪 Run Unit Tests
+        run: npx turbo run test
+
+  # ---------------------------------------------------------------------------
+  # Build Job
+  # ---------------------------------------------------------------------------
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # This job depends on the quality checks passing first
+    needs: [lint, type-check, test]
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: 📦 Restore Turborepo local cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          # The key uses a hash of the lockfile. This ensures the cache is
+          # invalidated only when dependencies change.
+          key: ${{ runner.os }}-turbo-${{ github.job }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ github.job }}-
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: ⚙️ Build All Packages
+        # This step leverages Turborepo's Remote Caching.
+        # Ensure TURBO_TOKEN and TURBO_TEAM secrets are set in your GitHub repository settings.
+        run: npx turbo run build
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}

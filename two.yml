@@ -1,0 +1,352 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  merge_group:
+
+# Cancel in-progress runs for same workflow on same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  # Fast validation job - runs first for quick feedback
+  validate:
+    name: 🔍 Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      affected-packages: ${{ steps.affected.outputs.packages }}
+      has-frontend-changes: ${{ steps.affected.outputs.frontend }}
+      has-backend-changes: ${{ steps.affected.outputs.backend }}
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed for affected package detection
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🎯 Detect Affected Packages
+        id: affected
+        run: |
+          # Use Turborepo to detect affected packages
+          AFFECTED=$(npx turbo run build --dry=json --filter="...[HEAD~1]" | jq -r '.packages[]' | tr '\n' ',' | sed 's/,$//')
+          echo "packages=$AFFECTED" >> $GITHUB_OUTPUT
+          
+          # Detect frontend/backend changes
+          echo "frontend=$(echo $AFFECTED | grep -q 'apps.*web\|apps.*frontend' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "backend=$(echo $AFFECTED | grep -q 'apps.*api\|apps.*server' && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+      - name: 🏞️ Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: 🧹 Lint & Format Check
+        run: |
+          biome ci .
+          # Check for any uncommitted formatting changes
+          git diff --exit-code
+
+  # Security and dependency analysis
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔍 Audit Dependencies
+        run: npm audit --audit-level=moderate
+
+      - name: 🛡️ Check for Known Vulnerabilities
+        run: npx audit-ci --moderate
+
+      - name: 📄 License Check
+        run: npx license-checker --onlyAllow "MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC"
+
+  # Type checking - can run in parallel with other jobs
+  typecheck:
+    name: 🔎 Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate]
+    if: needs.validate.outputs.affected-packages != ''
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/node_modules/.cache/turbo
+          key: ${{ runner.os }}-turbo-typecheck-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-typecheck-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-typecheck-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔎 Type Check
+        run: npx turbo run type-check --filter="...[HEAD~1]"
+
+  # Unit tests with coverage
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [validate]
+    if: needs.validate.outputs.affected-packages != ''
+    strategy:
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/node_modules/.cache/turbo
+            **/coverage
+          key: ${{ runner.os }}-turbo-test-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-test-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-test-${{ matrix.node-version }}-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🧪 Run Tests
+        run: npx turbo run test --filter="...[HEAD~1]" -- --coverage
+
+      - name: 📊 Upload Coverage Reports
+        if: matrix.node-version == 22
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+  # Build job with artifact generation
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [validate, typecheck]
+    if: needs.validate.outputs.affected-packages != ''
+    strategy:
+      matrix:
+        environment: [development, production]
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/node_modules/.cache/turbo
+            **/.next/cache
+            **/dist
+          key: ${{ runner.os }}-turbo-build-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-build-${{ matrix.environment }}-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-build-${{ matrix.environment }}-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🏗️ Build Applications
+        env:
+          NODE_ENV: ${{ matrix.environment }}
+        run: npx turbo run build --filter="...[HEAD~1]"
+
+      - name: 📦 Generate Bundle Analysis
+        if: matrix.environment == 'production' && needs.validate.outputs.has-frontend-changes == 'true'
+        run: npx turbo run analyze --filter="...[HEAD~1]" --continue
+
+      - name: 📤 Upload Build Artifacts
+        if: matrix.environment == 'production'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+          path: |
+            apps/**/dist
+            apps/**/.next
+            !**/node_modules
+          retention-days: 7
+
+      - name: 📤 Upload Bundle Analysis
+        if: matrix.environment == 'production' && needs.validate.outputs.has-frontend-changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis-${{ github.sha }}
+          path: |
+            apps/**/.next/analyze
+            apps/**/bundle-analyzer-report.html
+          retention-days: 30
+
+  # Integration tests (if applicable)
+  integration:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    if: needs.validate.outputs.has-backend-changes == 'true'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔗 Run Integration Tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+          REDIS_URL: redis://localhost:6379
+        run: npx turbo run test:integration --filter="...[HEAD~1]"
+
+  # Performance tests for frontend apps
+  performance:
+    name: ⚡ Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [build]
+    if: needs.validate.outputs.has-frontend-changes == 'true' && github.event_name == 'pull_request'
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ⚡ Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # Final validation job
+  ci-success:
+    name: ✅ CI Success
+    runs-on: ubuntu-latest
+    needs: [validate, security, typecheck, test, build]
+    if: always()
+    steps:
+      - name: 🎉 Check All Jobs
+        run: |
+          if [[ "${{ needs.validate.result }}" != "success" ]]; then
+            echo "Validation failed"
+            exit 1
+          fi
+          if [[ "${{ needs.security.result }}" != "success" ]]; then
+            echo "Security scan failed"
+            exit 1
+          fi
+          if [[ "${{ needs.typecheck.result }}" == "failure" ]]; then
+            echo "Type check failed"
+            exit 1
+          fi
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "Tests failed"
+            exit 1
+          fi
+          if [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "Build failed"
+            exit 1
+          fi
+          echo "All required jobs completed successfully! 🎉"

@@ -1,0 +1,230 @@
+name: CI Pipeline Workflow
+
+# Run on pushes to main and on PRs targeting main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Prevent duplicated runs for the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Minimal permissions: read-only for contents and metadata; write only what's needed
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+  id-token: write
+
+# Reusable variables
+env:
+  # Node LTS recommended. Change to the project LTS or use .nvmrc in setup-node step if preferred.
+  NODE_VERSION: '20'
+  # Turbo cache dir
+  TURBO_CACHE_DIR: .turbo
+
+#################################################################
+# Job 1: Checks (lint, typecheck, dependency review)
+#################################################################
+jobs:
+  checks:
+    name: ⚖️ Checks — lint, types & dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: ⬇️ Checkout code (full history)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: 🧩 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            **/package-lock.json
+            package-lock.json
+
+      - name: 🔒 Dependency review (GitHub)
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: github/dependency-review-action@v1
+        # This will add PR comments/warnings on dependency changes
+
+      - name: 📥 Install dependencies (ci)
+        # Use NODE_AUTH_TOKEN only if you publish or consume private packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: 🧭 Restore Turbo cache
+        id: turbo-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TURBO_CACHE_DIR }}
+            **/.turbo
+          # Key based on OS, node version and lockfile hash so cache hits across commits
+          key: ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-
+
+      - name: 🏞️ Setup Biome (lint/format)
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: 🧹 Lint (biome)
+        run: biome ci .
+        # This will fail the job if linting fails; quick feedback
+
+      - name: 🔎 Type check (TypeScript)
+        run: npm run check-types
+        # Place typecheck before heavy build so we fail fast
+
+      - name: 🔐 NPM Audit (fail on high)
+        run: |
+          npm audit --audit-level=high || (echo "Vulnerabilities found (>= high). Failing CI." && exit 1)
+        continue-on-error: false
+
+#################################################################
+# Job 2: Tests (unit tests & coverage)
+#################################################################
+  test:
+    name: 🧪 Tests — unit & coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: checks
+    steps:
+      - name: ⬇️ Checkout code (full history)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: 🧩 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            **/package-lock.json
+            package-lock.json
+
+      - name: 📥 Install dependencies (ci)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: 🔁 Restore Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TURBO_CACHE_DIR }}
+            **/.turbo
+            ~/.npm
+          key: ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-
+
+      - name: 🧪 Run unit tests (affected packages only)
+        # Use Turborepo to run tests only for changed packages (faster)
+        run: npx turbo run test --since=origin/main --include-dependencies
+
+      - name: 📊 Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            coverage
+            **/coverage
+          retention-days: 3
+
+      - name: 🔁 Cache Jest (if present)
+        if: test -d node_modules && [ -d ./node_modules/.cache/jest ] || true
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules/.cache/jest
+          key: ${{ runner.os }}-jest-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-jest-
+
+#################################################################
+# Job 3: Build (Turborepo build — incremental)
+#################################################################
+  build:
+    name: 🏗️ Build — turborepo (incremental)
+    runs-on: ubuntu-latest
+    needs:
+      - checks
+      - test
+    timeout-minutes: 60
+    environment: production
+    steps:
+      - name: ⬇️ Checkout code (full history)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: 🧩 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            **/package-lock.json
+            package-lock.json
+
+      - name: 🔁 Restore Turbo cache
+        id: restore-turbo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TURBO_CACHE_DIR }}
+            **/.turbo
+            ~/.npm
+          key: ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-
+      
+      - name: 📥 Install dependencies (ci)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: 🧰 Ensure turbo binary (use npx)
+        run: npx turbo --version
+
+      - name: ⚙️ Build affected projects only (turborepo)
+        # Use turbo's incremental flags so CI only builds changed packages since origin/main
+        # --concurrency can be tuned as needed
+        run: npx turbo run build --since=origin/main --include-dependencies --filter=...
+        # Note: adjust --filter if you want to target specific apps (e.g. --filter=web... or remove '--filter=...' to build all)
+
+      - name: 🔁 Save Turbo cache
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.TURBO_CACHE_DIR }}
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ env.NODE_VERSION }}-
+
+      - name: 📦 Upload build artifacts (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/**/.next
+            apps/**/dist
+            packages/**/dist
+          retention-days: 3

@@ -28,7 +28,8 @@
   - **Cut Costs by 70%:** Slash your evaluation expenses. [cite\_start]Our process is **70% more affordable** than traditional methods, freeing up your budget. [cite: 27, 35]
   - [cite\_start]**Ensure 100% Fairness:** Deliver **unbiased, standardized evaluations** every time, free from human fatigue and subjectivity. [cite: 29, 36]
   - [cite\_start]**Deliver Powerful Feedback:** Empower your educators to provide **customized, high-quality feedback** that helps every student achieve their full potential. [cite: 31]
-  - [cite\_start]**Provide Human-Like Annotation:** Offer insightful, natural annotations directly on the answer sheet, guiding students with the clarity of a dedicated teacher.  [cite: 33]
+  - [cite\_start]**Provide Human-Like Annotation:** Offer insightful, natural annotations directly on the answer sheet, guiding students with the clarity of a dedicated teacher. [cite: 33]
+
 ---
 
 ## **Social Proof / Traction Section**
@@ -36,7 +37,6 @@
 - **Headline:** Trusted by Leaders in Competitive Exam Coaching
 - **Text:** Our technology is already delivering results. [cite\_start]We are proud to be working with **Samkalp IAS in Delhi** and **Primus IAS in Bengaluru**, helping them streamline their evaluation process and provide superior feedback to their students. [cite: 44]
 - **Logo Area:** [Logo of Samkalp IAS][Logo of primus IAS]
-
 
 ---
 
@@ -176,3 +176,93 @@
 - **Contact Details:**
   - [cite\_start]**Email:** info@gradebench.com [cite: 3]
   - [cite\_start]**Website:** [www.gradebench.com](https://www.google.com/search?q=https://www.gradebench.com) [cite: 3]
+
+# Context
+
+A `ci.yml` is github actions file placed in `.github/workflows` is being used for defining an automated pipeline for Continous integration. The project is a turborepo containing few next js frontend app and hono js backend apps.
+ci.yml:
+
+```
+<code>
+```
+
+# Objective
+
+Step 1: on a scale of 100 rate the config code based on production best practices.
+Step 2: based the feedback from Step 1, make improvements on the code.
+Step 3: rate the improved code again on a scale of 100.
+Step 4: iterate the Step 1, 2, 3 until the rating becomes 100.
+
+# Output
+
+Provide the final revised version the `ci.yml`
+
+You are an expert DevOps engineer specializing in GitHub Actions for JavaScript monorepos. Your task is to analyze and improve a `ci.yml` GitHub Actions workflow file. The project is a monorepo built with **Turborepo**, containing **Next.js frontend applications** and **Hono.js backend APIs**.
+
+Please follow these steps:
+
+1.  **Analyze the current `ci.yml` file** provided below. Identify any issues or areas for improvement related to production best practices. Focus on topics like caching, dependency management, security, efficiency, and code quality checks.
+2.  **Provide a detailed, itemized list of your findings.** For each point, explain the issue and why it's a problem. Use a clear, professional tone.
+3.  **Refactor the `ci.yml` file** based on your analysis. The new version should be highly optimized, secure, and follow industry best practices for a Turborepo project with Next.js and Hono.js.
+4.  **Present the final, complete, and improved `ci.yml` workflow file.** It should be ready for production use.
+
+**Current `ci.yml`:**
+
+```yaml
+name: CI Pipeline Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: 🏗️ Build Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v5
+
+      - name: 📦 Restore Turborepo Build Cache
+        id: cache-turbo
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: 🟢 Setup Node JS
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: 🏞️ Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🏞️ Lint
+        run: biome ci .
+
+      - name: 🧪 Unit Test
+        run: npm run test
+
+      - name: ⚙️ Build
+        run: npm run build
+
+      - name: 🔎 Type Check
+        run: npm run check-types
+```

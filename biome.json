@@ -2,7 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
 	"files": {
 		"includes": [
-			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,md}"
+			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		]
 	},
 	"vcs": {
@@ -14,7 +14,7 @@
 	"linter": {
 		"enabled": true,
 		"includes": [
-			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,md}"
+			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		],
 		"rules": {
 			"recommended": true,
@@ -48,7 +48,7 @@
 	"assist": {
 		"enabled": true,
 		"includes": [
-			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,md}"
+			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		],
 		"actions": {
 			"recommended": true,
@@ -60,7 +60,7 @@
 	"formatter": {
 		"enabled": true,
 		"includes": [
-			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,md}"
+			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		]
 	},
 	"javascript": {

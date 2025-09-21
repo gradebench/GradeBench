@@ -4,53 +4,151 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{github.event.pull_request.number}}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    name: 🏗️ Build Code
+  validate:
+    name: 🔍 Validate
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 10
+
     steps:
-      - name: ⬇️ Checkout Code
+      - name: ⬇️ Checkout
         uses: actions/checkout@v5
 
-      - name: 📦 Restore Turborepo Build Cache
-        id: cache-turbo
-        uses: actions/cache@v4
-        with:
-          path: |
-            .turbo
-            **/.turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-
-      - name: 🟢 Setup Node JS
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: package-lock.json
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
 
       - name: 🏞️ Setup Biome
         uses: biomejs/setup-biome@v2
         with:
           version: latest
 
-      - name: 📥 Install Dependencies
-        run: npm ci
+      - name: 🧹 Lint & Format Check
+        run: |
+          biome ci .
 
-      - name: 🏞️ Lint
-        run: biome ci .
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔍 Audit Dependencies
+        run: npm audit --audit-level=moderate
+
+      - name: 🛡️ Check for Known Vulnerabilities
+        run: npx audit-ci --moderate
+
+  typecheck:
+    name: 🔎 Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [validate]
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔎 Type Check
+        run: npm run check-types
+
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [validate]
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
 
       - name: 🧪 Unit Test
         run: npm run test
 
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [validate, typecheck]
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node JS
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
       - name: ⚙️ Build
         run: npm run build
-
-      - name: 🔎 Type Check
-        run: npm run check-types
