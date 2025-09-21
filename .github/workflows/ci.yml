@@ -140,8 +140,8 @@ jobs:
     environment: production
 
     env:
-      NODE_ENV: ${{ vars.NODE_ENV }}
-      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+      NODE_ENV: staging
+      NEXT_PUBLIC_BASE_URL: https://www.gradebench.com
 
     steps:
       - name: ⬇️ Checkout
@@ -166,9 +166,6 @@ jobs:
 
       - name: 📥 Install Dependencies
         run: npm ci
-
-      - name: Install turbo package
-        run: npm install turbo
 
       - name: 🏗️ Build Applications
         run: npm run build
