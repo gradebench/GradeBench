@@ -7,10 +7,6 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 jobs:
   build:
@@ -19,27 +15,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 🟢 Setup Node JS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: 📦 Cache node_modules
-        id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            **/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: 📥 Install Dependencies
-        if: steps.cache-npm.outputs.cache-hit != 'true'
-        run: npm ci
+        uses: actions/checkout@v5
 
       - name: 📦 Restore Turborepo Build Cache
         id: cache-turbo
@@ -52,8 +28,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
-      - name: 🧹 Lint
-        run: npm run lint
+      - name: 🟢 Setup Node JS
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: 🏞️ Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🏞️ Lint
+        run: biome ci .
 
       - name: 🧪 Unit Test
         run: npm run test

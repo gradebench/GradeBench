@@ -3,11 +3,11 @@ import { SolutionRoadmap } from "./Roadmap";
 import { SolutionTargeted } from "./TargetedSolution";
 
 export const Solutions = () => {
-  return (
-    <>
-      <SolutionHero />
-      <SolutionTargeted />
-      <SolutionRoadmap />
-    </>
-  );
+	return (
+		<>
+			<SolutionHero />
+			<SolutionTargeted />
+			<SolutionRoadmap />
+		</>
+	);
 };

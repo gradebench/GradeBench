@@ -86,6 +86,7 @@ describe("SitePage", () => {
 });
 
 describe("SiteHeader", () => {
+  vi.stubEnv("NEXT_PUBLIC_BASE_URL", "https://www.gradebench.com");
   it("renders the header with navigation components", () => {
     render(<SiteHeader />);
 
@@ -102,11 +103,12 @@ describe("SiteHeader", () => {
 });
 
 describe("LeftNav", () => {
+  vi.stubEnv("NEXT_PUBLIC_BASE_URL", "https://www.gradebench.com");
   it("renders with default navigation items", () => {
     render(<LeftNav />);
 
     // Check for the index link
-    const indexLink = screen.getByRole("link", { name: "" }); // GradeBench component doesn't have text
+    const indexLink = screen.getByRole("link", { name: /gradebench/i });
     expect(indexLink).toBeDefined();
     expect(indexLink.getAttribute("href")).toBe(
       siteConfig.header.navigation.index.href,
@@ -138,6 +140,7 @@ describe("LeftNav", () => {
 });
 
 describe("RightNav", () => {
+  vi.stubEnv("NEXT_PUBLIC_BASE_URL", "https://www.gradebench.com");
   it("renders the CTA button with correct label and link", () => {
     render(<RightNav cta={mockCTA} />);
     const ctaLink = screen.getByRole("link", { name: /get started/i });

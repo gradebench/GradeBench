@@ -3,11 +3,11 @@ import { AboutTeam } from "./Team";
 import { AboutVision } from "./Vision";
 
 export const About = () => {
-  return (
-    <>
-      <AboutHero />
-      <AboutVision />
-      <AboutTeam />
-    </>
-  );
+	return (
+		<>
+			<AboutHero />
+			<AboutVision />
+			<AboutTeam />
+		</>
+	);
 };

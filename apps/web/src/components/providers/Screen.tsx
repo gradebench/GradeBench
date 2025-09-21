@@ -1,37 +1,35 @@
-import QueryClientProvider from "@/components/providers/ReactQueryProvider";
 import NextThemeProvider from "@gb/ui/src/components/providers/NextThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import QueryClientProvider from "@/components/providers/ReactQueryProvider";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 export const ScreenRootLayout = ({ children }: { children: ReactNode }) => {
-  return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <QueryClientProvider>
-            <NextThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-            </NextThemeProvider>
-          </QueryClientProvider>
-        </body>
-      </html>
-    </>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<QueryClientProvider>
+					<NextThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						{children}
+					</NextThemeProvider>
+				</QueryClientProvider>
+			</body>
+		</html>
+	);
 };
