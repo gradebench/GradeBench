@@ -10,7 +10,9 @@ export const siteConfig: SiteConfigType = {
 	pages: {
 		home: {
 			metadata: {
-				metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
+				metadataBase: new URL(
+					process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+				),
 				title: "Automated Grading & AI Evaluation Platform | GradeBench",
 				description:
 					"GradeBench saves educators 95% of their time with AI-powered grading. Get instant, unbiased feedback and cut evaluation costs by 70%. Transform your institution today.",
@@ -30,7 +32,9 @@ export const siteConfig: SiteConfigType = {
 		},
 		about: {
 			metadata: {
-				metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
+				metadataBase: new URL(
+					process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+				),
 				title: "Our Mission to Empower Educators | About GradeBench",
 				description:
 					"Learn about the GradeBench mission to reduce educator workload and make academic evaluations quick, fair, and meaningful. Meet our dedicated founding team.",
@@ -50,7 +54,9 @@ export const siteConfig: SiteConfigType = {
 		},
 		features: {
 			metadata: {
-				metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
+				metadataBase: new URL(
+					process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+				),
 				title:
 					"AI Grading, Personalized Feedback & Analytics | GradeBench Features",
 				description:
@@ -71,7 +77,9 @@ export const siteConfig: SiteConfigType = {
 		},
 		solutions: {
 			metadata: {
-				metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
+				metadataBase: new URL(
+					process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+				),
 				title: "AI Grading for UPSC Coaching Institutes & Schools | GradeBench",
 				description:
 					"GradeBench offers a tailored solution for UPSC institutes to automate answer sheet evaluation, reduce turnaround time, and scale operations. Discover our playbook.",
