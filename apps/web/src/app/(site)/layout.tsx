@@ -1,4 +1,4 @@
-import { SiteLayout } from "@/features/site/components/templetes";
+import { SiteLayout } from "@/features/site/components/templates";
 import "@gb/ui/globals.css";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {

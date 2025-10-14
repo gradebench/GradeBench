@@ -7,7 +7,7 @@ import {
 	SiteHeader,
 	SiteLayout,
 	SitePage,
-} from "../components/templetes";
+} from "../components/templates";
 import { siteConfig } from "../configs/site";
 
 // Mock next/link so Vitest doesn't break
