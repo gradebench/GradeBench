@@ -2,7 +2,7 @@ import { Card, CardContent } from "@gb/ui/src/components/ui/card";
 import { H3, Large, P, Small } from "@gb/ui/src/components/ui/typography";
 import { cn } from "@gb/ui/src/lib/utils";
 import type { ReactNode } from "react";
-import { featuresDetailInfo } from "../../configs/cards";
+import { featuresDetailInfo } from "@/features/site/configs/cards";
 
 export const FeatureDetails = () => {
 	return (
