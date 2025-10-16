@@ -2,7 +2,7 @@ import { H2, Lead } from "@gb/ui/src/components/ui/typography";
 import Link from "next/link";
 import { ThemedImage } from "./clients/PlaceHolder";
 
-export const BackedBySection = () => {
+export const SupportedBySection = () => {
 	return (
 		<section className="px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-6xl text-center">
