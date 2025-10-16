@@ -100,7 +100,7 @@ jobs:
         run: npm ci --prefer-offline
 
       - name: 🧪 Run Tests
-        run: npm run test:unit
+        run: npm run test
 
   run_build_tests:
     name: 🏗️ Build

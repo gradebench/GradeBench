@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { AboutHero } from "../components/about/Hero";
-import { AboutTeam } from "../components/about/Team";
-import { AboutVision } from "../components/about/Vision";
+import { AboutHero } from "../components/pages/about/Hero";
+import { AboutTeam } from "../components/pages/about/Team";
+import { AboutVision } from "../components/pages/about/Vision";
 
 describe("About Hero Section", () => {
 	it("Render Headline", () => {

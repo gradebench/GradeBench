@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { FinalCTA } from "../components/home/FinalCTA";
-import { HomeHeroSection } from "../components/home/HeroSection";
-import { ProblemSection } from "../components/home/ProblemSection";
-import { SocialProof } from "../components/home/SocialProof";
-import { SolutionSection } from "../components/home/SolutionSection";
+import { FinalCTA } from "../components/pages/home/FinalCTA";
+import { HomeHeroSection } from "../components/pages/home/HeroSection";
+import { ProblemSection } from "../components/pages/home/ProblemSection";
+import { SocialProof } from "../components/pages/home/SocialProof";
+import { SolutionSection } from "../components/pages/home/SolutionSection";
 
 describe("Home Hero Section", () => {
 	it("Render Headlines", () => {
