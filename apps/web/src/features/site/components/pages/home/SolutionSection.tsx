@@ -5,7 +5,7 @@ import {
 	CardTitle,
 } from "@gb/ui/src/components/ui/card";
 import { H2, Lead } from "@gb/ui/src/components/ui/typography";
-import { heroSolutionCards } from "../../configs/cards";
+import { heroSolutionCards } from "@/features/site/configs/cards";
 
 export const SolutionSection = () => {
 	return (

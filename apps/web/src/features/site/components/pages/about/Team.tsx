@@ -5,7 +5,7 @@ import {
 	CardTitle,
 } from "@gb/ui/src/components/ui/card";
 import { H2, Muted, P } from "@gb/ui/src/components/ui/typography";
-import { aboutTeamInfo } from "../../configs/cards";
+import { aboutTeamInfo } from "@/features/site/configs/cards";
 
 export const AboutTeam = () => {
 	return (

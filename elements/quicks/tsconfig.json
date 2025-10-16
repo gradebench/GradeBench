@@ -1,0 +1,18 @@
+{
+	"extends": "@gb/typescript-config/react-library.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"outDir": "dist",
+		"rootDir": "src",
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@gb-element/ui/*": ["./src/*"]
+		}
+	},
+	"exclude": ["node_modules", "dist"]
+}

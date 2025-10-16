@@ -6,7 +6,7 @@ import {
 } from "@gb/ui/src/components/ui/card";
 import { H2, Lead } from "@gb/ui/src/components/ui/typography";
 import type { ReactNode } from "react";
-import { heroProblemCards } from "../../configs/cards";
+import { heroProblemCards } from "@/features/site/configs/cards";
 
 export const ProblemSection = () => {
 	return (

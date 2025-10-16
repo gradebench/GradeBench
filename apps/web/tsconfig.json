@@ -4,7 +4,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb/*": ["../../packages/*"]
+			"@gb/*": ["../../packages/*"],
+			"@gb-elements/*": ["../../elements/*"]
 		}
 	},
 	"include": [

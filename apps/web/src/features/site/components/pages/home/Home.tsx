@@ -1,4 +1,4 @@
-import { BackedbySection } from "./BackedbySection";
+import { BackedBySection } from "./BackedBySection";
 import { FinalCTA } from "./FinalCTA";
 import { HomeHeroSection } from "./HeroSection";
 import { ProblemSection } from "./ProblemSection";
@@ -9,7 +9,7 @@ export const Home = () => {
 	return (
 		<>
 			<HomeHeroSection />
-			<BackedbySection />
+			<BackedBySection />
 			<ProblemSection />
 			<SolutionSection />
 			<SocialProof />

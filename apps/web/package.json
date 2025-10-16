@@ -12,6 +12,7 @@
 		"test": "vitest run --coverage"
 	},
 	"dependencies": {
+		"@gb-element/quicks": "^1.0.0",
 		"@gb/ui": "^1.0.0",
 		"@tanstack/react-query": "^5.84.2",
 		"@tanstack/react-query-devtools": "^5.84.2",

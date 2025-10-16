@@ -7,7 +7,7 @@ import {
 import { H2, Lead, P } from "@gb/ui/src/components/ui/typography";
 import { Globe } from "lucide-react";
 import type { ReactNode } from "react";
-import { solutionRoadmap } from "../../configs/cards";
+import { solutionRoadmap } from "@/features/site/configs/cards";
 
 export const SolutionRoadmap = () => {
 	return (
