@@ -1,8 +1,8 @@
-import { ScreenRootLayout } from "@/components/providers/Screen";
+import { DefaultRootLayout } from "@/components/templates/layouts";
 import "@gb/ui/globals.css";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-	return <ScreenRootLayout>{children}</ScreenRootLayout>;
+	return <DefaultRootLayout>{children}</DefaultRootLayout>;
 };
 
 export default RootLayout;

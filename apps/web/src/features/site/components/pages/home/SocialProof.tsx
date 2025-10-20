@@ -19,7 +19,7 @@ export const SocialProof = () => {
 					</Lead>
 				</div>
 
-				<div className="md:height-full flex flex-col items-stretch justify-center space-y-8 md:flex-row md:space-y-0 md:space-x-6">
+				<div className="md:height-full flex flex-col items-stretch justify-center space-y-8 md:flex-row md:space-x-6 md:space-y-0">
 					<Link
 						className="grid flex-1 place-items-center"
 						href="https://samkalpias.com/"

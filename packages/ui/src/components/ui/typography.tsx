@@ -14,7 +14,7 @@ export const H1 = ({
 	return (
 		<h1
 			className={cn(
-				"scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
+				"scroll-m-20 font-extrabold text-4xl tracking-tight lg:text-5xl",
 				className,
 			)}
 			{...props}
@@ -32,7 +32,7 @@ export const H2 = ({
 	return (
 		<h2
 			className={cn(
-				"scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0",
+				"scroll-m-20 font-semibold text-3xl tracking-tight first:mt-0",
 				className,
 			)}
 			{...props}
@@ -50,7 +50,7 @@ export const H3 = ({
 	return (
 		<h3
 			className={cn(
-				"scroll-m-20 text-2xl font-semibold tracking-tight",
+				"scroll-m-20 font-semibold text-2xl tracking-tight",
 				className,
 			)}
 			{...props}
@@ -68,7 +68,7 @@ export const H4 = ({
 	return (
 		<h4
 			className={cn(
-				"scroll-m-20 text-xl font-semibold tracking-tight",
+				"scroll-m-20 font-semibold text-xl tracking-tight",
 				className,
 			)}
 			{...props}
@@ -128,7 +128,7 @@ export const InlineCode = ({
 	return (
 		<code
 			className={cn(
-				"bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
+				"relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono font-semibold text-sm",
 				className,
 			)}
 			{...props}
@@ -156,7 +156,7 @@ export const Large = ({
 	...props
 }: TypoProps & ComponentProps<"div">) => {
 	return (
-		<div className={cn("text-lg font-semibold", className)} {...props}>
+		<div className={cn("font-semibold text-lg", className)} {...props}>
 			{children}
 		</div>
 	);
@@ -169,7 +169,7 @@ export const Small = ({
 }: TypoProps & ComponentProps<"small">) => {
 	return (
 		<small
-			className={cn("text-sm leading-none font-medium", className)}
+			className={cn("font-medium text-sm leading-none", className)}
 			{...props}
 		>
 			{children}
@@ -210,7 +210,7 @@ export const TR = ({
 	...props
 }: TypoProps & ComponentProps<"tr">) => {
 	return (
-		<tr className={cn("even:bg-muted m-0 border-t p-0", className)} {...props}>
+		<tr className={cn("m-0 border-t p-0 even:bg-muted", className)} {...props}>
 			{children}
 		</tr>
 	);

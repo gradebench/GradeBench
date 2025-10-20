@@ -11,7 +11,7 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb-element/ui/*": ["./src/*"]
+			"@gb-element/quicks/*": ["./src/*"]
 		}
 	},
 	"exclude": ["node_modules", "dist"]

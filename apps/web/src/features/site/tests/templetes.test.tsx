@@ -50,9 +50,9 @@ const mockNavMenu = [
 	},
 ];
 
-// Mock ScreenRootLayout component
+// Mock DefaultRootLayout component
 vi.mock("@/components/providers/Screen", () => ({
-	ScreenRootLayout: ({ children }: { children: React.ReactNode }) => (
+	DefaultRootLayout: ({ children }: { children: React.ReactNode }) => (
 		<div data-testid="screen-root-layout">{children}</div>
 	),
 }));

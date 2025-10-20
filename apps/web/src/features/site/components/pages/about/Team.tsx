@@ -51,14 +51,14 @@ const TeamCard = ({
 			data-testid="card"
 		>
 			<CardHeader className="pb-6 text-center">
-				<div className="from-primary/64 to-primary/80 mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-gradient-to-br">
-					<span className="text-2xl font-bold text-white">{fallback}</span>
+				<div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-gradient-to-br from-primary/64 to-primary/80">
+					<span className="font-bold text-2xl text-white">{fallback}</span>
 				</div>
-				<CardTitle className="text-xl font-bold">{name}</CardTitle>
+				<CardTitle className="font-bold text-xl">{name}</CardTitle>
 
 				<div className="flex flex-wrap items-baseline justify-center gap-4">
 					<Muted className="font-bold">{role}</Muted>
-					<P className="bg-primary dark:text-foreground text-background rounded-4xl px-2 leading-relaxed">
+					<P className="rounded-4xl bg-primary px-2 text-background leading-relaxed dark:text-foreground">
 						{expertise}
 					</P>
 				</div>

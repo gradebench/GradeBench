@@ -1,4 +1,4 @@
-import { GradeBench } from "@/components/anim/GradeBench1";
+import { GradeBench } from "@/components/anim/GradeBench";
 
 import { About } from "../components/pages/about/About";
 import { Features } from "../components/pages/features/Features";

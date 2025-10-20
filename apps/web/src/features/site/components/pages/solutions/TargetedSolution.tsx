@@ -18,10 +18,10 @@ export const SolutionTargeted = () => {
 
 				<div className="flex flex-col items-center gap-16">
 					<div>
-						<Card className="border-l-primary/32 h-full border-l-4 shadow-lg">
+						<Card className="h-full border-l-4 border-l-primary/32 shadow-lg">
 							<CardHeader>
 								<CardTitle
-									className="text-2xl font-bold"
+									className="font-bold text-2xl"
 									data-testid="challenge"
 								>
 									The Challenge
@@ -39,11 +39,11 @@ export const SolutionTargeted = () => {
 
 					<div>
 						<Card
-							className="border-l-primary/32 border-l-4 shadow-lg"
+							className="border-l-4 border-l-primary/32 shadow-lg"
 							data-testid="solution"
 						>
 							<CardHeader>
-								<CardTitle className="text-2xl font-bold">
+								<CardTitle className="font-bold text-2xl">
 									The GradeBench Solution
 								</CardTitle>
 							</CardHeader>
@@ -58,11 +58,11 @@ export const SolutionTargeted = () => {
 									operations without increasing faculty costs.
 								</P>
 								<div className="mt-6 flex items-center space-x-4">
-									<div className="bg-accent text-accent-foreground rounded-lg border px-4 py-2 shadow">
-										<span className="text-sm font-semibold">Samkalp IAS</span>
+									<div className="rounded-lg border bg-accent px-4 py-2 text-accent-foreground shadow">
+										<span className="font-semibold text-sm">Samkalp IAS</span>
 									</div>
-									<div className="bg-accent text-accent-foreground rounded-lg border px-4 py-2 shadow">
-										<span className="text-sm font-semibold">Primus IAS</span>
+									<div className="rounded-lg border bg-accent px-4 py-2 text-accent-foreground shadow">
+										<span className="font-semibold text-sm">Primus IAS</span>
 									</div>
 								</div>
 							</CardContent>
