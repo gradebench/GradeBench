@@ -27,6 +27,7 @@ GradeBench/
 │   └── typescript-config/ # Shared TypeScript configurations
 ├── elements/
 │   └── quicks/           # Quick UI elements and components
+├── kits/                 # Development kits (planned)
 └── docs/                 # Documentation files
 ```
 
