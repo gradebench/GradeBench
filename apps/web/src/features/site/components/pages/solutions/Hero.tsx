@@ -2,7 +2,7 @@ import { H1, Lead } from "@gb/ui/src/components/ui/typography";
 
 export const SolutionHero = () => {
 	return (
-		<section className="from-primary/20 to-primary/20 via-background grid min-h-screen place-items-center bg-gradient-to-br px-4 py-20 sm:px-6 lg:px-8">
+		<section className="grid min-h-screen place-items-center bg-gradient-to-br from-primary/20 via-background to-primary/20 px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-4xl text-center">
 				<H1 className="t mb-8" data-testid="headline">
 					A <span className="text-primary">Scalable </span>

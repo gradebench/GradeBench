@@ -1,7 +1,7 @@
-import Test from "@gb-elements/quicks/src/components/Test";
+import { H1 } from "@gb/ui/src/components/ui/typography";
 
 const Page = () => {
-	return <Test />;
+	return <H1>Quick Page</H1>;
 };
 
 export default Page;

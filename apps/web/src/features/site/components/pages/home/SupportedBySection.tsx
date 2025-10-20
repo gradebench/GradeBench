@@ -19,7 +19,7 @@ export const SupportedBySection = () => {
 						to deliver powerful, scalable solutions to educators worldwide.
 					</Lead>
 				</div>
-				<div className="flex flex-col items-stretch justify-center space-y-8 md:flex-row md:height-full md:space-y-0 md:space-x-8">
+				<div className="md:height-full flex flex-col items-stretch justify-center space-y-8 md:flex-row md:space-x-8 md:space-y-0">
 					<Link
 						className="grid flex-1 place-items-center"
 						href="https://www.microsoft.com/en-in/startups"

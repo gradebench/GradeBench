@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function ButtonArrow() {
 	return (
-		<Button className="group ">
+		<Button className="group">
 			Get Started
 			<ArrowRight
 				className="-me-1 opacity-60 transition-transform group-hover:translate-x-0.5"
