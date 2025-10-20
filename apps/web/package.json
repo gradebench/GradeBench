@@ -13,6 +13,8 @@
 	},
 	"dependencies": {
 		"@gb-element/quicks": "^1.0.0",
+		"@gb/fetch": "^1.0.0",
+		"@gb/flags": "^1.0.0",
 		"@gb/ui": "^1.0.0",
 		"@tanstack/react-query": "^5.84.2",
 		"@tanstack/react-query-devtools": "^5.84.2",
@@ -21,7 +23,8 @@
 		"motion": "^12.23.12",
 		"next": "^15.4.6",
 		"react": "^19.1.1",
-		"react-dom": "^19.1.1"
+		"react-dom": "^19.1.1",
+		"zustand": "^5.0.8"
 	},
 	"devDependencies": {
 		"@gb/typescript-config": "^1.0.0",
@@ -35,16 +38,9 @@
 		"@vitejs/plugin-react": "^5.0.0",
 		"@vitest/coverage-v8": "^3.2.4",
 		"jsdom": "^26.1.0",
-		"prettier": "^3.6.2",
-		"prettier-plugin-tailwindcss": "^0.6.14",
 		"tailwindcss": "^4.1.11",
 		"typescript": "^5.8.3",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4"
-	},
-	"prettier": {
-		"plugins": [
-			"prettier-plugin-tailwindcss"
-		]
 	}
 }

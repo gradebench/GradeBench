@@ -3,7 +3,6 @@ import "@gb/ui/globals.css";
 import NextThemeProvider from "@gb/ui/src/components/providers/NextThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
-import { UnhandledFetchError } from "./fetch-error";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -27,7 +26,6 @@ export const DefaultRootLayout = ({ children }: { children: ReactNode }) => {
 			>
 				<Providers>
 					<main>{children}</main>
-					<UnhandledFetchError />
 				</Providers>
 			</body>
 		</html>
