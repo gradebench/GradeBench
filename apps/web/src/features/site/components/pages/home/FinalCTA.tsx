@@ -3,7 +3,7 @@ import { H2, P } from "@gb/ui/src/components/ui/typography";
 
 export const FinalCTA = () => {
 	return (
-		<section className="from-primary bg-gradient-to-r to-blue-500/50 px-4 py-20 sm:px-6 lg:px-8">
+		<section className="bg-gradient-to-r from-primary to-blue-500/50 px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-4xl text-center">
 				<H2 className="mb-6" data-testid="headline">
 					Ready to Revolutionize Your Grading?
@@ -14,7 +14,7 @@ export const FinalCTA = () => {
 				</P>
 				<Button
 					size="lg"
-					className="bg-accent-foreground text-accent hover:bg-accent-foreground/90 px-8 py-3"
+					className="bg-accent-foreground px-8 py-3 text-accent hover:bg-accent-foreground/90"
 					data-testid="cta"
 				>
 					Request Your Free Demo

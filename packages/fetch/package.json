@@ -1,0 +1,24 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"name": "@gb/fetch",
+	"version": "1.0.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "tsc && tsc-alias"
+	},
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@gb/typescript-config": "^1.0.0",
+		"tsc-alias": "^1.8.16",
+		"typescript": "^5.9.3"
+	}
+}

@@ -57,7 +57,7 @@ export const HomeProblemCard = ({
 		>
 			<CardHeader className="pb-4 text-center">
 				<div>{icon}</div>
-				<CardTitle className="text-xl font-bold">{title}</CardTitle>
+				<CardTitle className="font-bold text-xl">{title}</CardTitle>
 			</CardHeader>
 			<CardContent className="text-center">{content}</CardContent>
 		</Card>

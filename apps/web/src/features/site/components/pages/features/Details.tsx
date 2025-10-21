@@ -66,9 +66,9 @@ const FeatureInfoTab = ({
 			</div>
 			<Card className="flex-1 shadow-xl" data-testid="card">
 				<CardContent className="p-8">
-					<div className="from-primary/60 rounded-lg bg-gradient-to-br to-blue-400/60 p-6 text-center text-white">
+					<div className="rounded-lg bg-gradient-to-br from-primary/60 to-blue-400/60 p-6 text-center text-white">
 						{cardIcon}
-						<Large className="text-2xl font-bold">{cardTitle}</Large>
+						<Large className="font-bold text-2xl">{cardTitle}</Large>
 						<Small>{cardSubtitle}</Small>
 					</div>
 				</CardContent>

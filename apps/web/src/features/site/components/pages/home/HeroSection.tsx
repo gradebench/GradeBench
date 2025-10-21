@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const HomeHeroSection = () => {
 	return (
-		<section className="from-primary/20 via-background to-primary/20 grid min-h-screen place-items-center bg-gradient-to-br px-4 py-20 sm:px-6 lg:px-8">
+		<section className="grid min-h-screen place-items-center bg-gradient-to-br from-primary/20 via-background to-primary/20 px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-3xl text-center">
 				<H1 className="mb-4" data-testid="headline">
 					<span className="text-primary">Grade</span>

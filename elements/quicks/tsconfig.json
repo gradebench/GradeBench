@@ -22,7 +22,8 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@gb-element/quicks/*": ["./src/*"]
 		}
 	},
 	"include": ["src"],

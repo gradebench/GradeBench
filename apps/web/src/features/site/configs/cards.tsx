@@ -16,7 +16,7 @@ import {
 export const heroProblemCards = [
 	{
 		icon: (
-			<Clock className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<Clock className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-destructive/16 p-2 text-destructive" />
 		),
 		title: "Time Sink",
 		content: (
@@ -29,7 +29,7 @@ export const heroProblemCards = [
 	},
 	{
 		icon: (
-			<DollarSign className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<DollarSign className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-destructive/16 p-2 text-destructive" />
 		),
 		title: "Budget Drain",
 		content: (
@@ -42,7 +42,7 @@ export const heroProblemCards = [
 	},
 	{
 		icon: (
-			<Target className="text-destructive bg-destructive/16 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<Target className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-destructive/16 p-2 text-destructive" />
 		),
 		title: "Missed Opportunity",
 		content: (
@@ -58,7 +58,7 @@ export const heroProblemCards = [
 export const heroSolutionCards = [
 	{
 		icon: (
-			<Zap className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+			<Zap className="mb-3 h-16 w-16 rounded-2xl bg-primary/16 p-2 text-primary" />
 		),
 		title: "Work 95% Faster",
 		content: (
@@ -71,7 +71,7 @@ export const heroSolutionCards = [
 	},
 	{
 		icon: (
-			<DollarSign className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+			<DollarSign className="mb-3 h-16 w-16 rounded-2xl bg-primary/16 p-2 text-primary" />
 		),
 		title: "Cut Costs by 70%",
 		content: (
@@ -84,7 +84,7 @@ export const heroSolutionCards = [
 	},
 	{
 		icon: (
-			<Shield className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+			<Shield className="mb-3 h-16 w-16 rounded-2xl bg-primary/16 p-2 text-primary" />
 		),
 		title: "Ensure 100% Fairness",
 		content: (
@@ -97,7 +97,7 @@ export const heroSolutionCards = [
 	},
 	{
 		icon: (
-			<Lightbulb className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+			<Lightbulb className="mb-3 h-16 w-16 rounded-2xl bg-primary/16 p-2 text-primary" />
 		),
 		title: "Deliver Powerful Feedback",
 		content: (
@@ -110,7 +110,7 @@ export const heroSolutionCards = [
 	},
 	{
 		icon: (
-			<Users className="text-primary bg-primary/16 mb-3 h-16 w-16 rounded-2xl p-2" />
+			<Users className="mb-3 h-16 w-16 rounded-2xl bg-primary/16 p-2 text-primary" />
 		),
 		title: "Provide Human-Like Annotation",
 		content: (
@@ -152,7 +152,7 @@ export const aboutTeamInfo = [
 export const featuresDetailInfo = [
 	{
 		icon: (
-			<Zap className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+			<Zap className="mr-4 h-16 w-16 rounded-2xl bg-primary/20 p-2 text-primary" />
 		),
 		title: "Grade in Seconds, Not Days",
 		subtitle: "AI-Powered Automated Grading",
@@ -166,7 +166,7 @@ export const featuresDetailInfo = [
 	},
 	{
 		icon: (
-			<Target className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+			<Target className="mr-4 h-16 w-16 rounded-2xl bg-primary/20 p-2 text-primary" />
 		),
 		title: "Deliver Feedback That Drives Improvement",
 		subtitle: "Dynamic & Personalized Feedback",
@@ -180,7 +180,7 @@ export const featuresDetailInfo = [
 	},
 	{
 		icon: (
-			<Users className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+			<Users className="mr-4 h-16 w-16 rounded-2xl bg-primary/20 p-2 text-primary" />
 		),
 		title: "The Personal Touch, Scaled",
 		subtitle: "Human-Like Digital Annotation",
@@ -194,7 +194,7 @@ export const featuresDetailInfo = [
 	},
 	{
 		icon: (
-			<BarChart3 className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+			<BarChart3 className="mr-4 h-16 w-16 rounded-2xl bg-primary/20 p-2 text-primary" />
 		),
 		title: "Turn Data into Strategy",
 		subtitle: "In-Depth Performance Analytics",
@@ -208,7 +208,7 @@ export const featuresDetailInfo = [
 	},
 	{
 		icon: (
-			<Shield className="text-primary bg-primary/20 mr-4 h-16 w-16 rounded-2xl p-2" />
+			<Shield className="mr-4 h-16 w-16 rounded-2xl bg-primary/20 p-2 text-primary" />
 		),
 		title: "Achieve Perfect Consistency",
 		subtitle: "Bias-Free & Standardized Evaluation",
@@ -225,7 +225,7 @@ export const featuresDetailInfo = [
 export const solutionRoadmap = [
 	{
 		icon: (
-			<Users className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<Users className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-primary/12 p-2 text-primary" />
 		),
 		title: "K-12 Schools",
 		description:
@@ -233,7 +233,7 @@ export const solutionRoadmap = [
 	},
 	{
 		icon: (
-			<Target className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<Target className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-primary/12 p-2 text-primary" />
 		),
 		title: "Undergraduate & Postgraduate Colleges",
 		description:
@@ -241,7 +241,7 @@ export const solutionRoadmap = [
 	},
 	{
 		icon: (
-			<Award className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
+			<Award className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-primary/12 p-2 text-primary" />
 		),
 		title: "Professional Institutes",
 		description:

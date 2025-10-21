@@ -15,8 +15,8 @@ import { H3, P } from "@gb/ui/src/components/ui/typography";
 import { Award, CheckCircle, Mail, Menu, Shield } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { GradeBench } from "@/components/anim/GradeBench1";
-import { ScreenRootLayout } from "@/components/providers/Screen";
+import { GradeBench } from "@/components/anim/GradeBench";
+import { DefaultRootLayout } from "@/components/templates/layouts";
 import { siteConfig } from "../configs/site";
 import type {
 	HeaderCTAType,
@@ -26,11 +26,11 @@ import type {
 
 export const SiteLayout = ({ children }: { children: ReactNode }) => {
 	return (
-		<ScreenRootLayout>
+		<DefaultRootLayout>
 			<SiteHeader />
 			{children}
 			<SiteFooter />
-		</ScreenRootLayout>
+		</DefaultRootLayout>
 	);
 };
 
@@ -40,7 +40,7 @@ export const SitePage = ({ children }: { children: ReactNode }) => {
 
 export const SiteHeader = () => {
 	return (
-		<header className="bg-primary/4 sticky top-0 z-100 border-b px-4 backdrop-blur-lg md:px-6">
+		<header className="sticky top-0 z-100 border-b bg-primary/4 px-4 backdrop-blur-lg md:px-6">
 			<div className="flex h-16 items-center justify-between gap-4">
 				{/* Left side */}
 				<LeftNav />
@@ -70,7 +70,7 @@ export const LeftNav = ({
 							<NavigationMenuItem key={index}>
 								<NavigationMenuLink
 									href={item.href}
-									className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+									className="py-1.5 font-medium text-muted-foreground hover:text-primary"
 								>
 									{item.label}
 								</NavigationMenuLink>
@@ -132,12 +132,12 @@ export const SiteFooter = ({
 					{/* Brand Section */}
 					<div className="lg:col-span-2">
 						<div className="mb-6 flex items-center">
-							<span className="flex gap-8 text-3xl font-bold text-white">
+							<span className="flex gap-8 font-bold text-3xl text-white">
 								<GradeBench />
 								GradeBench
 							</span>
 						</div>
-						<P className="mb-6 max-w-md leading-relaxed text-slate-300">
+						<P className="mb-6 max-w-md text-slate-300 leading-relaxed">
 							Empowering educators with AI-powered grading solutions that are
 							fast, fair, and affordable. Transform your evaluation process
 							today.
@@ -150,7 +150,7 @@ export const SiteFooter = ({
 
 					{/* Quick Links */}
 					<div className="text-center lg:col-span-3">
-						<H3 className="mb-6 text-lg font-semibold text-white">
+						<H3 className="mb-6 font-semibold text-lg text-white">
 							Quick Links
 						</H3>
 						<ul className="space-y-2">
@@ -170,7 +170,7 @@ export const SiteFooter = ({
 				<Separator className="my-8" />
 				<div className="border-slate-700">
 					<div className="flex flex-col items-center justify-between md:flex-row">
-						<div className="flex flex-col items-center space-y-2 md:flex-row md:space-y-0 md:space-x-8">
+						<div className="flex flex-col items-center space-y-2 md:flex-row md:space-x-8 md:space-y-0">
 							<P className="text-slate-300">
 								© {new Date().getFullYear()} GradeBench. All rights reserved.
 							</P>
@@ -184,23 +184,23 @@ export const SiteFooter = ({
 							<div className="mb-4 flex items-center space-x-8 md:mb-0">
 								<div className="flex items-center space-x-2">
 									<Shield className="h-5 w-5 text-green-400" />
-									<span className="text-sm text-slate-300">100% Secure</span>
+									<span className="text-slate-300 text-sm">100% Secure</span>
 								</div>
 								<div className="flex items-center space-x-2">
 									<CheckCircle className="h-5 w-5 text-green-400" />
-									<span className="text-sm text-slate-300">
+									<span className="text-slate-300 text-sm">
 										95% Faster Grading
 									</span>
 								</div>
 								<div className="flex items-center space-x-2">
 									<Award className="h-5 w-5 text-green-400" />
-									<span className="text-sm text-slate-300">
+									<span className="text-slate-300 text-sm">
 										Trusted by Leading Institutes
 									</span>
 								</div>
 							</div>
 
-							<div className="text-sm text-slate-400">
+							<div className="text-slate-400 text-sm">
 								Made with ❤️ for Educators
 							</div>
 						</div>

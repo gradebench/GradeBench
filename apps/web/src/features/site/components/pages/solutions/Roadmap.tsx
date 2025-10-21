@@ -34,10 +34,10 @@ export const SolutionRoadmap = () => {
 					))}
 				</div>
 
-				<Card className="from-secondary to-secondary/64 bg-gradient-to-r shadow-lg">
+				<Card className="bg-gradient-to-r from-secondary to-secondary/64 shadow-lg">
 					<CardHeader className="text-center">
-						<Globe className="text-primary bg-primary/12 mx-auto mb-4 h-16 w-16 rounded-2xl p-2" />
-						<CardTitle className="text-2xl font-bold">
+						<Globe className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-primary/12 p-2 text-primary" />
+						<CardTitle className="font-bold text-2xl">
 							Growing with India
 						</CardTitle>
 					</CardHeader>
@@ -70,7 +70,7 @@ const RoadmapCard = ({
 		>
 			<CardHeader className="text-center">
 				{icon}
-				<CardTitle className="text-xl font-bold">{title}</CardTitle>
+				<CardTitle className="font-bold text-xl">{title}</CardTitle>
 			</CardHeader>
 			<CardContent className="text-center">
 				<P>{description}</P>

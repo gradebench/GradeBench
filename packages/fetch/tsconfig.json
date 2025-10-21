@@ -1,0 +1,13 @@
+{
+	"extends": "@gb/typescript-config/base.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"outDir": "dist",
+		"rootDir": "src",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@gb/fetch/*": ["./src/*"]
+		}
+	},
+	"exclude": ["node_modules", "dist"]
+}
