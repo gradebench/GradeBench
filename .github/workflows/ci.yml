@@ -26,7 +26,7 @@ jobs:
           cache: npm
 
       - name: 📥 Install Dependencies
-        run: npm ci --prefer-offline
+        run: npm ci
 
       - name: 🔍 Audit Dependencies
         run: npm audit --audit-level=high
@@ -52,7 +52,7 @@ jobs:
           cache: npm
 
       - name: 📥 Install Dependencies
-        run: npm ci --prefer-offline
+        run: npm ci
 
       - name: 🏞️ Setup Biome
         uses: biomejs/setup-biome@v2
@@ -97,7 +97,15 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: 📥 Install Dependencies
-        run: npm ci --prefer-offline
+        run: npm ci
+
+      - name: 🔧 Verify Rollup Installation
+        run: |
+          # Check if rollup native bindings are installed
+          if [ ! -d "node_modules/@rollup/rollup-linux-x64-gnu" ]; then
+            echo "Installing rollup native bindings..."
+            npm install --no-save @rollup/rollup-linux-x64-gnu
+          fi
 
       - name: 🧪 Run Tests
         run: npm run test
@@ -136,7 +144,7 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: 📥 Install Dependencies
-        run: npm ci --prefer-offline
+        run: npm ci
 
       - name: 🏗️ Build Applications
         run: npm run build
