@@ -16,10 +16,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@gb/ui/components/ui/table";
+import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
+import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import { CheckCircleIcon, DownloadIcon, XCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { DashboardLayout } from "@/components/quicks/shared/DashboardLayout";
-import { FeatureGuard } from "@/components/quicks/shared/FeatureGuard";
 
 const mockResults = [
 	{ id: 1, question: "What is 2+2?", answer: "4", correct: true, score: 100 },

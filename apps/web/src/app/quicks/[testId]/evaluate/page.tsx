@@ -9,10 +9,10 @@ import {
 	CardTitle,
 } from "@gb/ui/components/ui/card";
 import { Progress } from "@gb/ui/components/ui/progress";
+import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
+import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DashboardLayout } from "@/components/quicks/shared/DashboardLayout";
-import { FeatureGuard } from "@/components/quicks/shared/FeatureGuard";
 
 export default function EvaluationDashboard() {
 	const router = useRouter();

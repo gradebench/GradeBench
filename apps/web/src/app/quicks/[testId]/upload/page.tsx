@@ -9,6 +9,7 @@ import {
 	CardTitle,
 } from "@gb/ui/components/ui/card";
 import { Progress } from "@gb/ui/components/ui/progress";
+import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import {
 	CheckCircleIcon,
 	EyeIcon,
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FeatureGuard } from "@/components/quicks/shared/FeatureGuard";
 
 interface UploadedFile {
 	id: string;
@@ -68,7 +68,9 @@ export default function UploadPage() {
 				<div className="mx-auto max-w-6xl">
 					{/* Header with Progress */}
 					<header
-						className={`transition-all duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"} mb-8`}
+						className={`transition-all duration-700 ease-out ${
+							isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+						} mb-8`}
 					>
 						<div className="mb-4 flex items-center justify-between">
 							<div>
@@ -90,7 +92,11 @@ export default function UploadPage() {
 					<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 						{/* Upload Section */}
 						<div
-							className={`transition-all delay-200 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+							className={`transition-all delay-200 duration-700 ease-out ${
+								isLoaded
+									? "translate-y-0 opacity-100"
+									: "translate-y-4 opacity-0"
+							}`}
 						>
 							<Card>
 								<CardHeader>
@@ -130,7 +136,11 @@ export default function UploadPage() {
 
 						{/* Uploaded Files List */}
 						<div
-							className={`transition-all delay-300 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+							className={`transition-all delay-300 duration-700 ease-out ${
+								isLoaded
+									? "translate-y-0 opacity-100"
+									: "translate-y-4 opacity-0"
+							}`}
 						>
 							<Card>
 								<CardHeader>
@@ -148,7 +158,11 @@ export default function UploadPage() {
 											<div
 												key={file.id}
 												style={{ transitionDelay: `${index * 100}ms` }}
-												className={`flex items-center justify-between rounded-lg border bg-card p-3 transition-all hover:bg-accent ${isLoaded ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}`}
+												className={`flex items-center justify-between rounded-lg border bg-card p-3 transition-all hover:bg-accent ${
+													isLoaded
+														? "translate-x-0 opacity-100"
+														: "-translate-x-4 opacity-0"
+												}`}
 											>
 												<div className="flex flex-1 items-center gap-3">
 													<div className="rounded bg-primary/10 p-2">
@@ -190,7 +204,9 @@ export default function UploadPage() {
 
 					{/* Action Buttons */}
 					<div
-						className={`transition-all delay-500 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"} mt-8 flex justify-between`}
+						className={`transition-all delay-500 duration-700 ease-out ${
+							isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+						} mt-8 flex justify-between`}
 					>
 						<Button variant="outline" onClick={() => router.push("/quicks")}>
 							Cancel
