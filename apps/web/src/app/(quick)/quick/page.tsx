@@ -1,13 +1,13 @@
 import { H1 } from "@gb/ui/src/components/ui/typography";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { TestClientComp } from "@/hooks/test-comp";
 import { flagOptions } from "@/hooks/test-flags";
 import { getQueryClient } from "@/libs/tanstack/client";
-import { TestClientComp } from "@/hooks/test-comp";
 
-const Page = () => {
+const Page = async () => {
 	const queryClient = getQueryClient();
 
-	void queryClient.prefetchQuery(flagOptions);
+	await queryClient.prefetchQuery(flagOptions);
 
 	return (
 		<>
