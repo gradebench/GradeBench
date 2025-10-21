@@ -34,6 +34,21 @@ expect.extend({
 	toHaveFocus,
 });
 
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: vi.fn().mockImplementation(query => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		addListener: vi.fn(), // deprecated
+		removeListener: vi.fn(), // deprecated
+		dispatchEvent: vi.fn(),
+	})),
+});
+
 // Clean up after each test
 afterEach(() => {
 	cleanup();

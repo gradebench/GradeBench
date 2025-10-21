@@ -1,5 +1,5 @@
 import { Badge } from "@gb/ui/components/ui/badge";
-import type { QuickTest } from "@/types/quicks/test";
+import type { QuickTest } from "../types/test.js";
 
 const statusConfig = {
 	draft: { label: "Draft", variant: "secondary" as const },
@@ -10,6 +10,6 @@ const statusConfig = {
 };
 
 export function TestStatusBadge({ status }: { status: QuickTest["status"] }) {
-	const config = statusConfig[status];
+	const config = statusConfig[status as keyof typeof statusConfig];
 	return <Badge variant={config.variant}>{config.label}</Badge>;
 }

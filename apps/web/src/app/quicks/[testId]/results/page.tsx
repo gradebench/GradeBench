@@ -1,22 +1,49 @@
 "use client";
 
 import { Button } from "@gb/ui/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@gb/ui/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@gb/ui/components/ui/table";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@gb/ui/components/ui/card";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@gb/ui/components/ui/table";
+import { CheckCircleIcon, DownloadIcon, XCircleIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/quicks/shared/DashboardLayout";
 import { FeatureGuard } from "@/components/quicks/shared/FeatureGuard";
-import { CheckCircleIcon, XCircleIcon, DownloadIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const mockResults = [
 	{ id: 1, question: "What is 2+2?", answer: "4", correct: true, score: 100 },
-	{ id: 2, question: "Capital of France?", answer: "Paris", correct: true, score: 100 },
-	{ id: 3, question: "Largest planet?", answer: "Saturn", correct: false, score: 0 },
+	{
+		id: 2,
+		question: "Capital of France?",
+		answer: "Paris",
+		correct: true,
+		score: 100,
+	},
+	{
+		id: 3,
+		question: "Largest planet?",
+		answer: "Saturn",
+		correct: false,
+		score: 0,
+	},
 ];
 
 export default function ResultsPage() {
 	const router = useRouter();
-	const totalScore = Math.round(mockResults.reduce((acc, r) => acc + r.score, 0) / mockResults.length);
+	const totalScore = Math.round(
+		mockResults.reduce((acc, r) => acc + r.score, 0) / mockResults.length,
+	);
 
 	return (
 		<FeatureGuard>
@@ -31,7 +58,7 @@ export default function ResultsPage() {
 				}
 			>
 				<div className="space-y-6">
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+					<div className="grid grid-cols-1 gap-4 md:grid-cols-4">
 						<Card>
 							<CardHeader>
 								<CardDescription>Overall Score</CardDescription>
@@ -80,7 +107,9 @@ export default function ResultsPage() {
 								<TableBody>
 									{mockResults.map((result) => (
 										<TableRow key={result.id}>
-											<TableCell className="font-medium">{result.question}</TableCell>
+											<TableCell className="font-medium">
+												{result.question}
+											</TableCell>
 											<TableCell>{result.answer}</TableCell>
 											<TableCell>
 												{result.correct ? (
