@@ -14,8 +14,26 @@ const launchpadAPI = createApiClient({
 	defaultTimeout: 10000,
 });
 
-export const evaluateFlag = (
+export const evaluateFlag = async (
 	name: string,
 ): Promise<StandardResponse<FlagResult>> => {
-	return launchpadAPI.get<FlagResult>(`/launchpad/v1/eval/flags/${name}`);
+	try {
+		return await launchpadAPI.get<FlagResult>(
+			`/launchpad/v1/eval/flags/${name}`,
+		);
+	} catch (_error) {
+		return {
+			success: false,
+			data: null,
+			error: {
+				code: "FAILED_TO_FETCH",
+				message: "Failed to fetch flag evaluation",
+				details: null,
+			},
+			metadata: {
+				service: "launchpad",
+				timestamp: new Date().toISOString(),
+			},
+		} as StandardResponse<FlagResult>;
+	}
 };
