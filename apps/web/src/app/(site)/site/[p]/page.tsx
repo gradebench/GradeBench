@@ -11,7 +11,7 @@ export const generateMetadata = async ({
 	const { p } = await params;
 	const page = siteConfig.pages[p];
 	page.metadata.metadataBase = new URL(
-		`${process.env.NEXT_PUBLIC_BASE_URL}` || "http://localhost:3000",
+		process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
 	);
 	return page.metadata;
 };
