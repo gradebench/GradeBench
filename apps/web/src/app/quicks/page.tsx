@@ -1,6 +1,9 @@
 "use client";
 
 import { Button } from "@gb/ui/src/components/ui/button";
+import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
+import { getStatusConfig } from "@gb-element/quicks/lib/status-utils";
+import type { QuickTest } from "@gb-element/quicks/types/test";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
@@ -9,9 +12,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
-import { getStatusConfig } from "@gb-element/quicks/lib/status-utils";
-import type { QuickTest } from "@gb-element/quicks/types/test";
 
 const mockTests: QuickTest[] = [
 	{
@@ -90,8 +90,6 @@ const mockTests: QuickTest[] = [
 		evaluatedQuestions: 8,
 	},
 ];
-
-
 
 export default function QuicksDashboard() {
 	const [currentPage, setCurrentPage] = useState(1);

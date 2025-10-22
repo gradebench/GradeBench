@@ -11,6 +11,7 @@ import {
 import { Input } from "@gb/ui/src/components/ui/input";
 import { Label } from "@gb/ui/src/components/ui/label";
 import { Textarea } from "@gb/ui/src/components/ui/textarea";
+import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import {
 	CheckCircleIcon,
 	ChevronRightIcon,
@@ -21,7 +22,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FeatureGuard } from "@/components/quicks/shared/FeatureGuard";
 
 export default function TestSetupPage() {
 	const router = useRouter();
@@ -52,7 +52,9 @@ export default function TestSetupPage() {
 			<div className="min-h-screen p-4 sm:p-6 lg:p-8">
 				<div className="mx-auto max-w-6xl">
 					<header
-						className={`transition-all duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"} mb-8`}
+						className={`transition-all duration-700 ease-out ${
+							isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+						} mb-8`}
 					>
 						<h1 className="font-bold text-3xl">Create New Test</h1>
 						<p className="mt-1 text-muted-foreground">
@@ -62,7 +64,9 @@ export default function TestSetupPage() {
 
 					{/* Progress Steps */}
 					<div
-						className={`transition-all delay-200 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"} mb-8`}
+						className={`transition-all delay-200 duration-700 ease-out ${
+							isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+						} mb-8`}
 					>
 						<div className="flex items-center justify-between">
 							{steps.map((step, idx) => (
@@ -100,7 +104,11 @@ export default function TestSetupPage() {
 					{/* Step 1: Upload Test Paper */}
 					{currentStep === 1 && (
 						<div
-							className={`transition-all delay-300 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+							className={`transition-all delay-300 duration-700 ease-out ${
+								isLoaded
+									? "translate-y-0 opacity-100"
+									: "translate-y-4 opacity-0"
+							}`}
 						>
 							<Card>
 								<CardHeader>
@@ -152,7 +160,11 @@ export default function TestSetupPage() {
 					{/* Step 2: Evaluator Configuration */}
 					{currentStep === 2 && (
 						<div
-							className={`transition-all delay-300 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+							className={`transition-all delay-300 duration-700 ease-out ${
+								isLoaded
+									? "translate-y-0 opacity-100"
+									: "translate-y-4 opacity-0"
+							}`}
 						>
 							<Card>
 								<CardHeader>
@@ -207,7 +219,11 @@ export default function TestSetupPage() {
 					{/* Step 3: Model Key Answer */}
 					{currentStep === 3 && (
 						<div
-							className={`transition-all delay-300 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+							className={`transition-all delay-300 duration-700 ease-out ${
+								isLoaded
+									? "translate-y-0 opacity-100"
+									: "translate-y-4 opacity-0"
+							}`}
 						>
 							<Card>
 								<CardHeader>
@@ -259,7 +275,9 @@ export default function TestSetupPage() {
 
 					{/* Navigation Buttons */}
 					<div
-						className={`transition-all delay-500 duration-700 ease-out ${isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"} mt-8 flex justify-between`}
+						className={`transition-all delay-500 duration-700 ease-out ${
+							isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+						} mt-8 flex justify-between`}
 					>
 						<Button
 							variant="outline"
