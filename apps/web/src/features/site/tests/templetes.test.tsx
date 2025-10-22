@@ -50,13 +50,6 @@ const mockNavMenu = [
 	},
 ];
 
-// Mock DefaultRootLayout component
-vi.mock("@/components/providers/Screen", () => ({
-	DefaultRootLayout: ({ children }: { children: React.ReactNode }) => (
-		<div data-testid="screen-root-layout">{children}</div>
-	),
-}));
-
 describe("SiteLayout", () => {
 	it("renders the layout with header and footer", () => {
 		render(
@@ -65,8 +58,11 @@ describe("SiteLayout", () => {
 			</SiteLayout>,
 		);
 
-		expect(screen.getByTestId("screen-root-layout")).toBeDefined();
+		// Check that the content is rendered
 		expect(screen.getByTestId("site-content")).toBeDefined();
+		// Check that header and footer are present
+		expect(screen.getByRole("banner")).toBeDefined(); // header
+		expect(screen.getByRole("contentinfo")).toBeDefined(); // footer
 	});
 });
 

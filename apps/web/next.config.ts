@@ -2,7 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 	/* config options here */
+	output: "standalone",
 	transpilePackages: ["@gb/ui", "@gb-element/quicks"],
+	webpack: (config) => {
+		config.resolve.extensionAlias = {
+			".js": [".js", ".ts", ".tsx"],
+		};
+		return config;
+	},
 	async rewrites() {
 		return [
 			{

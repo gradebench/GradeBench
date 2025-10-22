@@ -2,17 +2,12 @@
 	"extends": "@gb/typescript-config/react-library.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "dist",
-		"rootDir": "src",
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
 		"paths": {
-			"@/*": ["./src/*"],
-			"@gb-element/quicks/*": ["./src/*"]
+			"@/*": ["./src/*"]
 		}
 	},
-	"exclude": ["node_modules", "dist"]
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules"]
 }
