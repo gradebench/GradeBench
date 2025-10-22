@@ -159,7 +159,7 @@ export default function ReviewPage() {
 										<div>
 											<label
 												htmlFor={`score-${question.id}`}
-												className="mb-2 block text-sm font-medium"
+												className="mb-2 block font-medium text-sm"
 											>
 												AI Score
 											</label>
@@ -172,7 +172,7 @@ export default function ReviewPage() {
 												onChange={(e) =>
 													handleScoreChange(
 														question.id,
-														Number.parseInt(e.target.value),
+														Number.parseInt(e.target.value, 10),
 													)
 												}
 												disabled={editingId !== question.id}
@@ -182,7 +182,7 @@ export default function ReviewPage() {
 										<div>
 											<label
 												htmlFor={`comment-${question.id}`}
-												className="mb-2 block text-sm font-medium"
+												className="mb-2 block font-medium text-sm"
 											>
 												AI Comment
 											</label>

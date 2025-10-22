@@ -85,7 +85,7 @@ export default function UploadPage() {
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
-								<div className="flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:border-muted-foreground/50">
+								<div className="flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50 transition-colors hover:border-muted-foreground/50">
 									<div className="text-center">
 										<UploadIcon className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
 										<p className="text-muted-foreground text-sm">

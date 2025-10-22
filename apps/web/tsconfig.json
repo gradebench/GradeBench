@@ -5,6 +5,7 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@gb/*": ["../../packages/*"],
+			"@gb-element/quicks/*": ["../../elements/quicks/src/*"],
 			"@gb-elements/*": ["../../elements/*"]
 		}
 	},

@@ -22,7 +22,7 @@ import {
 	UploadIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 const STEPS = [
 	{ num: 1, title: "Test Paper", icon: FileTextIcon },
@@ -35,6 +35,11 @@ export default function NewTestPage() {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [testName, setTestName] = useState("");
 	const [testPaper, setTestPaper] = useState<string | null>(null);
+	const testNameId = useId();
+	const totalQuestionsId = useId();
+	const totalMarksId = useId();
+	const evaluationCriteriaId = useId();
+	const additionalNotesId = useId();
 
 	const handleNext = () => {
 		if (currentStep < 3) {
@@ -86,7 +91,7 @@ export default function NewTestPage() {
 											)}
 										</div>
 										<p
-											className={`mt-2 text-center text-sm font-medium ${
+											className={`mt-2 text-center font-medium text-sm ${
 												isCurrent ? "text-foreground" : "text-muted-foreground"
 											}`}
 										>
@@ -116,9 +121,9 @@ export default function NewTestPage() {
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div>
-									<Label htmlFor="test-name">Test Name</Label>
+									<Label htmlFor={testNameId}>Test Name</Label>
 									<Input
-										id="test-name"
+										id={testNameId}
 										placeholder="e.g., Math Quiz - Chapter 5"
 										value={testName}
 										onChange={(e) => setTestName(e.target.value)}
@@ -127,7 +132,7 @@ export default function NewTestPage() {
 								</div>
 								<div>
 									<Label>Test Paper (PDF)</Label>
-									<div className="mt-2 flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:border-muted-foreground/50">
+									<div className="mt-2 flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50 transition-colors hover:border-muted-foreground/50">
 										{testPaper ? (
 											<div className="text-center">
 												<FileTextIcon className="mx-auto mb-2 h-12 w-12 text-primary" />
@@ -175,9 +180,9 @@ export default function NewTestPage() {
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div>
-									<Label htmlFor="total-questions">Total Questions</Label>
+									<Label htmlFor={totalQuestionsId}>Total Questions</Label>
 									<Input
-										id="total-questions"
+										id={totalQuestionsId}
 										type="number"
 										placeholder="e.g., 20"
 										defaultValue="20"
@@ -185,9 +190,9 @@ export default function NewTestPage() {
 									/>
 								</div>
 								<div>
-									<Label htmlFor="total-marks">Total Marks</Label>
+									<Label htmlFor={totalMarksId}>Total Marks</Label>
 									<Input
-										id="total-marks"
+										id={totalMarksId}
 										type="number"
 										placeholder="e.g., 100"
 										defaultValue="100"
@@ -195,11 +200,11 @@ export default function NewTestPage() {
 									/>
 								</div>
 								<div>
-									<Label htmlFor="evaluation-criteria">
+									<Label htmlFor={evaluationCriteriaId}>
 										Evaluation Criteria
 									</Label>
 									<Textarea
-										id="evaluation-criteria"
+										id={evaluationCriteriaId}
 										placeholder="Describe how answers should be evaluated..."
 										className="mt-2 min-h-[120px]"
 										defaultValue="Evaluate based on accuracy, completeness, and clarity of explanation."
@@ -221,7 +226,7 @@ export default function NewTestPage() {
 							<CardContent className="space-y-4">
 								<div>
 									<Label>Answer Key (PDF)</Label>
-									<div className="mt-2 flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 transition-colors hover:border-muted-foreground/50">
+									<div className="mt-2 flex min-h-[200px] cursor-pointer items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed bg-muted/50 transition-colors hover:border-muted-foreground/50">
 										<div className="text-center">
 											<UploadIcon className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
 											<p className="text-muted-foreground text-sm">
@@ -237,11 +242,11 @@ export default function NewTestPage() {
 									</div>
 								</div>
 								<div>
-									<Label htmlFor="additional-notes">
+									<Label htmlFor={additionalNotesId}>
 										Additional Notes (Optional)
 									</Label>
 									<Textarea
-										id="additional-notes"
+										id={additionalNotesId}
 										placeholder="Any special instructions for the evaluator..."
 										className="mt-2 min-h-[100px]"
 									/>
