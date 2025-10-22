@@ -1,0 +1,150 @@
+name: 🚩 CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security_checks:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🔍 Audit Dependencies
+        run: npm audit --audit-level=high
+
+      - name: 🛡️ Check for Known Vulnerabilities
+        run: npx audit-ci --high
+
+  lint_checks:
+    name: 🔍 Validate
+    runs-on: ubuntu-latest
+    needs: [security_checks]
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🏞️ Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: 🧹 Lint & Format Check
+        run: |
+          biome ci .
+
+  run_unit_tests:
+    name: 🧪 Unit Test
+    runs-on: ubuntu-latest
+    needs: [security_checks, lint_checks]
+
+    environment: test
+
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+      NEXT_PUBLIC_API_URL: ${{vars.NEXT_PUBLIC_API_URL}}
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-
+
+      - name: 📥 Install Dependencies
+        run: npm ci
+
+      - name: 🔧 Verify Rollup Installation
+        run: |
+          # Check if rollup native bindings are installed
+          if [ ! -d "node_modules/@rollup/rollup-linux-x64-gnu" ]; then
+            echo "Installing rollup native bindings..."
+            npm install --no-save @rollup/rollup-linux-x64-gnu
+          fi
+
+      - name: 🧪 Run Tests
+        run: npm run test
+
+  run_build_tests:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: [security_checks, lint_checks]
+
+    environment: test
+
+    env:
+      NODE_ENV: test
+      NEXT_PUBLIC_BASE_URL: ${{ vars.NEXT_PUBLIC_BASE_URL }}
+      NEXT_PUBLIC_API_URL: ${{vars.NEXT_PUBLIC_API_URL}}
+
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v5
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 📦 Restore Turborepo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+            **/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-turbo-
+
+      - name: 📥 Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: 🏗️ Build Applications
+        run: npm run build
