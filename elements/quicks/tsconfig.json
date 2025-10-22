@@ -4,6 +4,8 @@
 		"baseUrl": ".",
 		"outDir": "dist",
 		"rootDir": "src",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
 		"plugins": [
 			{
 				"name": "next"
