@@ -1,1 +1,1 @@
-export type { QuickTest, TestStatus } from "./test";
+export type { QuickTest } from "./test";

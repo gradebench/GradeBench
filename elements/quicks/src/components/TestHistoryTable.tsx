@@ -8,14 +8,6 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@gb/ui/components/ui/pagination";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@gb/ui/components/ui/table";
 
 import type { QuickTest } from "../types/test";
 import { TestStatusBadge } from "./TestStatusBadge";
@@ -35,82 +27,72 @@ export function TestHistoryTable({
 }: TestHistoryTableProps) {
 	return (
 		<div className="space-y-4">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Test Name</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Questions</TableHead>
-						<TableHead>Score</TableHead>
-						<TableHead>Created</TableHead>
-						<TableHead>Actions</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
+			{tests.length === 0 ? (
+				<div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-16 text-center">
+					<div className="mb-4 text-6xl">📝</div>
+					<h3 className="mb-2 font-semibold text-lg">No tests yet</h3>
+					<p className="text-muted-foreground text-sm">
+						Create your first test to get started
+					</p>
+				</div>
+			) : (
+				<div className="space-y-2">
 					{tests.map((test) => (
-						<TableRow key={test.id}>
-							<TableCell className="font-medium">{test.name}</TableCell>
-							<TableCell>
-								<TestStatusBadge status={test.status} />
-							</TableCell>
-							<TableCell>
-								{test.totalQuestions
-									? `${test.evaluatedQuestions || 0}/${test.totalQuestions}`
-									: "-"}
-							</TableCell>
-							<TableCell>{test.score ? `${test.score}%` : "-"}</TableCell>
-							<TableCell>
-								{new Date(test.createdAt).toLocaleDateString("en-US")}
-							</TableCell>
-							<TableCell>
-								<a
-									href={`/quicks/${test.id}/results`}
-									className="text-primary text-sm hover:underline"
-								>
-									View
-								</a>
-							</TableCell>
-						</TableRow>
+						<a
+							key={test.id}
+							href={`/quicks/tests/${test.id}/report`}
+							className="flex items-center justify-between rounded-lg border p-4"
+						>
+							<div className="font-medium">{test.name}</div>
+							<TestStatusBadge status={test.status} />
+						</a>
 					))}
-				</TableBody>
-			</Table>
+				</div>
+			)}
 			{totalPages > 1 && (
-				<Pagination>
-					<PaginationContent>
-						<PaginationItem>
-							<PaginationPrevious
-								href="#"
-								onClick={(e: React.MouseEvent) => {
-									e.preventDefault();
-									if (currentPage > 1) onPageChange(currentPage - 1);
-								}}
-							/>
-						</PaginationItem>
-						{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-							<PaginationItem key={page}>
-								<PaginationLink
+				<div className="flex items-center justify-between border-t pt-4">
+					<p className="text-muted-foreground text-sm">
+						Page {currentPage} of {totalPages}
+					</p>
+					<Pagination>
+						<PaginationContent>
+							<PaginationItem>
+								<PaginationPrevious
 									href="#"
-									isActive={page === currentPage}
 									onClick={(e: React.MouseEvent) => {
 										e.preventDefault();
-										onPageChange(page);
+										if (currentPage > 1) onPageChange(currentPage - 1);
 									}}
-								>
-									{page}
-								</PaginationLink>
+								/>
 							</PaginationItem>
-						))}
-						<PaginationItem>
-							<PaginationNext
-								href="#"
-								onClick={(e: React.MouseEvent) => {
-									e.preventDefault();
-									if (currentPage < totalPages) onPageChange(currentPage + 1);
-								}}
-							/>
-						</PaginationItem>
-					</PaginationContent>
-				</Pagination>
+							{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+								(page) => (
+									<PaginationItem key={page}>
+										<PaginationLink
+											href="#"
+											isActive={page === currentPage}
+											onClick={(e: React.MouseEvent) => {
+												e.preventDefault();
+												onPageChange(page);
+											}}
+										>
+											{page}
+										</PaginationLink>
+									</PaginationItem>
+								),
+							)}
+							<PaginationItem>
+								<PaginationNext
+									href="#"
+									onClick={(e: React.MouseEvent) => {
+										e.preventDefault();
+										if (currentPage < totalPages) onPageChange(currentPage + 1);
+									}}
+								/>
+							</PaginationItem>
+						</PaginationContent>
+					</Pagination>
+				</div>
 			)}
 		</div>
 	);

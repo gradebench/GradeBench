@@ -8,12 +8,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@gb/ui/components/ui/card";
+import { CreateTestDrawer } from "@gb-element/quicks/components/CreateTestDrawer";
 import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
 import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import { TestHistoryTable } from "@gb-element/quicks/components/TestHistoryTable";
 import type { QuickTest } from "@gb-element/quicks/types/test";
 import { PlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // Mock data - replace with API call
@@ -58,13 +58,72 @@ const mockTests: QuickTest[] = [
 		totalQuestions: 12,
 		createdAt: "2025-10-22T08:00:00Z",
 	},
+	{
+		id: "6",
+		name: "Biology - Cell Structure",
+		status: "completed",
+		totalQuestions: 18,
+		evaluatedQuestions: 18,
+		score: 78,
+		createdAt: "2025-10-14T11:00:00Z",
+	},
+	{
+		id: "7",
+		name: "Geography - Maps & Locations",
+		status: "evaluating",
+		totalQuestions: 22,
+		evaluatedQuestions: 15,
+		createdAt: "2025-10-19T13:30:00Z",
+	},
+	{
+		id: "8",
+		name: "Computer Science - Algorithms",
+		status: "completed",
+		totalQuestions: 30,
+		evaluatedQuestions: 30,
+		score: 95,
+		createdAt: "2025-10-12T09:00:00Z",
+	},
+	{
+		id: "9",
+		name: "Economics - Microeconomics",
+		status: "draft",
+		totalQuestions: 20,
+		createdAt: "2025-10-21T15:00:00Z",
+	},
+	{
+		id: "10",
+		name: "Literature - Shakespeare",
+		status: "completed",
+		totalQuestions: 15,
+		evaluatedQuestions: 15,
+		score: 88,
+		createdAt: "2025-10-13T10:15:00Z",
+	},
+	{
+		id: "11",
+		name: "Physics - Mechanics",
+		status: "evaluating",
+		totalQuestions: 25,
+		evaluatedQuestions: 18,
+		createdAt: "2025-10-20T16:00:00Z",
+	},
+	{
+		id: "12",
+		name: "Art History - Renaissance",
+		status: "completed",
+		totalQuestions: 20,
+		evaluatedQuestions: 20,
+		score: 82,
+		createdAt: "2025-10-11T14:30:00Z",
+	},
 ];
 
 const ITEMS_PER_PAGE = 5;
 
 export default function QuicksDashboard() {
-	const router = useRouter();
 	const [currentPage, setCurrentPage] = useState(1);
+	const [drawerOpen, setDrawerOpen] = useState(false);
 
 	const totalPages = Math.ceil(mockTests.length / ITEMS_PER_PAGE);
 	const paginatedTests = mockTests.slice(
@@ -82,10 +141,9 @@ export default function QuicksDashboard() {
 	return (
 		<FeatureGuard>
 			<DashboardLayout
-				title="Quick Tests Dashboard"
-				description="Manage and monitor your test evaluations"
+				title=""
 				action={
-					<Button onClick={() => router.push("/quicks/new")}>
+					<Button onClick={() => setDrawerOpen(true)}>
 						<PlusIcon className="mr-2 h-4 w-4" />
 						Create New Test
 					</Button>
@@ -144,6 +202,8 @@ export default function QuicksDashboard() {
 						</CardContent>
 					</Card>
 				</div>
+
+				<CreateTestDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
 			</DashboardLayout>
 		</FeatureGuard>
 	);
