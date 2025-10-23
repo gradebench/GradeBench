@@ -42,6 +42,9 @@ export function CreateTestDrawer({
 		toast.success("Test question paper uploaded successfully");
 		onOpenChange(false);
 		setUploadedFiles([]);
+		// Redirect to test creation page
+		const newTestId = `test-${Date.now()}`;
+		window.location.href = `/quicks/tests/${newTestId}`;
 	};
 
 	return (
