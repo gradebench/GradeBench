@@ -60,6 +60,7 @@
 	},
 	"formatter": {
 		"enabled": true,
+		"formatWithErrors": true,
 		"includes": [
 			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		]
@@ -92,6 +93,10 @@
 		}
 	},
 	"css": {
+		"parser": {
+			"cssModules": false,
+			"allowWrongLineComments": false
+		},
 		"formatter": {
 			"enabled": true
 		},
