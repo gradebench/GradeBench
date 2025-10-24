@@ -44,6 +44,25 @@ export interface TestQuestion {
 	mandatory: boolean;
 }
 
+export interface QuestionPaper {
+	id: string; // uuid
+	raw_file_name?: string | null;
+	raw_data_url: string;
+	digitized_data_url?: string | null;
+
+	subject?: string | null;
+	exam_type?: string | null;
+	total_marks?: number | null;
+	duration_minutes?: number | null;
+	academic_year?: string | null;
+	grade_level?: string | null;
+	institution?: string | null;
+	instructions?: string[] | null;
+
+	updated_at?: string | null; // ISO timestamp
+	created_at?: string | null; // ISO timestamp
+}
+
 export interface TestBasicInfo {
 	testId: string;
 	title: string;
@@ -55,6 +74,8 @@ export interface TestBasicInfo {
 	duration: number; // in minutes
 	description?: string;
 	instructions?: string;
+	/** Optional list of associated question papers (uploaded files and metadata) */
+	questionPapers?: QuestionPaper[];
 	createdAt: string;
 	updatedAt?: string;
 }

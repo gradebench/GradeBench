@@ -33,7 +33,6 @@ import type {
 	TestQuestion,
 } from "@gb-element/quicks/types/test-creation";
 import {
-	AlertCircleIcon,
 	ArrowLeftIcon,
 	ArrowRightIcon,
 	CheckCircleIcon,
@@ -42,6 +41,7 @@ import {
 	SettingsIcon,
 	SparklesIcon,
 	TrashIcon,
+	XIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useId, useState } from "react";
@@ -49,30 +49,23 @@ import { useId, useState } from "react";
 const STEPS = [
 	{
 		id: 1,
-		title: "Test Details",
+		title: "Test Setup",
 		icon: FileTextIcon,
-		description: "Basic test information",
+		description: "Test details & question papers",
 	},
 	{
 		id: 2,
-		title: "Questions",
-		icon: PlusIcon,
-		description: "Add test questions",
-	},
-	{
-		id: 3,
 		title: "Evaluator Config",
 		icon: SettingsIcon,
 		description: "Configure evaluation",
 	},
 	{
-		id: 4,
+		id: 3,
 		title: "Model Answers",
 		icon: SparklesIcon,
 		description: "Generate key answers",
 	},
 ];
-
 const EXAM_CATEGORIES: { value: ExamCategory; label: string }[] = [
 	{ value: "upsc", label: "UPSC" },
 	{ value: "engineering", label: "Engineering" },
@@ -104,6 +97,48 @@ const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 	{ value: "true_false", label: "True/False" },
 ];
 
+// Mock pre-fetched questions from uploaded paper
+const MOCK_FETCHED_QUESTIONS: TestQuestion[] = [
+	{
+		id: "q1",
+		questionNumber: 1,
+		questionText:
+			"Explain the significance of the Magna Carta in the development of constitutional law.",
+		questionType: "long_answer",
+		marks: 15,
+		wordLimit: 250,
+		mandatory: true,
+	},
+	{
+		id: "q2",
+		questionNumber: 2,
+		questionText:
+			"Discuss the role of the French Revolution in shaping modern European politics.",
+		questionType: "essay",
+		marks: 20,
+		wordLimit: 400,
+		mandatory: true,
+	},
+	{
+		id: "q3",
+		questionNumber: 3,
+		questionText: "What were the main causes of World War I?",
+		questionType: "short_answer",
+		marks: 10,
+		wordLimit: 150,
+		mandatory: true,
+	},
+	{
+		id: "q4",
+		questionNumber: 4,
+		questionText: "Analyze the impact of colonialism on African economies.",
+		questionType: "long_answer",
+		marks: 15,
+		wordLimit: 300,
+		mandatory: true,
+	},
+];
+
 export default function TestCreationPage() {
 	const router = useRouter();
 	const params = useParams();
@@ -120,6 +155,10 @@ export default function TestCreationPage() {
 	const _totalMarksId = useId();
 	const durationId = useId();
 	const descriptionId = useId();
+	const academicYearId = useId();
+	const gradeLevelId = useId();
+	const institutionId = useId();
+	const instructionsId = useId();
 
 	// Test Basic Info State
 	const [basicInfo, setBasicInfo] = useState<Partial<TestBasicInfo>>({
@@ -127,20 +166,37 @@ export default function TestCreationPage() {
 		title: "",
 		category: "upsc",
 		subject: "",
-		totalMarks: 0,
-		totalQuestions: 0,
+		totalMarks: 60, // Pre-calculated from fetched questions
+		totalQuestions: 4, // From fetched questions
 		duration: 180,
 		description: "",
 		instructions: "",
+		questionPapers: [],
 		createdAt: new Date().toISOString(),
 	});
 
-	// Questions State
-	const [questions, setQuestions] = useState<TestQuestion[]>([]);
+	// Additional metadata state
+	const [academicYear, setAcademicYear] = useState("2024-2025");
+	const [gradeLevel, setGradeLevel] = useState("Grade 12");
+	const [institution, setInstitution] = useState(
+		"Central Board of Secondary Education",
+	);
+	const [additionalInstructions, setAdditionalInstructions] = useState<
+		string[]
+	>([
+		"Answer all questions",
+		"Use black or blue pen only",
+		"Draw diagrams wherever necessary",
+	]);
+
+	// Questions State - Initialize with fetched questions
+	const [questions, setQuestions] = useState<TestQuestion[]>(
+		MOCK_FETCHED_QUESTIONS,
+	);
 	const [currentQuestion, setCurrentQuestion] = useState<Partial<TestQuestion>>(
 		{
 			id: crypto.randomUUID(),
-			questionNumber: 1,
+			questionNumber: 5,
 			questionText: "",
 			questionType: "short_answer",
 			marks: 10,
@@ -157,11 +213,11 @@ export default function TestCreationPage() {
 	const [modelAnswers, setModelAnswers] = useState<ModelAnswer[]>([]);
 
 	const handleNext = () => {
-		if (currentStep === 4) {
+		if (currentStep === 3) {
 			// Final step - generate rubrics and navigate
 			handleFinalize();
 		} else {
-			setCurrentStep((prev) => Math.min(prev + 1, 4));
+			setCurrentStep((prev) => Math.min(prev + 1, 3));
 		}
 	};
 
@@ -234,19 +290,21 @@ export default function TestCreationPage() {
 	const canProceed = () => {
 		switch (currentStep) {
 			case 1:
-				return basicInfo.title && basicInfo.category && basicInfo.subject;
+				return (
+					basicInfo.title &&
+					basicInfo.category &&
+					basicInfo.subject &&
+					questions.length > 0
+				);
 			case 2:
-				return questions.length > 0;
-			case 3:
 				return true; // Evaluator config is optional
-			case 4:
+			case 3:
 				return true; // Model answers can be empty
 			default:
 				return false;
 		}
 	};
-
-	const progressPercentage = (currentStep / 4) * 100;
+	const progressPercentage = (currentStep / 3) * 100;
 
 	return (
 		<FeatureGuard>
@@ -312,305 +370,428 @@ export default function TestCreationPage() {
 						</CardContent>
 					</Card>
 
-					{/* Step 1: Test Details */}
+					{/* Step 1: Test Setup (Test Details + Pre-fetched Questions) */}
 					{currentStep === 1 && (
-						<Card>
-							<CardHeader>
-								<CardTitle>Test Details</CardTitle>
-								<CardDescription>
-									Enter the basic information about your test
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-									<div className="space-y-2">
-										<Label htmlFor={titleId}>Test Title *</Label>
-										<Input
-											id={titleId}
-											placeholder="e.g., UPSC Civil Services 2025 - GS Paper 1"
-											value={basicInfo.title}
-											onChange={(e) =>
-												setBasicInfo({ ...basicInfo, title: e.target.value })
-											}
-										/>
-									</div>
+						<div className="space-y-6">
+							{/* Basic Test Information */}
+							<Card className="border-blue-600/20 bg-slate-950">
+								<CardHeader>
+									<CardTitle className="text-blue-400">Test Details</CardTitle>
+									<CardDescription className="text-slate-400">
+										Enter the basic information about your test
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+										<div className="space-y-2">
+											<Label htmlFor={titleId} className="text-slate-200">
+												Test Title *
+											</Label>
+											<Input
+												id={titleId}
+												placeholder="e.g., UPSC Civil Services 2025 - GS Paper 1"
+												value={basicInfo.title}
+												onChange={(e) =>
+													setBasicInfo({ ...basicInfo, title: e.target.value })
+												}
+												className="border-blue-600/30 bg-slate-900 text-slate-100"
+											/>
+										</div>
 
-									<div className="space-y-2">
-										<Label htmlFor={categoryId}>Category *</Label>
-										<Select
-											value={basicInfo.category}
-											onValueChange={(value: ExamCategory) =>
-												setBasicInfo({ ...basicInfo, category: value })
-											}
-										>
-											<SelectTrigger id={categoryId}>
-												<SelectValue placeholder="Select category" />
-											</SelectTrigger>
-											<SelectContent>
-												{EXAM_CATEGORIES.map((cat) => (
-													<SelectItem key={cat.value} value={cat.value}>
-														{cat.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-
-									<div className="space-y-2">
-										<Label htmlFor={subjectId}>Subject *</Label>
-										{basicInfo.category === "upsc" ? (
+										<div className="space-y-2">
+											<Label htmlFor={categoryId} className="text-slate-200">
+												Category *
+											</Label>
 											<Select
-												value={basicInfo.subject}
-												onValueChange={(value) =>
-													setBasicInfo({ ...basicInfo, subject: value })
+												value={basicInfo.category}
+												onValueChange={(value: ExamCategory) =>
+													setBasicInfo({ ...basicInfo, category: value })
 												}
 											>
-												<SelectTrigger id={subjectId}>
-													<SelectValue placeholder="Select subject" />
+												<SelectTrigger
+													id={categoryId}
+													className="border-blue-600/30 bg-slate-900 text-slate-100"
+												>
+													<SelectValue placeholder="Select category" />
 												</SelectTrigger>
-												<SelectContent>
-													{UPSC_SUBJECTS.map((subj) => (
-														<SelectItem key={subj.value} value={subj.value}>
-															{subj.label}
+												<SelectContent className="border-blue-600/30 bg-slate-900">
+													{EXAM_CATEGORIES.map((cat) => (
+														<SelectItem
+															key={cat.value}
+															value={cat.value}
+															className="text-slate-100 focus:bg-blue-600/20"
+														>
+															{cat.label}
 														</SelectItem>
 													))}
 												</SelectContent>
 											</Select>
-										) : (
+										</div>
+
+										<div className="space-y-2">
+											<Label htmlFor={subjectId} className="text-slate-200">
+												Subject *
+											</Label>
+											{basicInfo.category === "upsc" ? (
+												<Select
+													value={basicInfo.subject}
+													onValueChange={(value) =>
+														setBasicInfo({ ...basicInfo, subject: value })
+													}
+												>
+													<SelectTrigger
+														id={subjectId}
+														className="border-blue-600/30 bg-slate-900 text-slate-100"
+													>
+														<SelectValue placeholder="Select subject" />
+													</SelectTrigger>
+													<SelectContent className="border-blue-600/30 bg-slate-900">
+														{UPSC_SUBJECTS.map((subj) => (
+															<SelectItem
+																key={subj.value}
+																value={subj.value}
+																className="text-slate-100 focus:bg-blue-600/20"
+															>
+																{subj.label}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											) : (
+												<Input
+													id={subjectId}
+													placeholder="Enter subject name"
+													value={basicInfo.subject}
+													onChange={(e) =>
+														setBasicInfo({
+															...basicInfo,
+															subject: e.target.value,
+														})
+													}
+													className="border-blue-600/30 bg-slate-900 text-slate-100"
+												/>
+											)}
+										</div>
+
+										<div className="space-y-2">
+											<Label htmlFor={durationId} className="text-slate-200">
+												Duration (minutes)
+											</Label>
 											<Input
-												id={subjectId}
-												placeholder="Enter subject name"
-												value={basicInfo.subject}
+												id={durationId}
+												type="number"
+												placeholder="180"
+												value={basicInfo.duration || ""}
 												onChange={(e) =>
 													setBasicInfo({
 														...basicInfo,
-														subject: e.target.value,
+														duration: parseInt(e.target.value, 10) || 0,
 													})
 												}
+												className="border-blue-600/30 bg-slate-900 text-slate-100"
 											/>
-										)}
+										</div>
+
+										<div className="space-y-2">
+											<Label
+												htmlFor={academicYearId}
+												className="text-slate-200"
+											>
+												Academic Year
+											</Label>
+											<Input
+												id={academicYearId}
+												placeholder="e.g., 2024-2025"
+												value={academicYear}
+												onChange={(e) => setAcademicYear(e.target.value)}
+												className="border-blue-600/30 bg-slate-900 text-slate-100"
+											/>
+										</div>
+
+										<div className="space-y-2">
+											<Label htmlFor={gradeLevelId} className="text-slate-200">
+												Grade Level
+											</Label>
+											<Input
+												id={gradeLevelId}
+												placeholder="e.g., Grade 12"
+												value={gradeLevel}
+												onChange={(e) => setGradeLevel(e.target.value)}
+												className="border-blue-600/30 bg-slate-900 text-slate-100"
+											/>
+										</div>
+
+										<div className="space-y-2 md:col-span-2">
+											<Label htmlFor={institutionId} className="text-slate-200">
+												Institution
+											</Label>
+											<Input
+												id={institutionId}
+												placeholder="e.g., Central Board of Secondary Education"
+												value={institution}
+												onChange={(e) => setInstitution(e.target.value)}
+												className="border-blue-600/30 bg-slate-900 text-slate-100"
+											/>
+										</div>
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor={durationId}>Duration (minutes)</Label>
-										<Input
-											id={durationId}
-											type="number"
-											placeholder="180"
-											value={basicInfo.duration || ""}
+										<Label htmlFor={descriptionId} className="text-slate-200">
+											Description (Optional)
+										</Label>
+										<Textarea
+											id={descriptionId}
+											placeholder="Brief description of the test..."
+											value={basicInfo.description}
 											onChange={(e) =>
 												setBasicInfo({
 													...basicInfo,
-													duration: parseInt(e.target.value, 10) || 0,
+													description: e.target.value,
 												})
 											}
+											rows={3}
+											className="border-blue-600/30 bg-slate-900 text-slate-100"
 										/>
 									</div>
-								</div>
 
-								<div className="space-y-2">
-									<Label htmlFor={descriptionId}>Description (Optional)</Label>
-									<Textarea
-										id={descriptionId}
-										placeholder="Brief description of the test..."
-										value={basicInfo.description}
-										onChange={(e) =>
-											setBasicInfo({
-												...basicInfo,
-												description: e.target.value,
-											})
-										}
-										rows={3}
-									/>
-								</div>
-
-								<div className="rounded-lg border bg-blue-50 p-4">
-									<div className="flex items-start gap-3">
-										<AlertCircleIcon className="h-5 w-5 text-blue-600" />
-										<div className="text-sm">
-											<p className="font-medium text-blue-900">Note:</p>
-											<p className="text-blue-700">
-												Total marks and question count will be automatically
-												calculated as you add questions in the next step.
-											</p>
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					)}
-
-					{/* Step 2: Questions */}
-					{currentStep === 2 && (
-						<div className="space-y-4">
-							{/* Current Test Summary */}
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center justify-between">
-										<span>Questions for: {basicInfo.title}</span>
-										<div className="flex gap-4 text-sm">
-											<Badge variant="outline">
-												Total: {questions.length} Questions
-											</Badge>
-											<Badge variant="outline">
-												{basicInfo.totalMarks} Marks
-											</Badge>
-										</div>
-									</CardTitle>
-								</CardHeader>
-							</Card>
-
-							{/* Add Question Form */}
-							<Card>
-								<CardHeader>
-									<CardTitle>Add New Question</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4">
 									<div className="space-y-2">
-										<Label>Question Text *</Label>
-										<Textarea
-											placeholder="Enter the question..."
-											value={currentQuestion.questionText}
-											onChange={(e) =>
-												setCurrentQuestion({
-													...currentQuestion,
-													questionText: e.target.value,
-												})
-											}
-											rows={4}
-										/>
-									</div>
-
-									<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+										<Label htmlFor={instructionsId} className="text-slate-200">
+											Instructions
+										</Label>
 										<div className="space-y-2">
-											<Label>Question Type</Label>
-											<Select
-												value={currentQuestion.questionType}
-												onValueChange={(value: QuestionType) =>
-													setCurrentQuestion({
-														...currentQuestion,
-														questionType: value,
-													})
-												}
-											>
-												<SelectTrigger>
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													{QUESTION_TYPES.map((type) => (
-														<SelectItem key={type.value} value={type.value}>
-															{type.label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-
-										<div className="space-y-2">
-											<Label>Marks *</Label>
-											<Input
-												type="number"
-												placeholder="10"
-												value={currentQuestion.marks || ""}
-												onChange={(e) =>
-													setCurrentQuestion({
-														...currentQuestion,
-														marks: parseInt(e.target.value, 10) || 0,
-													})
-												}
-											/>
-										</div>
-
-										<div className="space-y-2">
-											<Label>Word Limit</Label>
-											<Input
-												type="number"
-												placeholder="200"
-												value={currentQuestion.wordLimit || ""}
-												onChange={(e) =>
-													setCurrentQuestion({
-														...currentQuestion,
-														wordLimit:
-															parseInt(e.target.value, 10) || undefined,
-													})
-												}
-											/>
-										</div>
-									</div>
-
-									<Button onClick={handleAddQuestion} className="w-full">
-										<PlusIcon className="mr-2 h-4 w-4" />
-										Add Question
-									</Button>
-								</CardContent>
-							</Card>
-
-							{/* Questions List */}
-							{questions.length > 0 && (
-								<Card>
-									<CardHeader>
-										<CardTitle>Added Questions ({questions.length})</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<div className="space-y-3">
-											{questions.map((q) => (
+											{additionalInstructions.map((instruction, idx) => (
 												<div
-													key={q.id}
-													className="flex items-start justify-between rounded-lg border p-4"
+													key={idx}
+													className="flex items-center gap-2 rounded-md border border-blue-600/20 bg-slate-900 px-3 py-2"
 												>
-													<div className="flex-1">
-														<div className="flex items-start gap-3">
-															<Badge variant="secondary">
-																Q{q.questionNumber}
-															</Badge>
-															<div className="flex-1">
-																<p className="font-medium">{q.questionText}</p>
-																<div className="mt-2 flex gap-2 text-sm">
-																	<Badge variant="outline">
-																		{q.marks} marks
-																	</Badge>
-																	<Badge variant="outline">
-																		{
-																			QUESTION_TYPES.find(
-																				(t) => t.value === q.questionType,
-																			)?.label
-																		}
-																	</Badge>
-																	{q.wordLimit && (
-																		<Badge variant="outline">
-																			{q.wordLimit} words
-																		</Badge>
-																	)}
-																</div>
-															</div>
-														</div>
-													</div>
+													<span className="flex-1 text-slate-100 text-sm">
+														{instruction}
+													</span>
 													<Button
 														variant="ghost"
 														size="sm"
-														onClick={() => handleRemoveQuestion(q.id)}
+														onClick={() => {
+															setAdditionalInstructions(
+																additionalInstructions.filter(
+																	(_, i) => i !== idx,
+																),
+															);
+														}}
+														className="h-6 w-6 p-0 text-slate-400 hover:text-red-400"
 													>
-														<TrashIcon className="h-4 w-4 text-red-500" />
+														<XIcon className="h-4 w-4" />
 													</Button>
 												</div>
 											))}
 										</div>
-									</CardContent>
-								</Card>
-							)}
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Pre-fetched Questions from Uploaded Paper */}
+							<Card className="border-blue-600/20 bg-slate-950">
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2 text-blue-400">
+										<FileTextIcon className="h-5 w-5" />
+										<span>Questions from Uploaded Paper</span>
+									</CardTitle>
+									<CardDescription className="text-slate-400">
+										{questions.length} questions detected •{" "}
+										{basicInfo.totalMarks} total marks
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-3">
+									{questions.map((q) => (
+										<div
+											key={q.id}
+											className="rounded-lg border border-blue-600/20 bg-slate-900 p-4 transition-colors hover:border-blue-600/40"
+										>
+											<div className="flex items-start justify-between gap-4">
+												<div className="flex-1 space-y-2">
+													<div className="flex items-start gap-3">
+														<Badge
+															variant="outline"
+															className="mt-0.5 border-blue-600/30 bg-blue-600/10 text-blue-400"
+														>
+															Q{q.questionNumber}
+														</Badge>
+														<div className="flex-1">
+															<p className="font-medium text-slate-100 leading-relaxed">
+																{q.questionText}
+															</p>
+															<div className="mt-3 flex flex-wrap gap-2">
+																<Badge
+																	variant="secondary"
+																	className="border-slate-700 bg-slate-800 text-slate-300"
+																>
+																	{
+																		QUESTION_TYPES.find(
+																			(t) => t.value === q.questionType,
+																		)?.label
+																	}
+																</Badge>
+																<Badge
+																	variant="secondary"
+																	className="border-slate-700 bg-slate-800 text-slate-300"
+																>
+																	{q.marks} marks
+																</Badge>
+																{q.wordLimit && (
+																	<Badge
+																		variant="secondary"
+																		className="border-slate-700 bg-slate-800 text-slate-300"
+																	>
+																		≤ {q.wordLimit} words
+																	</Badge>
+																)}
+															</div>
+														</div>
+													</div>
+												</div>
+												<Button
+													variant="ghost"
+													size="sm"
+													onClick={() => handleRemoveQuestion(q.id)}
+													className="text-slate-400 hover:text-red-400"
+												>
+													<TrashIcon className="h-4 w-4" />
+												</Button>
+											</div>
+										</div>
+									))}
+								</CardContent>
+							</Card>
+
+							{/* Manual Question Addition */}
+							<Card className="border-blue-600/20 bg-slate-950">
+								<CardHeader>
+									<CardTitle className="text-blue-400">
+										Add More Questions (Optional)
+									</CardTitle>
+									<CardDescription className="text-slate-400">
+										Add additional questions manually
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{/* Add New Question Form */}
+									<div className="space-y-4 rounded-lg border border-blue-600/20 bg-slate-900 p-4">
+										<h4 className="font-semibold text-blue-400 text-sm">
+											Add New Question
+										</h4>
+										<div className="space-y-3">
+											<div className="space-y-2">
+												<Label className="text-slate-200 text-sm">
+													Question Text *
+												</Label>
+												<Textarea
+													placeholder="Enter the question..."
+													value={currentQuestion.questionText}
+													onChange={(e) =>
+														setCurrentQuestion({
+															...currentQuestion,
+															questionText: e.target.value,
+														})
+													}
+													rows={2}
+													className="border-blue-600/30 bg-slate-800 text-slate-100"
+												/>
+											</div>
+
+											<div className="grid grid-cols-3 gap-3">
+												<div className="space-y-2">
+													<Label className="text-slate-200 text-sm">Type</Label>
+													<Select
+														value={currentQuestion.questionType}
+														onValueChange={(value: QuestionType) =>
+															setCurrentQuestion({
+																...currentQuestion,
+																questionType: value,
+															})
+														}
+													>
+														<SelectTrigger className="border-blue-600/30 bg-slate-800 text-slate-100">
+															<SelectValue />
+														</SelectTrigger>
+														<SelectContent className="border-blue-600/30 bg-slate-900">
+															{QUESTION_TYPES.map((type) => (
+																<SelectItem
+																	key={type.value}
+																	value={type.value}
+																	className="text-slate-100 focus:bg-blue-600/20"
+																>
+																	{type.label}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+												</div>
+
+												<div className="space-y-2">
+													<Label className="text-slate-200 text-sm">
+														Marks *
+													</Label>
+													<Input
+														type="number"
+														placeholder="10"
+														value={currentQuestion.marks || ""}
+														onChange={(e) =>
+															setCurrentQuestion({
+																...currentQuestion,
+																marks: parseInt(e.target.value, 10) || 0,
+															})
+														}
+														className="border-blue-600/30 bg-slate-800 text-slate-100"
+													/>
+												</div>
+
+												<div className="space-y-2">
+													<Label className="text-slate-200 text-sm">
+														Word Limit
+													</Label>
+													<Input
+														type="number"
+														placeholder="200"
+														value={currentQuestion.wordLimit || ""}
+														onChange={(e) =>
+															setCurrentQuestion({
+																...currentQuestion,
+																wordLimit:
+																	parseInt(e.target.value, 10) || undefined,
+															})
+														}
+														className="border-blue-600/30 bg-slate-800 text-slate-100"
+													/>
+												</div>
+											</div>
+
+											<Button
+												onClick={handleAddQuestion}
+												disabled={
+													!currentQuestion.questionText ||
+													!currentQuestion.marks
+												}
+												className="w-full bg-blue-600 hover:bg-blue-700"
+											>
+												<PlusIcon className="mr-2 h-4 w-4" />
+												Add Question
+											</Button>
+										</div>
+									</div>
+								</CardContent>
+							</Card>
 						</div>
 					)}
 
-					{/* Step 3: Evaluator Configuration */}
-					{currentStep === 3 && (
+					{/* Step 2: Evaluator Config (previously Step 3) */}
+					{currentStep === 2 && (
 						<EvaluatorConfigPanel
 							config={evaluatorConfig}
 							onChange={setEvaluatorConfig}
 						/>
 					)}
 
-					{/* Step 4: Model Answers */}
-					{currentStep === 4 && (
+					{/* Step 3: Model Answers (previously Step 4) */}
+					{currentStep === 3 && (
 						<ModelAnswerGenerator
 							questions={questions}
 							isGenerating={isGeneratingAnswers}
@@ -627,8 +808,8 @@ export default function TestCreationPage() {
 							{currentStep === 1 ? "Cancel" : "Back"}
 						</Button>
 						<Button onClick={handleNext} disabled={!canProceed()}>
-							{currentStep === 4 ? "Generate Rubrics & Complete" : "Next"}
-							{currentStep < 4 && <ArrowRightIcon className="ml-2 h-4 w-4" />}
+							{currentStep === 3 ? "Generate Rubrics & Complete" : "Next"}
+							{currentStep < 3 && <ArrowRightIcon className="ml-2 h-4 w-4" />}
 						</Button>
 					</div>
 				</div>

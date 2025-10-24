@@ -9,6 +9,7 @@ export type { QuickTest } from "./test";
 export type {
 	ExamCategory,
 	ModelAnswer,
+	QuestionPaper,
 	QuestionType,
 	TestBasicInfo,
 	TestQuestion,

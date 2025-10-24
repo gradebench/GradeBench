@@ -49,28 +49,30 @@ export function CreateTestDrawer({
 
 	return (
 		<Drawer open={open} onOpenChange={onOpenChange} direction="bottom">
-			<DrawerContent>
-				<DrawerHeader>
-					<DrawerTitle>Upload Question Paper</DrawerTitle>
-					<DrawerDescription>
+			<DrawerContent className="h-[85vh]">
+				<DrawerHeader className="px-8 py-6">
+					<DrawerTitle className="text-2xl">Upload Question Paper</DrawerTitle>
+					<DrawerDescription className="text-base">
 						Upload your test question papers to create a new test
 					</DrawerDescription>
 				</DrawerHeader>
 
-				<div className="flex-1 overflow-y-auto p-6">
-					<div className="mx-auto max-w-2xl space-y-4">
+				<div className="flex-1 overflow-y-auto px-8 py-6">
+					<div className="mx-auto max-w-4xl space-y-6">
 						<div>
-							<Label className="text-base">Upload Question Papers</Label>
-							<div className="mt-3 flex items-center justify-center rounded-lg border-2 border-dashed p-12">
+							<Label className="font-semibold text-lg">
+								Upload Question Papers
+							</Label>
+							<div className="mt-4 flex min-h-[400px] items-center justify-center rounded-xl border-2 border-dashed px-12 py-20">
 								<label
 									htmlFor={fileUploadId}
 									className="flex cursor-pointer flex-col items-center"
 								>
-									<UploadIcon className="mb-3 h-12 w-12 text-muted-foreground" />
-									<span className="mb-1 font-medium text-sm">
+									<UploadIcon className="mb-4 h-16 w-16 text-muted-foreground" />
+									<span className="mb-2 font-semibold text-lg">
 										Click to upload or drag and drop
 									</span>
-									<span className="text-muted-foreground text-xs">
+									<span className="text-muted-foreground text-sm">
 										PDF, PNG, JPG (max 10MB)
 									</span>
 									<input
@@ -86,23 +88,23 @@ export function CreateTestDrawer({
 						</div>
 
 						{uploadedFiles.length > 0 && (
-							<div className="space-y-3">
-								<Label className="text-base">
+							<div className="space-y-4">
+								<Label className="font-semibold text-lg">
 									Uploaded Files ({uploadedFiles.length})
 								</Label>
-								<div className="space-y-2">
+								<div className="space-y-3">
 									{uploadedFiles.map((file, index) => (
 										<div
 											key={index}
-											className="flex items-center justify-between rounded-lg border bg-muted/50 p-3"
+											className="flex items-center justify-between rounded-lg border bg-muted/50 p-4"
 										>
-											<span className="text-sm">{file.name}</span>
+											<span className="text-base">{file.name}</span>
 											<Button
 												variant="ghost"
-												size="sm"
+												size="default"
 												onClick={() => removeFile(index)}
 											>
-												<XIcon className="h-4 w-4" />
+												<XIcon className="h-5 w-5" />
 											</Button>
 										</div>
 									))}
@@ -112,16 +114,17 @@ export function CreateTestDrawer({
 					</div>
 				</div>
 
-				<DrawerFooter>
-					<div className="flex gap-2">
+				<DrawerFooter className="px-8 py-6">
+					<div className="flex gap-4">
 						<DrawerClose asChild>
-							<Button variant="outline" className="flex-1">
+							<Button variant="outline" size="lg" className="flex-1 text-base">
 								Cancel
 							</Button>
 						</DrawerClose>
 						<Button
 							onClick={handleSubmit}
-							className="flex-1"
+							size="lg"
+							className="flex-1 text-base"
 							disabled={uploadedFiles.length === 0}
 						>
 							Upload & Create Test
