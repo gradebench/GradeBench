@@ -78,7 +78,7 @@ export function EvaluatorConfigPanel({
 				<CardHeader>
 					<div className="flex items-start justify-between">
 						<div className="space-y-2">
-							<CardTitle className="flex items-center gap-2 text-blue-400 text-2xl">
+							<CardTitle className="flex items-center gap-2 text-2xl text-blue-400">
 								<SlidersIcon className="h-6 w-6" />
 								Evaluator Configuration
 							</CardTitle>
@@ -108,7 +108,9 @@ export function EvaluatorConfigPanel({
 				<CardHeader>
 					<div className="flex items-center gap-2">
 						<InfoIcon className="h-5 w-5 text-blue-400" />
-						<CardTitle className="text-blue-400">Identity & Philosophy</CardTitle>
+						<CardTitle className="text-blue-400">
+							Identity & Philosophy
+						</CardTitle>
 					</div>
 					<CardDescription className="text-slate-400">
 						Define the evaluator's identity and grading approach
@@ -140,7 +142,7 @@ export function EvaluatorConfigPanel({
 							}
 							placeholder="Describe the overall grading approach and principles..."
 							rows={4}
-							className="border-blue-600/30 bg-slate-900 text-slate-100 resize-none"
+							className="resize-none border-blue-600/30 bg-slate-900 text-slate-100"
 						/>
 					</div>
 				</CardContent>
@@ -151,7 +153,9 @@ export function EvaluatorConfigPanel({
 				<CardHeader>
 					<div className="flex items-center gap-2">
 						<AlertCircleIcon className="h-5 w-5 text-yellow-400" />
-						<CardTitle className="text-blue-400">Leniency & Strictness</CardTitle>
+						<CardTitle className="text-blue-400">
+							Leniency & Strictness
+						</CardTitle>
 					</div>
 					<CardDescription className="text-slate-400">
 						Control how strictly the evaluator grades answers
@@ -211,11 +215,18 @@ export function EvaluatorConfigPanel({
 							<div className="flex items-center justify-between">
 								<Label className="text-slate-200">Keyword Matching</Label>
 								<Badge variant="secondary" className="bg-slate-800">
-									{(localConfig.leniency.leniency_keyword_matching_threshold * 100).toFixed(0)}%
+									{(
+										localConfig.leniency.leniency_keyword_matching_threshold *
+										100
+									).toFixed(0)}
+									%
 								</Badge>
 							</div>
 							<Slider
-								value={[localConfig.leniency.leniency_keyword_matching_threshold * 100]}
+								value={[
+									localConfig.leniency.leniency_keyword_matching_threshold *
+										100,
+								]}
 								onValueChange={([value]) =>
 									updateSection("leniency", {
 										leniency_keyword_matching_threshold: value / 100,
@@ -233,13 +244,22 @@ export function EvaluatorConfigPanel({
 
 						<div className="space-y-3">
 							<div className="flex items-center justify-between">
-								<Label className="text-slate-200">Spelling/Grammar Penalty</Label>
+								<Label className="text-slate-200">
+									Spelling/Grammar Penalty
+								</Label>
 								<Badge variant="secondary" className="bg-slate-800">
-									{localConfig.leniency.leniency_spelling_grammar_penalty_percent}%
+									{
+										localConfig.leniency
+											.leniency_spelling_grammar_penalty_percent
+									}
+									%
 								</Badge>
 							</div>
 							<Slider
-								value={[localConfig.leniency.leniency_spelling_grammar_penalty_percent]}
+								value={[
+									localConfig.leniency
+										.leniency_spelling_grammar_penalty_percent,
+								]}
 								onValueChange={([value]) =>
 									updateSection("leniency", {
 										leniency_spelling_grammar_penalty_percent: value,
@@ -271,16 +291,28 @@ export function EvaluatorConfigPanel({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="none" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="none"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										None - Exact wording required
 									</SelectItem>
-									<SelectItem value="low" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="low"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Low - Minimal rewording
 									</SelectItem>
-									<SelectItem value="medium" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="medium"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Medium - Moderate rewording
 									</SelectItem>
-									<SelectItem value="high" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="high"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										High - Flexible interpretation
 									</SelectItem>
 								</SelectContent>
@@ -288,7 +320,9 @@ export function EvaluatorConfigPanel({
 						</div>
 
 						<div className="space-y-3">
-							<Label className="text-slate-200">Handwriting Interpretation</Label>
+							<Label className="text-slate-200">
+								Handwriting Interpretation
+							</Label>
 							<Select
 								value={localConfig.leniency.leniency_handwriting_interpretation}
 								onValueChange={(value: HandwritingInterpretation) =>
@@ -301,13 +335,22 @@ export function EvaluatorConfigPanel({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="strict" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="strict"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Strict
 									</SelectItem>
-									<SelectItem value="moderate" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="moderate"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Moderate
 									</SelectItem>
-									<SelectItem value="lenient" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="lenient"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Lenient
 									</SelectItem>
 								</SelectContent>
@@ -350,14 +393,17 @@ export function EvaluatorConfigPanel({
 						<>
 							<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 								<div className="space-y-1">
-									<Label className="text-slate-200">Correct Method, Wrong Answer</Label>
+									<Label className="text-slate-200">
+										Correct Method, Wrong Answer
+									</Label>
 									<p className="text-muted-foreground text-xs">
 										Award marks when method is correct but answer is wrong
 									</p>
 								</div>
 								<Switch
 									checked={
-										localConfig.partialMarking.partial_mark_for_correct_method_wrong_answer
+										localConfig.partialMarking
+											.partial_mark_for_correct_method_wrong_answer
 									}
 									onCheckedChange={(checked) =>
 										updateSection("partialMarking", {
@@ -369,13 +415,22 @@ export function EvaluatorConfigPanel({
 
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<Label className="text-slate-200">Correct Method Percentage</Label>
+									<Label className="text-slate-200">
+										Correct Method Percentage
+									</Label>
 									<Badge variant="secondary" className="bg-slate-800">
-										{localConfig.partialMarking.partial_mark_for_correct_method_percentage}%
+										{
+											localConfig.partialMarking
+												.partial_mark_for_correct_method_percentage
+										}
+										%
 									</Badge>
 								</div>
 								<Slider
-									value={[localConfig.partialMarking.partial_mark_for_correct_method_percentage]}
+									value={[
+										localConfig.partialMarking
+											.partial_mark_for_correct_method_percentage,
+									]}
 									onValueChange={([value]) =>
 										updateSection("partialMarking", {
 											partial_mark_for_correct_method_percentage: value,
@@ -422,19 +477,34 @@ export function EvaluatorConfigPanel({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="strict" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="strict"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										📋 Strict - Formal and direct
 									</SelectItem>
-									<SelectItem value="neutral" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="neutral"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										📝 Neutral - Balanced approach
 									</SelectItem>
-									<SelectItem value="encouraging" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="encouraging"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										💪 Encouraging - Positive reinforcement
 									</SelectItem>
-									<SelectItem value="balanced" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="balanced"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										⚖️ Balanced - Mix of critique and praise
 									</SelectItem>
-									<SelectItem value="mentoring" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="mentoring"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🎓 Mentoring - Guidance focused
 									</SelectItem>
 								</SelectContent>
@@ -455,16 +525,28 @@ export function EvaluatorConfigPanel({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="minimal" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="minimal"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Minimal - Brief comments
 									</SelectItem>
-									<SelectItem value="concise" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="concise"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Concise - Key points only
 									</SelectItem>
-									<SelectItem value="detailed" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="detailed"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Detailed - Thorough explanations
 									</SelectItem>
-									<SelectItem value="comprehensive" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="comprehensive"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										Comprehensive - Maximum detail
 									</SelectItem>
 								</SelectContent>
@@ -497,9 +579,22 @@ export function EvaluatorConfigPanel({
 				<AlertTitle className="text-blue-400">Configuration Summary</AlertTitle>
 				<AlertDescription className="text-slate-400">
 					<div className="mt-2 space-y-1 text-sm">
-						<p>• Leniency: <strong>{localConfig.leniency.global_leniency_level}</strong></p>
-						<p>• Partial Marking: <strong>{localConfig.partialMarking.partial_marking_enabled ? "Enabled" : "Disabled"}</strong></p>
-						<p>• Feedback Tone: <strong>{localConfig.feedback.feedback_tone}</strong></p>
+						<p>
+							• Leniency:{" "}
+							<strong>{localConfig.leniency.global_leniency_level}</strong>
+						</p>
+						<p>
+							• Partial Marking:{" "}
+							<strong>
+								{localConfig.partialMarking.partial_marking_enabled
+									? "Enabled"
+									: "Disabled"}
+							</strong>
+						</p>
+						<p>
+							• Feedback Tone:{" "}
+							<strong>{localConfig.feedback.feedback_tone}</strong>
+						</p>
 					</div>
 				</AlertDescription>
 			</Alert>
