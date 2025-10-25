@@ -97,7 +97,7 @@
 		"parser": {
 			"cssModules": false,
 			"allowWrongLineComments": false,
-			"tailwindDirectives": true
+			"tailwindDirectives": false
 		},
 		"formatter": {
 			"enabled": true
