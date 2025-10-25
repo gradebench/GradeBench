@@ -1,11 +1,2 @@
-# Ignore Tailwind CSS v4 globals file (uses directives not supported by Biome)
-
-packages/ui/src/styles/globals.css
-
-# Standard ignores
-
-node_modules
-dist
-.next
-coverage
-build
+# Ignore Tailwind CSS v4 globals file (not yet fully supported by Biome)
+**/globals.css

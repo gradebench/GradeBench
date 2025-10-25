@@ -97,16 +97,16 @@
 		"parser": {
 			"cssModules": false,
 			"allowWrongLineComments": false,
-			"tailwindDirectives": false
+			"tailwindDirectives": true
 		},
 		"formatter": {
-			"enabled": true
+			"enabled": false
 		},
 		"assist": {
-			"enabled": true
+			"enabled": false
 		},
 		"linter": {
-			"enabled": true
+			"enabled": false
 		}
 	},
 	"graphql": {
