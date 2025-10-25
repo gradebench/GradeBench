@@ -1,13 +1,9 @@
 {
-	"extends": "@gb/typescript-config/base.json",
+	"extends": "../../packages/typescript-config/base.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "dist",
-		"rootDir": "src",
-		"paths": {
-			"@/*": ["./src/*"],
-			"@gb-kits/launchpad/*": ["./src/*"]
-		}
+		"outDir": "dist"
 	},
+	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

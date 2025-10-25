@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@gb/ui/components/ui/button";
+import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/components/ui/card";
+} from "@gb/ui/src/components/ui/card";
 import { CreateTestDrawer } from "@gb-element/quicks/components/CreateTestDrawer";
 import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
 import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";

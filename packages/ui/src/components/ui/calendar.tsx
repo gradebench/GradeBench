@@ -1,7 +1,5 @@
 "use client";
 
-import { Button, buttonVariants } from "@gb/ui/components/ui/button";
-import { cn } from "@gb/ui/lib/utils";
 import {
 	ChevronDownIcon,
 	ChevronLeftIcon,
@@ -13,6 +11,8 @@ import {
 	DayPicker,
 	getDefaultClassNames,
 } from "react-day-picker";
+import { cn } from "../../lib/utils";
+import { Button, buttonVariants } from "./button";
 
 // Extract nested components to avoid re-creation on every render
 const CalendarRoot = ({

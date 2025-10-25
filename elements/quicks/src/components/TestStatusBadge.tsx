@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@gb/ui/components/ui/badge";
+import { Badge } from "@gb/ui/src/components/ui/badge";
 import { getStatusConfig } from "../lib/status-utils";
 import type { QuickTest } from "../types/test";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@gb/ui/components/ui/button";
+import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	Drawer,
 	DrawerClose,
@@ -9,8 +9,8 @@ import {
 	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
-} from "@gb/ui/components/ui/drawer";
-import { Label } from "@gb/ui/components/ui/label";
+} from "@gb/ui/src/components/ui/drawer";
+import { Label } from "@gb/ui/src/components/ui/label";
 import { UploadIcon, XIcon } from "lucide-react";
 import { useId, useState } from "react";
 import { toast } from "sonner";
