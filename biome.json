@@ -3,7 +3,8 @@
 	"files": {
 		"includes": [
 			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
-		]
+		],
+		"ignoreUnknown": true
 	},
 	"vcs": {
 		"enabled": true,

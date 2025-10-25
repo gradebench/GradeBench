@@ -1,25 +1,25 @@
 "use client";
 
-import { Badge } from "@gb/ui/components/ui/badge";
-import { Button } from "@gb/ui/components/ui/button";
+import { Badge } from "@gb/ui/src/components/ui/badge";
+import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/components/ui/card";
-import { Input } from "@gb/ui/components/ui/input";
-import { Label } from "@gb/ui/components/ui/label";
-import { Progress } from "@gb/ui/components/ui/progress";
+} from "@gb/ui/src/components/ui/card";
+import { Input } from "@gb/ui/src/components/ui/input";
+import { Label } from "@gb/ui/src/components/ui/label";
+import { Progress } from "@gb/ui/src/components/ui/progress";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@gb/ui/components/ui/select";
-import { Textarea } from "@gb/ui/components/ui/textarea";
+} from "@gb/ui/src/components/ui/select";
+import { Textarea } from "@gb/ui/src/components/ui/textarea";
 import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
 import { EvaluatorConfigPanel } from "@gb-element/quicks/components/EvaluatorConfigPanel";
 import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";

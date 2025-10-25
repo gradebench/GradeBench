@@ -1,17 +1,17 @@
 "use client";
 
-import { Badge } from "@gb/ui/components/ui/badge";
-import { Button } from "@gb/ui/components/ui/button";
+import { Badge } from "@gb/ui/src/components/ui/badge";
+import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/components/ui/card";
-import { Input } from "@gb/ui/components/ui/input";
-import { Label } from "@gb/ui/components/ui/label";
-import { Textarea } from "@gb/ui/components/ui/textarea";
+} from "@gb/ui/src/components/ui/card";
+import { Input } from "@gb/ui/src/components/ui/input";
+import { Label } from "@gb/ui/src/components/ui/label";
+import { Textarea } from "@gb/ui/src/components/ui/textarea";
 import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
 import { FeatureGuard } from "@gb-element/quicks/components/FeatureGuard";
 import {

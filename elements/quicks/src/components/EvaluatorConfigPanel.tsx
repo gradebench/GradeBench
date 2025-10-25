@@ -4,28 +4,28 @@ import {
 	Alert,
 	AlertDescription,
 	AlertTitle,
-} from "@gb/ui/components/ui/alert";
-import { Badge } from "@gb/ui/components/ui/badge";
-import { Button } from "@gb/ui/components/ui/button";
+} from "@gb/ui/src/components/ui/alert";
+import { Badge } from "@gb/ui/src/components/ui/badge";
+import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/components/ui/card";
-import { Input } from "@gb/ui/components/ui/input";
-import { Label } from "@gb/ui/components/ui/label";
+} from "@gb/ui/src/components/ui/card";
+import { Input } from "@gb/ui/src/components/ui/input";
+import { Label } from "@gb/ui/src/components/ui/label";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "@gb/ui/components/ui/select";
-import { Slider } from "@gb/ui/components/ui/slider";
-import { Switch } from "@gb/ui/components/ui/switch";
-import { Textarea } from "@gb/ui/components/ui/textarea";
+} from "@gb/ui/src/components/ui/select";
+import { Slider } from "@gb/ui/src/components/ui/slider";
+import { Switch } from "@gb/ui/src/components/ui/switch";
+import { Textarea } from "@gb/ui/src/components/ui/textarea";
 import {
 	AlertCircleIcon,
 	CheckCircleIcon,

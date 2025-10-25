@@ -1,4 +1,4 @@
-import { Toaster } from "@gb/ui/components/ui/sonner";
+import { Toaster } from "@gb/ui/src/components/ui/sonner";
 import { DefaultRootLayout } from "@/components/templates/layouts";
 import "@gb/ui/globals.css";
 

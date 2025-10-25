@@ -7,7 +7,7 @@ import {
 	PaginationLink,
 	PaginationNext,
 	PaginationPrevious,
-} from "@gb/ui/components/ui/pagination";
+} from "@gb/ui/src/components/ui/pagination";
 
 import type { QuickTest } from "../types/test";
 import { TestStatusBadge } from "./TestStatusBadge";
@@ -59,6 +59,7 @@ export function TestHistoryTable({
 							<PaginationItem>
 								<PaginationPrevious
 									href="#"
+									size="default"
 									onClick={(e: React.MouseEvent) => {
 										e.preventDefault();
 										if (currentPage > 1) onPageChange(currentPage - 1);
@@ -70,6 +71,7 @@ export function TestHistoryTable({
 									<PaginationItem key={page}>
 										<PaginationLink
 											href="#"
+											size="default"
 											isActive={page === currentPage}
 											onClick={(e: React.MouseEvent) => {
 												e.preventDefault();
@@ -84,6 +86,7 @@ export function TestHistoryTable({
 							<PaginationItem>
 								<PaginationNext
 									href="#"
+									size="default"
 									onClick={(e: React.MouseEvent) => {
 										e.preventDefault();
 										if (currentPage < totalPages) onPageChange(currentPage + 1);
