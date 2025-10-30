@@ -91,7 +91,7 @@ export type InterpretationFlexibility = "strict" | "moderate" | "flexible";
 // Identity Configuration
 export interface IdentityConfig {
 	subject: string; // e.g., "Mathematics", "Literature", "Physics"
-	exam_type: ExamType;
+	exam_type: ExamType | string;
 	grading_philosophy: string; // Free text description
 }
 
@@ -100,10 +100,10 @@ export interface ScoringMethodologyConfig {
 	scoring_scheme_default: ScoringSchemeDefault;
 	decimal_precision: number; // 0-3
 	allow_negative_marking: boolean;
-	negative_marking_policy: NegativeMarkingPolicy;
+	negative_marking_policy: NegativeMarkingPolicy | string;
 	negative_mark_value_mcq: number; // e.g., -0.25, -1.0
 	negative_mark_value_subjective: number;
-	rounding_policy: RoundingPolicy;
+	rounding_policy: RoundingPolicy | string;
 	total_marks_cap: boolean;
 	grace_marks_enabled: boolean;
 	grace_marks_threshold: number; // 0.0-5.0
@@ -161,7 +161,7 @@ export interface FeedbackPreferencesConfig {
 // Annotation Preferences Configuration
 export interface AnnotationPreferencesConfig {
 	annotation_enabled: boolean;
-	annotation_style: AnnotationStyle;
+	annotation_style: AnnotationStyle | string;
 	annotation_use_checkmarks: boolean;
 	annotation_use_crosses: boolean;
 	annotation_use_highlights: boolean;
@@ -187,7 +187,7 @@ export interface ConsistencyFairnessConfig {
 
 // Learning & Adaptation Configuration
 export interface LearningAdaptationConfig {
-	adaptation_learning_rate: AdaptationLearningRate;
+	adaptation_learning_rate: AdaptationLearningRate | string;
 	adaptation_confidence_threshold: number; // 0.0-1.0
 	adaptation_sample_size_for_autonomy: number; // 5-50
 	adaptation_enable_auto_recommendations: boolean;

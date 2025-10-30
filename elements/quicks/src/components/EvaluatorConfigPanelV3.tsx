@@ -35,7 +35,6 @@ import {
 	AlertCircleIcon,
 	CheckCircleIcon,
 	InfoIcon,
-	Loader2Icon,
 	MessageSquareIcon,
 	SlidersIcon,
 	SparklesIcon,
@@ -100,7 +99,7 @@ export function EvaluatorConfigPanelV3({
 	const [localConfig, setLocalConfig] = useState<EvaluatorConfigurationV3>(
 		createDefaultEvaluatorConfigV3("Standard Evaluation", "General"),
 	);
-	const [isSaving, setIsSaving] = useState(false);
+	const [_isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	const selectTemplate = (templateKey: keyof typeof TEMPLATE_CONFIGS) => {
@@ -275,7 +274,9 @@ export function EvaluatorConfigPanelV3({
 	};
 
 	if (onSave && typeof window !== "undefined") {
-		(window as any).__evaluatorConfigSave = handleSaveConfig;
+		(
+			window as unknown as { __evaluatorConfigSave?: () => Promise<void> }
+		).__evaluatorConfigSave = handleSaveConfig;
 	}
 
 	return (
@@ -354,12 +355,21 @@ export function EvaluatorConfigPanelV3({
 				</CardContent>
 			</Card>
 
-			<Accordion type="multiple" defaultValue={["identity", "scoring", "leniency"]} className="space-y-3">
-				<AccordionItem value="identity" className="overflow-hidden rounded-lg border border-blue-600/20 bg-gradient-to-br from-slate-950/80 to-slate-900/50 backdrop-blur-sm">
-					<AccordionTrigger className="px-6 hover:no-underline hover:bg-slate-900/30 transition-all">
+			<Accordion
+				type="multiple"
+				defaultValue={["identity", "scoring", "leniency"]}
+				className="space-y-3"
+			>
+				<AccordionItem
+					value="identity"
+					className="overflow-hidden rounded-lg border border-blue-600/20 bg-gradient-to-br from-slate-950/80 to-slate-900/50 backdrop-blur-sm"
+				>
+					<AccordionTrigger className="px-6 transition-all hover:bg-slate-900/30 hover:no-underline">
 						<div className="flex items-center gap-2">
 							<InfoIcon className="h-5 w-5 text-blue-400" />
-							<span className="font-semibold text-blue-400">Identity & Philosophy</span>
+							<span className="font-semibold text-blue-400">
+								Identity & Philosophy
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-4 px-6 pb-6">
@@ -420,11 +430,16 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="scoring" className="overflow-hidden rounded-lg border border-blue-600/20 bg-gradient-to-br from-slate-950/80 to-slate-900/50 backdrop-blur-sm">
-					<AccordionTrigger className="px-6 hover:no-underline hover:bg-slate-900/30 transition-all">
+				<AccordionItem
+					value="scoring"
+					className="overflow-hidden rounded-lg border border-blue-600/20 bg-gradient-to-br from-slate-950/80 to-slate-900/50 backdrop-blur-sm"
+				>
+					<AccordionTrigger className="px-6 transition-all hover:bg-slate-900/30 hover:no-underline">
 						<div className="flex items-center gap-2">
 							<SlidersIcon className="h-5 w-5 text-blue-400" />
-							<span className="font-semibold text-blue-400">Scoring Methodology</span>
+							<span className="font-semibold text-blue-400">
+								Scoring Methodology
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 px-6 pb-6">
@@ -443,10 +458,16 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="integer" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="integer"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Integer
 										</SelectItem>
-										<SelectItem value="decimal" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="decimal"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Decimal
 										</SelectItem>
 									</SelectContent>
@@ -459,7 +480,7 @@ export function EvaluatorConfigPanelV3({
 									value={localConfig.scoring_methodology.decimal_precision.toString()}
 									onValueChange={(value) =>
 										updateSection("scoring_methodology", {
-											decimal_precision: parseInt(value),
+											decimal_precision: parseInt(value, 10),
 										})
 									}
 								>
@@ -467,10 +488,30 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="0" className="text-slate-100 focus:bg-blue-600/20">0</SelectItem>
-										<SelectItem value="1" className="text-slate-100 focus:bg-blue-600/20">1</SelectItem>
-										<SelectItem value="2" className="text-slate-100 focus:bg-blue-600/20">2</SelectItem>
-										<SelectItem value="3" className="text-slate-100 focus:bg-blue-600/20">3</SelectItem>
+										<SelectItem
+											value="0"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											0
+										</SelectItem>
+										<SelectItem
+											value="1"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											1
+										</SelectItem>
+										<SelectItem
+											value="2"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											2
+										</SelectItem>
+										<SelectItem
+											value="3"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											3
+										</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -489,18 +530,42 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="round_up" className="text-slate-100 focus:bg-blue-600/20">Round Up</SelectItem>
-										<SelectItem value="round_down" className="text-slate-100 focus:bg-blue-600/20">Round Down</SelectItem>
-										<SelectItem value="round_nearest" className="text-slate-100 focus:bg-blue-600/20">Round Nearest</SelectItem>
-										<SelectItem value="no_rounding" className="text-slate-100 focus:bg-blue-600/20">No Rounding</SelectItem>
+										<SelectItem
+											value="round_up"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Round Up
+										</SelectItem>
+										<SelectItem
+											value="round_down"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Round Down
+										</SelectItem>
+										<SelectItem
+											value="round_nearest"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Round Nearest
+										</SelectItem>
+										<SelectItem
+											value="no_rounding"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											No Rounding
+										</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
 
 							<div className="space-y-3">
-								<Label className="text-slate-200">Negative Marking Policy</Label>
+								<Label className="text-slate-200">
+									Negative Marking Policy
+								</Label>
 								<Select
-									value={localConfig.scoring_methodology.negative_marking_policy}
+									value={
+										localConfig.scoring_methodology.negative_marking_policy
+									}
 									onValueChange={(value) =>
 										updateSection("scoring_methodology", {
 											negative_marking_policy: value,
@@ -511,10 +576,30 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="none" className="text-slate-100 focus:bg-blue-600/20">None</SelectItem>
-										<SelectItem value="per_question" className="text-slate-100 focus:bg-blue-600/20">Per Question</SelectItem>
-										<SelectItem value="per_option" className="text-slate-100 focus:bg-blue-600/20">Per Option</SelectItem>
-										<SelectItem value="custom" className="text-slate-100 focus:bg-blue-600/20">Custom</SelectItem>
+										<SelectItem
+											value="none"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											None
+										</SelectItem>
+										<SelectItem
+											value="per_question"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Per Question
+										</SelectItem>
+										<SelectItem
+											value="per_option"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Per Option
+										</SelectItem>
+										<SelectItem
+											value="custom"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
+											Custom
+										</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
@@ -523,7 +608,9 @@ export function EvaluatorConfigPanelV3({
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
 								<Label className="text-slate-200">Allow Negative Marking</Label>
-								<p className="text-muted-foreground text-xs">Deduct marks for incorrect answers</p>
+								<p className="text-muted-foreground text-xs">
+									Deduct marks for incorrect answers
+								</p>
 							</div>
 							<Switch
 								checked={localConfig.scoring_methodology.allow_negative_marking}
@@ -538,7 +625,9 @@ export function EvaluatorConfigPanelV3({
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
 								<Label className="text-slate-200">Grace Marks Enabled</Label>
-								<p className="text-muted-foreground text-xs">Allow awarding grace marks</p>
+								<p className="text-muted-foreground text-xs">
+									Allow awarding grace marks
+								</p>
 							</div>
 							<Switch
 								checked={localConfig.scoring_methodology.grace_marks_enabled}
@@ -553,13 +642,17 @@ export function EvaluatorConfigPanelV3({
 						{localConfig.scoring_methodology.grace_marks_enabled && (
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<Label className="text-slate-200">Grace Marks Threshold</Label>
+									<Label className="text-slate-200">
+										Grace Marks Threshold
+									</Label>
 									<Badge variant="secondary" className="bg-slate-800">
 										{localConfig.scoring_methodology.grace_marks_threshold}
 									</Badge>
 								</div>
 								<Slider
-									value={[localConfig.scoring_methodology.grace_marks_threshold]}
+									value={[
+										localConfig.scoring_methodology.grace_marks_threshold,
+									]}
 									onValueChange={([value]) =>
 										updateSection("scoring_methodology", {
 											grace_marks_threshold: value,
@@ -575,11 +668,16 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="leniency" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="leniency"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<AlertCircleIcon className="h-5 w-5 text-yellow-400" />
-							<span className="font-semibold text-blue-400">Leniency & Strictness</span>
+							<span className="font-semibold text-blue-400">
+								Leniency & Strictness
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
@@ -597,19 +695,34 @@ export function EvaluatorConfigPanelV3({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="very_strict" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="very_strict"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🔴 Very Strict
 									</SelectItem>
-									<SelectItem value="strict" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="strict"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🟠 Strict
 									</SelectItem>
-									<SelectItem value="moderate" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="moderate"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🟡 Moderate
 									</SelectItem>
-									<SelectItem value="lenient" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="lenient"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🟢 Lenient
 									</SelectItem>
-									<SelectItem value="very_lenient" className="text-slate-100 focus:bg-blue-600/20">
+									<SelectItem
+										value="very_lenient"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
 										🔵 Very Lenient
 									</SelectItem>
 								</SelectContent>
@@ -621,11 +734,18 @@ export function EvaluatorConfigPanelV3({
 								<div className="flex items-center justify-between">
 									<Label className="text-slate-200">Keyword Matching</Label>
 									<Badge variant="secondary" className="bg-slate-800">
-										{(localConfig.leniency_strictness.leniency_keyword_matching_threshold * 100).toFixed(0)}%
+										{(
+											localConfig.leniency_strictness
+												.leniency_keyword_matching_threshold * 100
+										).toFixed(0)}
+										%
 									</Badge>
 								</div>
 								<Slider
-									value={[localConfig.leniency_strictness.leniency_keyword_matching_threshold * 100]}
+									value={[
+										localConfig.leniency_strictness
+											.leniency_keyword_matching_threshold * 100,
+									]}
 									onValueChange={([value]) =>
 										updateSection("leniency_strictness", {
 											leniency_keyword_matching_threshold: value / 100,
@@ -640,13 +760,22 @@ export function EvaluatorConfigPanelV3({
 
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<Label className="text-slate-200">Spelling/Grammar Penalty</Label>
+									<Label className="text-slate-200">
+										Spelling/Grammar Penalty
+									</Label>
 									<Badge variant="secondary" className="bg-slate-800">
-										{localConfig.leniency_strictness.leniency_spelling_grammar_penalty_percent}%
+										{
+											localConfig.leniency_strictness
+												.leniency_spelling_grammar_penalty_percent
+										}
+										%
 									</Badge>
 								</div>
 								<Slider
-									value={[localConfig.leniency_strictness.leniency_spelling_grammar_penalty_percent]}
+									value={[
+										localConfig.leniency_strictness
+											.leniency_spelling_grammar_penalty_percent,
+									]}
 									onValueChange={([value]) =>
 										updateSection("leniency_strictness", {
 											leniency_spelling_grammar_penalty_percent: value,
@@ -662,21 +791,30 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="partial" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="partial"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<CheckCircleIcon className="h-5 w-5 text-green-400" />
-							<span className="font-semibold text-blue-400">Partial Marking</span>
+							<span className="font-semibold text-blue-400">
+								Partial Marking
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
 								<Label className="text-slate-200">Enable Partial Marking</Label>
-								<p className="text-muted-foreground text-xs">Award partial credit for incomplete answers</p>
+								<p className="text-muted-foreground text-xs">
+									Award partial credit for incomplete answers
+								</p>
 							</div>
 							<Switch
-								checked={localConfig.partial_marking_rules.partial_marking_enabled}
+								checked={
+									localConfig.partial_marking_rules.partial_marking_enabled
+								}
 								onCheckedChange={(checked) =>
 									updateSection("partial_marking_rules", {
 										partial_marking_enabled: checked,
@@ -689,13 +827,22 @@ export function EvaluatorConfigPanelV3({
 							<>
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
-										<Label className="text-slate-200">Correct Method, Wrong Answer</Label>
+										<Label className="text-slate-200">
+											Correct Method, Wrong Answer
+										</Label>
 										<Badge variant="secondary" className="bg-slate-800">
-											{localConfig.partial_marking_rules.partial_mark_for_correct_method_wrong_answer}%
+											{
+												localConfig.partial_marking_rules
+													.partial_mark_for_correct_method_wrong_answer
+											}
+											%
 										</Badge>
 									</div>
 									<Slider
-										value={[localConfig.partial_marking_rules.partial_mark_for_correct_method_wrong_answer]}
+										value={[
+											localConfig.partial_marking_rules
+												.partial_mark_for_correct_method_wrong_answer,
+										]}
 										onValueChange={([value]) =>
 											updateSection("partial_marking_rules", {
 												partial_mark_for_correct_method_wrong_answer: value,
@@ -710,13 +857,22 @@ export function EvaluatorConfigPanelV3({
 
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
-										<Label className="text-slate-200">Partial Steps Percentage</Label>
+										<Label className="text-slate-200">
+											Partial Steps Percentage
+										</Label>
 										<Badge variant="secondary" className="bg-slate-800">
-											{localConfig.partial_marking_rules.partial_mark_for_partial_steps}%
+											{
+												localConfig.partial_marking_rules
+													.partial_mark_for_partial_steps
+											}
+											%
 										</Badge>
 									</div>
 									<Slider
-										value={[localConfig.partial_marking_rules.partial_mark_for_partial_steps]}
+										value={[
+											localConfig.partial_marking_rules
+												.partial_mark_for_partial_steps,
+										]}
 										onValueChange={([value]) =>
 											updateSection("partial_marking_rules", {
 												partial_mark_for_partial_steps: value,
@@ -733,11 +889,16 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="feedback" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="feedback"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<MessageSquareIcon className="h-5 w-5 text-purple-400" />
-							<span className="font-semibold text-blue-400">Feedback Settings</span>
+							<span className="font-semibold text-blue-400">
+								Feedback Settings
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
@@ -756,19 +917,34 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="strict" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="strict"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											📋 Strict
 										</SelectItem>
-										<SelectItem value="neutral" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="neutral"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											📝 Neutral
 										</SelectItem>
-										<SelectItem value="encouraging" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="encouraging"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											💪 Encouraging
 										</SelectItem>
-										<SelectItem value="professional" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="professional"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											⚖️ Professional
 										</SelectItem>
-										<SelectItem value="conversational" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="conversational"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											🎓 Conversational
 										</SelectItem>
 									</SelectContent>
@@ -789,16 +965,28 @@ export function EvaluatorConfigPanelV3({
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent className="border-blue-600/30 bg-slate-900">
-										<SelectItem value="concise" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="concise"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Concise
 										</SelectItem>
-										<SelectItem value="moderate" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="moderate"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Moderate
 										</SelectItem>
-										<SelectItem value="detailed" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="detailed"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Detailed
 										</SelectItem>
-										<SelectItem value="comprehensive" className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											value="comprehensive"
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											Comprehensive
 										</SelectItem>
 									</SelectContent>
@@ -808,11 +996,18 @@ export function EvaluatorConfigPanelV3({
 
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
-								<Label className="text-slate-200">Include Improvement Tips</Label>
-								<p className="text-muted-foreground text-xs">Provide actionable suggestions</p>
+								<Label className="text-slate-200">
+									Include Improvement Tips
+								</Label>
+								<p className="text-muted-foreground text-xs">
+									Provide actionable suggestions
+								</p>
 							</div>
 							<Switch
-								checked={localConfig.feedback_preferences.feedback_include_improvement_tips}
+								checked={
+									localConfig.feedback_preferences
+										.feedback_include_improvement_tips
+								}
 								onCheckedChange={(checked) =>
 									updateSection("feedback_preferences", {
 										feedback_include_improvement_tips: checked,
@@ -823,18 +1018,25 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="annotation" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="annotation"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<SparklesIcon className="h-5 w-5 text-pink-400" />
-							<span className="font-semibold text-blue-400">Annotation Preferences</span>
+							<span className="font-semibold text-blue-400">
+								Annotation Preferences
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
 								<Label className="text-slate-200">Enable Annotations</Label>
-								<p className="text-muted-foreground text-xs">Generate annotated PDFs</p>
+								<p className="text-muted-foreground text-xs">
+									Generate annotated PDFs
+								</p>
 							</div>
 							<Switch
 								checked={localConfig.annotation_preferences.annotation_enabled}
@@ -862,20 +1064,45 @@ export function EvaluatorConfigPanelV3({
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent className="border-blue-600/30 bg-slate-900">
-											<SelectItem value="minimal" className="text-slate-100 focus:bg-blue-600/20">Minimal</SelectItem>
-											<SelectItem value="moderate" className="text-slate-100 focus:bg-blue-600/20">Moderate</SelectItem>
-											<SelectItem value="detailed" className="text-slate-100 focus:bg-blue-600/20">Detailed</SelectItem>
-											<SelectItem value="comprehensive" className="text-slate-100 focus:bg-blue-600/20">Comprehensive</SelectItem>
+											<SelectItem
+												value="minimal"
+												className="text-slate-100 focus:bg-blue-600/20"
+											>
+												Minimal
+											</SelectItem>
+											<SelectItem
+												value="moderate"
+												className="text-slate-100 focus:bg-blue-600/20"
+											>
+												Moderate
+											</SelectItem>
+											<SelectItem
+												value="detailed"
+												className="text-slate-100 focus:bg-blue-600/20"
+											>
+												Detailed
+											</SelectItem>
+											<SelectItem
+												value="comprehensive"
+												className="text-slate-100 focus:bg-blue-600/20"
+											>
+												Comprehensive
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
 
 								<div className="grid gap-4 md:grid-cols-3">
 									<div className="space-y-2">
-										<Label className="text-slate-200 text-sm">Correct Color</Label>
+										<Label className="text-slate-200 text-sm">
+											Correct Color
+										</Label>
 										<Input
 											type="color"
-											value={localConfig.annotation_preferences.annotation_highlight_correct_color}
+											value={
+												localConfig.annotation_preferences
+													.annotation_highlight_correct_color
+											}
 											onChange={(e) =>
 												updateSection("annotation_preferences", {
 													annotation_highlight_correct_color: e.target.value,
@@ -885,10 +1112,15 @@ export function EvaluatorConfigPanelV3({
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label className="text-slate-200 text-sm">Incorrect Color</Label>
+										<Label className="text-slate-200 text-sm">
+											Incorrect Color
+										</Label>
 										<Input
 											type="color"
-											value={localConfig.annotation_preferences.annotation_highlight_incorrect_color}
+											value={
+												localConfig.annotation_preferences
+													.annotation_highlight_incorrect_color
+											}
 											onChange={(e) =>
 												updateSection("annotation_preferences", {
 													annotation_highlight_incorrect_color: e.target.value,
@@ -898,10 +1130,15 @@ export function EvaluatorConfigPanelV3({
 										/>
 									</div>
 									<div className="space-y-2">
-										<Label className="text-slate-200 text-sm">Partial Color</Label>
+										<Label className="text-slate-200 text-sm">
+											Partial Color
+										</Label>
 										<Input
 											type="color"
-											value={localConfig.annotation_preferences.annotation_highlight_partial_color}
+											value={
+												localConfig.annotation_preferences
+													.annotation_highlight_partial_color
+											}
 											onChange={(e) =>
 												updateSection("annotation_preferences", {
 													annotation_highlight_partial_color: e.target.value,
@@ -916,21 +1153,30 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="consistency" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="consistency"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<CheckCircleIcon className="h-5 w-5 text-cyan-400" />
-							<span className="font-semibold text-blue-400">Consistency & Fairness</span>
+							<span className="font-semibold text-blue-400">
+								Consistency & Fairness
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
 						<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 							<div className="space-y-1">
 								<Label className="text-slate-200">Bias Detection</Label>
-								<p className="text-muted-foreground text-xs">Monitor for potential biases</p>
+								<p className="text-muted-foreground text-xs">
+									Monitor for potential biases
+								</p>
 							</div>
 							<Switch
-								checked={localConfig.consistency_fairness.bias_detection_enabled}
+								checked={
+									localConfig.consistency_fairness.bias_detection_enabled
+								}
 								onCheckedChange={(checked) =>
 									updateSection("consistency_fairness", {
 										bias_detection_enabled: checked,
@@ -941,11 +1187,16 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="learning" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="learning"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<SparklesIcon className="h-5 w-5 text-purple-400" />
-							<span className="font-semibold text-blue-400">Learning & Adaptation</span>
+							<span className="font-semibold text-blue-400">
+								Learning & Adaptation
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
@@ -963,30 +1214,60 @@ export function EvaluatorConfigPanelV3({
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
-									<SelectItem value="slow" className="text-slate-100 focus:bg-blue-600/20">Slow</SelectItem>
-									<SelectItem value="moderate" className="text-slate-100 focus:bg-blue-600/20">Moderate</SelectItem>
-									<SelectItem value="fast" className="text-slate-100 focus:bg-blue-600/20">Fast</SelectItem>
-									<SelectItem value="aggressive" className="text-slate-100 focus:bg-blue-600/20">Aggressive</SelectItem>
+									<SelectItem
+										value="slow"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
+										Slow
+									</SelectItem>
+									<SelectItem
+										value="moderate"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
+										Moderate
+									</SelectItem>
+									<SelectItem
+										value="fast"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
+										Fast
+									</SelectItem>
+									<SelectItem
+										value="aggressive"
+										className="text-slate-100 focus:bg-blue-600/20"
+									>
+										Aggressive
+									</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="subject" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="subject"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<InfoIcon className="h-5 w-5 text-orange-400" />
-							<span className="font-semibold text-blue-400">Subject-Specific Rules</span>
+							<span className="font-semibold text-blue-400">
+								Subject-Specific Rules
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
 						<div className="space-y-4">
-							<h4 className="font-semibold text-slate-200 text-sm">Mathematics</h4>
+							<h4 className="font-semibold text-slate-200 text-sm">
+								Mathematics
+							</h4>
 							<div className="flex items-center justify-between rounded-lg border border-blue-600/20 bg-slate-900 p-4">
 								<Label className="text-slate-200">Require Working</Label>
 								<Switch
-									checked={localConfig.subject_specific_rules.subject_math_require_working}
+									checked={
+										localConfig.subject_specific_rules
+											.subject_math_require_working
+									}
 									onCheckedChange={(checked) =>
 										updateSection("subject_specific_rules", {
 											subject_math_require_working: checked,
@@ -997,13 +1278,22 @@ export function EvaluatorConfigPanelV3({
 							<div className="grid gap-4 md:grid-cols-2">
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
-										<Label className="text-slate-200 text-sm">Formula Weight</Label>
+										<Label className="text-slate-200 text-sm">
+											Formula Weight
+										</Label>
 										<Badge variant="secondary" className="bg-slate-800">
-											{(localConfig.subject_specific_rules.subject_math_formula_weight * 100).toFixed(0)}%
+											{(
+												localConfig.subject_specific_rules
+													.subject_math_formula_weight * 100
+											).toFixed(0)}
+											%
 										</Badge>
 									</div>
 									<Slider
-										value={[localConfig.subject_specific_rules.subject_math_formula_weight * 100]}
+										value={[
+											localConfig.subject_specific_rules
+												.subject_math_formula_weight * 100,
+										]}
 										onValueChange={([value]) =>
 											updateSection("subject_specific_rules", {
 												subject_math_formula_weight: value / 100,
@@ -1017,13 +1307,22 @@ export function EvaluatorConfigPanelV3({
 								</div>
 								<div className="space-y-3">
 									<div className="flex items-center justify-between">
-										<Label className="text-slate-200 text-sm">Calculation Weight</Label>
+										<Label className="text-slate-200 text-sm">
+											Calculation Weight
+										</Label>
 										<Badge variant="secondary" className="bg-slate-800">
-											{(localConfig.subject_specific_rules.subject_math_calculation_weight * 100).toFixed(0)}%
+											{(
+												localConfig.subject_specific_rules
+													.subject_math_calculation_weight * 100
+											).toFixed(0)}
+											%
 										</Badge>
 									</div>
 									<Slider
-										value={[localConfig.subject_specific_rules.subject_math_calculation_weight * 100]}
+										value={[
+											localConfig.subject_specific_rules
+												.subject_math_calculation_weight * 100,
+										]}
 										onValueChange={([value]) =>
 											updateSection("subject_specific_rules", {
 												subject_math_calculation_weight: value / 100,
@@ -1040,21 +1339,31 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="question" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="question"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<SlidersIcon className="h-5 w-5 text-teal-400" />
-							<span className="font-semibold text-blue-400">Question Type Rules</span>
+							<span className="font-semibold text-blue-400">
+								Question Type Rules
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
 						<div className="space-y-3">
-							<Label className="text-slate-200">Numerical Precision Digits</Label>
+							<Label className="text-slate-200">
+								Numerical Precision Digits
+							</Label>
 							<Select
 								value={localConfig.question_type_rules.question_type_numerical_precision_digits.toString()}
 								onValueChange={(value) =>
 									updateSection("question_type_rules", {
-										question_type_numerical_precision_digits: parseInt(value),
+										question_type_numerical_precision_digits: parseInt(
+											value,
+											10,
+										),
 									})
 								}
 							>
@@ -1063,7 +1372,11 @@ export function EvaluatorConfigPanelV3({
 								</SelectTrigger>
 								<SelectContent className="border-blue-600/30 bg-slate-900">
 									{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-										<SelectItem key={n} value={n.toString()} className="text-slate-100 focus:bg-blue-600/20">
+										<SelectItem
+											key={n}
+											value={n.toString()}
+											className="text-slate-100 focus:bg-blue-600/20"
+										>
 											{n}
 										</SelectItem>
 									))}
@@ -1073,11 +1386,16 @@ export function EvaluatorConfigPanelV3({
 					</AccordionContent>
 				</AccordionItem>
 
-				<AccordionItem value="quality" className="border-blue-600/20 bg-slate-950 rounded-lg border px-6">
+				<AccordionItem
+					value="quality"
+					className="rounded-lg border border-blue-600/20 bg-slate-950 px-6"
+				>
 					<AccordionTrigger className="hover:no-underline">
 						<div className="flex items-center gap-2">
 							<CheckCircleIcon className="h-5 w-5 text-emerald-400" />
-							<span className="font-semibold text-blue-400">Quality Metrics</span>
+							<span className="font-semibold text-blue-400">
+								Quality Metrics
+							</span>
 						</div>
 					</AccordionTrigger>
 					<AccordionContent className="space-y-6 pt-4">
@@ -1085,11 +1403,16 @@ export function EvaluatorConfigPanelV3({
 							<div className="flex items-center justify-between">
 								<Label className="text-slate-200">Consistency Threshold</Label>
 								<Badge variant="secondary" className="bg-slate-800">
-									{(localConfig.quality_metrics.consistency_threshold * 100).toFixed(0)}%
+									{(
+										localConfig.quality_metrics.consistency_threshold * 100
+									).toFixed(0)}
+									%
 								</Badge>
 							</div>
 							<Slider
-								value={[localConfig.quality_metrics.consistency_threshold * 100]}
+								value={[
+									localConfig.quality_metrics.consistency_threshold * 100,
+								]}
 								onValueChange={([value]) =>
 									updateSection("quality_metrics", {
 										consistency_threshold: value / 100,
