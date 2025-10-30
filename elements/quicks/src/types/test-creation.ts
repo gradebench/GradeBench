@@ -1,5 +1,5 @@
 // Test Creation Types
-import type { EvaluatorConfiguration } from "./evaluator-config";
+import type { EvaluatorConfigurationV3 } from "./evaluator-config-v3";
 
 export type ExamCategory =
 	| "upsc"
@@ -100,7 +100,7 @@ export interface TestCreationData {
 	basicInfo: TestBasicInfo;
 	questions: TestQuestion[];
 	modelAnswers: ModelAnswer[];
-	evaluatorConfig?: EvaluatorConfiguration;
+	evaluatorConfig?: EvaluatorConfigurationV3;
 }
 export interface DynamicRubric {
 	id: string;

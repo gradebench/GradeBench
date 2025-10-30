@@ -19,10 +19,3 @@ export interface QuickTestQuestion {
 	maxScore: number;
 	feedback?: string;
 }
-
-export interface QuickTestConfig {
-	totalQuestions: number;
-	totalMarks: number;
-	evaluationCriteria: string;
-	additionalNotes?: string;
-}

@@ -21,9 +21,9 @@ import {
 } from "@gb/ui/src/components/ui/select";
 import { Textarea } from "@gb/ui/src/components/ui/textarea";
 import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
-import { EvaluatorConfigPanel } from "@gb-element/quicks/components/EvaluatorConfigPanel";
+import { EvaluatorConfigPanelV3 } from "@gb-element/quicks/components/EvaluatorConfigPanelV3";
 import { ModelAnswerGenerator } from "@gb-element/quicks/components/ModelAnswerGenerator";
-import type { EvaluatorConfiguration } from "@gb-element/quicks/types/evaluator-config";
+import type { EvaluatorConfigurationV3 } from "@gb-element/quicks/types/evaluator-config-v3";
 import type {
   ExamCategory,
   ModelAnswer,
@@ -146,6 +146,8 @@ export default function TestCreationPage() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isGeneratingAnswers, setIsGeneratingAnswers] = useState(false);
+  const [isSavingConfig, setIsSavingConfig] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form IDs for accessibility
   const titleId = useId();
@@ -206,13 +208,29 @@ export default function TestCreationPage() {
 
   // Evaluator Config State
   const [evaluatorConfig, setEvaluatorConfig] =
-    useState<EvaluatorConfiguration | null>(null);
+    useState<EvaluatorConfigurationV3 | null>(null);
 
   // Model Answers State
   const [modelAnswers, setModelAnswers] = useState<ModelAnswer[]>([]);
 
-  const handleNext = () => {
-    if (currentStep === 3) {
+  const handleNext = async () => {
+    if (currentStep === 2) {
+      // Save evaluator config before proceeding
+      try {
+        setIsSavingConfig(true);
+        const saveFn = (
+          window as unknown as { __evaluatorConfigSave?: () => Promise<void> }
+        ).__evaluatorConfigSave;
+        if (saveFn) {
+          await saveFn();
+        }
+        setCurrentStep((prev) => Math.min(prev + 1, 3));
+      } catch (error) {
+        console.error("Failed to save evaluator config:", error);
+      } finally {
+        setIsSavingConfig(false);
+      }
+    } else if (currentStep === 3) {
       // Final step - generate rubrics and navigate
       handleFinalize();
     } else {
@@ -286,6 +304,42 @@ export default function TestCreationPage() {
     router.push(`/quicks/tests/${newTestId}/evaluate`);
   };
 
+  const handleDeleteTest = async () => {
+    if (!testId || isNewTest) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this test? This action cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      setIsDeleting(true);
+
+      const response = await fetch(
+        `http://localhost:8083/grade/v1/question-papers/${testId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete test: ${response.statusText}`);
+      }
+
+      // Navigate back to quicks page after successful deletion
+      router.push("/quicks");
+    } catch (error) {
+      console.error("Error deleting test:", error);
+      alert("Failed to delete test. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const canProceed = () => {
     switch (currentStep) {
       case 1:
@@ -309,6 +363,18 @@ export default function TestCreationPage() {
     <DashboardLayout
       title={isNewTest ? "Create New Test" : "Edit Test"}
       description="Set up your test with detailed configuration"
+      action={
+        !isNewTest && (
+          <Button
+            variant="destructive"
+            onClick={handleDeleteTest}
+            disabled={isDeleting}
+          >
+            <TrashIcon className="mr-2 h-4 w-4" />
+            {isDeleting ? "Deleting..." : "Delete Test"}
+          </Button>
+        )
+      }
     >
       <div className="mx-auto max-w-6xl space-y-6">
         {/* Progress Indicator */}
@@ -776,9 +842,12 @@ export default function TestCreationPage() {
 
         {/* Step 2: Evaluator Config (previously Step 3) */}
         {currentStep === 2 && (
-          <EvaluatorConfigPanel
-            config={evaluatorConfig}
-            onChange={setEvaluatorConfig}
+          <EvaluatorConfigPanelV3
+            onConfigSelected={setEvaluatorConfig}
+            initialConfigId={evaluatorConfig?.id}
+            onSave={async () => {
+              // This will be called after successful save
+            }}
           />
         )}
 
@@ -799,9 +868,18 @@ export default function TestCreationPage() {
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
             {currentStep === 1 ? "Cancel" : "Back"}
           </Button>
-          <Button onClick={handleNext} disabled={!canProceed()}>
-            {currentStep === 3 ? "Generate Rubrics & Complete" : "Next"}
-            {currentStep < 3 && <ArrowRightIcon className="ml-2 h-4 w-4" />}
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed() || isSavingConfig}
+          >
+            {isSavingConfig
+              ? "Saving..."
+              : currentStep === 3
+              ? "Generate Rubrics & Complete"
+              : "Next"}
+            {currentStep < 3 && !isSavingConfig && (
+              <ArrowRightIcon className="ml-2 h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
