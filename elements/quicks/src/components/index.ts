@@ -4,3 +4,4 @@ export { EvaluatorConfigPanelV3 } from "./EvaluatorConfigPanelV3";
 export { ModelAnswerGenerator } from "./ModelAnswerGenerator";
 export { TestHistoryTable } from "./TestHistoryTable";
 export { TestStatusBadge } from "./TestStatusBadge";
+export { UploadQuestionPaperDrawer } from "./UploadQuestionPaperDrawer";

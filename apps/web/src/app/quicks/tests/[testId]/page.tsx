@@ -43,7 +43,7 @@ import {
 	XIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 const STEPS = [
 	{
@@ -96,47 +96,13 @@ const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
 	{ value: "true_false", label: "True/False" },
 ];
 
-// Mock pre-fetched questions from uploaded paper
-const MOCK_FETCHED_QUESTIONS: TestQuestion[] = [
-	{
-		id: "q1",
-		questionNumber: 1,
-		questionText:
-			"Explain the significance of the Magna Carta in the development of constitutional law.",
-		questionType: "long_answer",
-		marks: 15,
-		wordLimit: 250,
-		mandatory: true,
-	},
-	{
-		id: "q2",
-		questionNumber: 2,
-		questionText:
-			"Discuss the role of the French Revolution in shaping modern European politics.",
-		questionType: "essay",
-		marks: 20,
-		wordLimit: 400,
-		mandatory: true,
-	},
-	{
-		id: "q3",
-		questionNumber: 3,
-		questionText: "What were the main causes of World War I?",
-		questionType: "short_answer",
-		marks: 10,
-		wordLimit: 150,
-		mandatory: true,
-	},
-	{
-		id: "q4",
-		questionNumber: 4,
-		questionText: "Analyze the impact of colonialism on African economies.",
-		questionType: "long_answer",
-		marks: 15,
-		wordLimit: 300,
-		mandatory: true,
-	},
-];
+interface ProcessedQuestion {
+	question_number: number;
+	question_text: string;
+	marks: number;
+	word_limit?: number;
+	question_type?: string;
+}
 
 export default function TestCreationPage() {
 	const router = useRouter();
@@ -148,6 +114,7 @@ export default function TestCreationPage() {
 	const [isGeneratingAnswers, setIsGeneratingAnswers] = useState(false);
 	const [isSavingConfig, setIsSavingConfig] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isLoading, setIsLoading] = useState(!isNewTest);
 
 	// Form IDs for accessibility
 	const titleId = useId();
@@ -167,8 +134,8 @@ export default function TestCreationPage() {
 		title: "",
 		category: "upsc",
 		subject: "",
-		totalMarks: 60, // Pre-calculated from fetched questions
-		totalQuestions: 4, // From fetched questions
+		totalMarks: 0,
+		totalQuestions: 0,
 		duration: 180,
 		description: "",
 		instructions: "",
@@ -177,23 +144,15 @@ export default function TestCreationPage() {
 	});
 
 	// Additional metadata state
-	const [academicYear, setAcademicYear] = useState("2024-2025");
-	const [gradeLevel, setGradeLevel] = useState("Grade 12");
-	const [institution, setInstitution] = useState(
-		"Central Board of Secondary Education",
-	);
+	const [academicYear, setAcademicYear] = useState("");
+	const [gradeLevel, setGradeLevel] = useState("");
+	const [institution, setInstitution] = useState("");
 	const [additionalInstructions, setAdditionalInstructions] = useState<
 		string[]
-	>([
-		"Answer all questions",
-		"Use black or blue pen only",
-		"Draw diagrams wherever necessary",
-	]);
+	>([]);
 
-	// Questions State - Initialize with fetched questions
-	const [questions, setQuestions] = useState<TestQuestion[]>(
-		MOCK_FETCHED_QUESTIONS,
-	);
+	// Questions State
+	const [questions, setQuestions] = useState<TestQuestion[]>([]);
 	const [currentQuestion, setCurrentQuestion] = useState<Partial<TestQuestion>>(
 		{
 			id: crypto.randomUUID(),
@@ -212,6 +171,63 @@ export default function TestCreationPage() {
 
 	// Model Answers State
 	const [modelAnswers, setModelAnswers] = useState<ModelAnswer[]>([]);
+
+	// Fetch test data on mount
+	useEffect(() => {
+		if (isNewTest) return;
+
+		const fetchTestData = async () => {
+			try {
+				setIsLoading(true);
+				const response = await fetch(
+					`http://localhost:8083/grade/v1/question-papers/${testId}`,
+				);
+				const result = await response.json();
+
+				if (result.success && result.data?.question_papers) {
+					const qp = result.data.question_papers;
+					const name = qp.name || "";
+
+					// Fetch processed document if available
+					if (qp.processed_document_url) {
+						const processedRes = await fetch(qp.processed_document_url);
+						const processedData = await processedRes.json();
+
+						const processedQuestions: TestQuestion[] = (
+							processedData.questions || []
+						).map((q: ProcessedQuestion, idx: number) => ({
+							id: `q${idx + 1}`,
+							questionNumber: q.question_number || idx + 1,
+							questionText: q.question_text || "",
+							questionType: (q.question_type as QuestionType) || "short_answer",
+							marks: q.marks || 0,
+							wordLimit: q.word_limit,
+							mandatory: true,
+						}));
+
+						const totalMarks = processedQuestions.reduce(
+							(sum, q) => sum + q.marks,
+							0,
+						);
+
+						setQuestions(processedQuestions);
+						setBasicInfo((prev) => ({
+							...prev,
+							title: name,
+							totalMarks,
+							totalQuestions: processedQuestions.length,
+						}));
+					}
+				}
+			} catch (error) {
+				console.error("Error fetching test data:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchTestData();
+	}, [testId, isNewTest]);
 
 	const handleNext = async () => {
 		if (currentStep === 2) {
@@ -358,6 +374,21 @@ export default function TestCreationPage() {
 		}
 	};
 	const progressPercentage = (currentStep / 3) * 100;
+
+	if (isLoading) {
+		return (
+			<DashboardLayout
+				title="Loading..."
+				description="Fetching test data"
+			>
+				<div className="flex items-center justify-center py-12">
+					<div className="text-center">
+						<div className="mb-4 text-lg">Loading test data...</div>
+					</div>
+				</div>
+			</DashboardLayout>
+		);
+	}
 
 	return (
 		<DashboardLayout
