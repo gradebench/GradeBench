@@ -1,5 +1,5 @@
+import { cn } from "@gb/ui/lib/utils";
 import type { ComponentProps, ReactNode } from "react";
-import { cn } from "../../lib/utils";
 
 interface TypoProps {
 	className?: string;

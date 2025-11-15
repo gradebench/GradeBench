@@ -69,7 +69,8 @@
 	"exports": {
 		"./globals.css": "./src/styles/globals.css",
 		"./postcss.config": "./postcss.config.mjs",
-		"./lib/*": "./src/lib/*",
+		"./lib/utils": "./src/lib/utils.ts",
+		"./lib/*": "./src/lib/*.ts",
 		"./components/ui": "./src/components/ui/index.ts",
 		"./components/ui/*": "./src/components/ui/*",
 		"./components/*": "./src/components/*",
