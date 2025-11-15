@@ -1,5 +1,5 @@
 import { createApiClient, type StandardResponse } from "@gb/fetch";
-import type { FlagResult } from "@/types/flag.types.js";
+import type { FlagResult } from "../types/flag.types";
 
 const launchpadAPI = createApiClient({
 	baseURL:

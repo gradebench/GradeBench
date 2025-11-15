@@ -1,19 +1,41 @@
 {
-	"extends": "@gb/typescript-config/nextjs.json",
 	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["dom", "dom.iterable", "es2022"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"jsxImportSource": "react",
+		"incremental": true,
+		"forceConsistentCasingInFileNames": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@gb/*": ["../../packages/*"],
-			"@gb-elements/*": ["../../elements/*"]
+			"@gb-element/quicks/*": ["../../elements/quicks/src/*"],
+			"@gb-elements/*": ["../../elements/*"],
+			"@gb-kits/*": ["../../kits/*"]
 		}
 	},
 	"include": [
-		"src/**/*.ts",
-		"src/**/*.tsx",
 		"next-env.d.ts",
-		"next.config.js",
-		".next/types/**/*.ts",
-		"vitest.setup.ts"
-	]
+		"src/types/global.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts"
+	],
+	"exclude": ["node_modules"]
 }

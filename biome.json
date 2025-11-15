@@ -1,9 +1,10 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
 	"files": {
 		"includes": [
 			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
-		]
+		],
+		"ignoreUnknown": true
 	},
 	"vcs": {
 		"enabled": true,
@@ -60,6 +61,7 @@
 	},
 	"formatter": {
 		"enabled": true,
+		"formatWithErrors": true,
 		"includes": [
 			"**/*.{js,cjs,mjs,ts,cts,mts,jsx,tsx,json,jsonc,html,css,yaml,yml,md}"
 		]
@@ -92,14 +94,19 @@
 		}
 	},
 	"css": {
+		"parser": {
+			"cssModules": false,
+			"allowWrongLineComments": false,
+			"tailwindDirectives": true
+		},
 		"formatter": {
-			"enabled": true
+			"enabled": false
 		},
 		"assist": {
-			"enabled": true
+			"enabled": false
 		},
 		"linter": {
-			"enabled": true
+			"enabled": false
 		}
 	},
 	"graphql": {

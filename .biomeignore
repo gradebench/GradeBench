@@ -1,0 +1,2 @@
+# Ignore Tailwind CSS v4 globals file (not yet fully supported by Biome)
+**/globals.css

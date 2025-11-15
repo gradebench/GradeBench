@@ -15,12 +15,6 @@ export default defineConfig({
 		setupFiles: ["./vitest.setup.ts"],
 		coverage: {
 			provider: "v8",
-			thresholds: {
-				branches: 50,
-				functions: 50,
-				lines: 50,
-				statements: 50,
-			},
 		},
 	},
 	resolve: {

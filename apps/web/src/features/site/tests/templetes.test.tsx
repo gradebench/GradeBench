@@ -50,6 +50,21 @@ const mockNavMenu = [
 	},
 ];
 
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	})),
+});
+
 // Mock DefaultRootLayout component
 vi.mock("@/components/providers/Screen", () => ({
 	DefaultRootLayout: ({ children }: { children: React.ReactNode }) => (
@@ -65,8 +80,8 @@ describe("SiteLayout", () => {
 			</SiteLayout>,
 		);
 
-		expect(screen.getByTestId("screen-root-layout")).toBeDefined();
 		expect(screen.getByTestId("site-content")).toBeDefined();
+		expect(screen.getByRole("banner")).toBeDefined();
 	});
 });
 

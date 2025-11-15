@@ -1,5 +1,5 @@
 import QueryClientProvider from "@/libs/tanstack/ReactQueryProvider";
-import "@gb/ui/globals.css";
+import "@gb/ui/src/styles/globals.css";
 import NextThemeProvider from "@gb/ui/src/components/providers/NextThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";

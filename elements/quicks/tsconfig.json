@@ -1,9 +1,10 @@
 {
-	"extends": "@gb/typescript-config/react-library.json",
+	"extends": "../../packages/typescript-config/react-library.json",
 	"compilerOptions": {
 		"baseUrl": ".",
 		"outDir": "dist",
-		"rootDir": "src",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
 		"plugins": [
 			{
 				"name": "next"
@@ -11,7 +12,8 @@
 		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb-element/quicks/*": ["./src/*"]
+			"@gb-element/quicks/*": ["./src/*"],
+			"@gb/*": ["../../packages/*"]
 		}
 	},
 	"exclude": ["node_modules", "dist"]

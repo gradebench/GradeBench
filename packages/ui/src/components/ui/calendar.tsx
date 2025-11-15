@@ -1,6 +1,5 @@
 "use client";
 
-import { Button, buttonVariants } from "@gb/ui/components/ui/button";
 import { cn } from "@gb/ui/lib/utils";
 import {
 	ChevronDownIcon,
@@ -13,6 +12,56 @@ import {
 	DayPicker,
 	getDefaultClassNames,
 } from "react-day-picker";
+import { Button, buttonVariants } from "./button";
+
+// Extract nested components to avoid re-creation on every render
+const CalendarRoot = ({
+	className,
+	rootRef,
+	...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+	rootRef?: React.Ref<HTMLDivElement>;
+}) => {
+	return (
+		<div
+			data-slot="calendar"
+			ref={rootRef}
+			className={cn(className)}
+			{...props}
+		/>
+	);
+};
+
+const CalendarChevron = ({
+	className,
+	orientation,
+	...props
+}: React.SVGProps<SVGSVGElement> & {
+	orientation?: "left" | "right" | "up" | "down";
+}) => {
+	if (orientation === "left") {
+		return <ChevronLeftIcon className={cn("size-4", className)} {...props} />;
+	}
+
+	if (orientation === "right") {
+		return <ChevronRightIcon className={cn("size-4", className)} {...props} />;
+	}
+
+	return <ChevronDownIcon className={cn("size-4", className)} {...props} />;
+};
+
+const CalendarWeekNumber = ({
+	children,
+	...props
+}: React.TdHTMLAttributes<HTMLTableCellElement>) => {
+	return (
+		<td {...props}>
+			<div className="flex size-(--cell-size) items-center justify-center text-center">
+				{children}
+			</div>
+		</td>
+	);
+};
 
 function Calendar({
 	className,
@@ -128,49 +177,10 @@ function Calendar({
 				...classNames,
 			}}
 			components={{
-				// biome-ignore lint/correctness/noNestedComponentDefinitions: shadcn
-				Root: ({ className, rootRef, ...props }) => {
-					return (
-						<div
-							data-slot="calendar"
-							ref={rootRef}
-							className={cn(className)}
-							{...props}
-						/>
-					);
-				},
-				// biome-ignore lint/correctness/noNestedComponentDefinitions: shadcn
-				Chevron: ({ className, orientation, ...props }) => {
-					if (orientation === "left") {
-						return (
-							<ChevronLeftIcon className={cn("size-4", className)} {...props} />
-						);
-					}
-
-					if (orientation === "right") {
-						return (
-							<ChevronRightIcon
-								className={cn("size-4", className)}
-								{...props}
-							/>
-						);
-					}
-
-					return (
-						<ChevronDownIcon className={cn("size-4", className)} {...props} />
-					);
-				},
+				Root: CalendarRoot,
+				Chevron: CalendarChevron,
 				DayButton: CalendarDayButton,
-				// biome-ignore lint/correctness/noNestedComponentDefinitions: shadcn
-				WeekNumber: ({ children, ...props }) => {
-					return (
-						<td {...props}>
-							<div className="flex size-(--cell-size) items-center justify-center text-center">
-								{children}
-							</div>
-						</td>
-					);
-				},
+				WeekNumber: CalendarWeekNumber,
 				...components,
 			}}
 			{...props}
