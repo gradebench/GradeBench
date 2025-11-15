@@ -19,8 +19,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@gb/ui/src/components/ui/select";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface CreateAcademicTestDrawerProps {
@@ -44,7 +43,6 @@ export function CreateAcademicTestDrawer({
 	onOpenChange,
 	onTestCreated,
 }: CreateAcademicTestDrawerProps) {
-	const router = useRouter();
 	const [testName, setTestName] = useState("");
 	const [questionPaperId, setQuestionPaperId] = useState("");
 	const [evaluatorConfigId, setEvaluatorConfigId] = useState("");
@@ -57,13 +55,7 @@ export function CreateAcademicTestDrawer({
 
 	const API_BASE_URL = "http://localhost:8083/grade/v1";
 
-	useEffect(() => {
-		if (open) {
-			fetchData();
-		}
-	}, [open]);
-
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		setFetching(true);
 		try {
 			const [qpResponse, ecResponse] = await Promise.all([
@@ -90,8 +82,13 @@ export function CreateAcademicTestDrawer({
 		} finally {
 			setFetching(false);
 		}
-	};
+	}, []);
 
+	useEffect(() => {
+		if (open) {
+			fetchData();
+		}
+	}, [open, fetchData]);
 	const handleSubmit = async () => {
 		if (!testName.trim()) {
 			toast.error("Please enter a test name");
