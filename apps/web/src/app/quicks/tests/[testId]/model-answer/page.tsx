@@ -1,17 +1,19 @@
 "use client";
 
 import { Button } from "@gb/ui/src/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const ExpectedAnswer = ({ component }: { component: any }) => {
+const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
 	if (!component) return null;
 
 	switch (component.component_type) {
 		case "concept_point":
-			return <p className="text-sm">{component.component_text || "No answer"}</p>;
+			return (
+				<p className="text-sm">{component.component_text || "No answer"}</p>
+			);
 		case "exact_match":
 			return <p className="text-sm">{component.exact_answer || "No answer"}</p>;
 		case "numerical":
@@ -40,13 +42,24 @@ const ExpectedAnswer = ({ component }: { component: any }) => {
 	}
 };
 
+interface NumericalAnswer {
+	value: number;
+	unit?: string;
+}
+
+interface CodeAnswer {
+	expected_code: string;
+}
+
 interface AnswerComponent {
 	component_id: string;
 	component_type: string;
 	component_text?: string;
 	keywords?: string[];
 	component_marks?: number;
-	[key: string]: any; // Allow other properties
+	exact_answer?: string;
+	numerical_answer?: NumericalAnswer;
+	code_answer?: CodeAnswer;
 }
 
 interface QuestionAnswer {
@@ -140,18 +153,17 @@ export default function ModelAnswerPage() {
 
 				if (s3Response.ok) {
 					const data = await s3Response.json();
-					console.log("Fetched model answer data:", data);
 					setModelAnswerData(data);
 					toast.success("Model answers loaded");
 					return;
 				}
 
-				const errorText = await s3Response.text();
+				const _errorText = await s3Response.text();
 				toast.error(`Failed to fetch from S3: ${s3Response.status}`);
 			} else {
 				setNeedsGeneration(true);
 			}
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to load model answers");
 		} finally {
 			setLoading(false);
@@ -187,14 +199,25 @@ export default function ModelAnswerPage() {
 	return (
 		<div className="space-y-6">
 			<div className="border-b bg-background p-6">
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => router.push("/quicks")}
-				>
-					<ArrowLeft className="mr-2 h-4 w-4" />
-					Back to Dashboard
-				</Button>
+				<div className="container mx-auto flex items-center justify-between">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => router.push("/quicks")}
+					>
+						<ArrowLeft className="mr-2 h-4 w-4" />
+						Back to Dashboard
+					</Button>
+					{modelAnswerData && (
+						<Button
+							size="sm"
+							onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
+						>
+							Proceed to Evaluation
+							<ArrowRight className="ml-2 h-4 w-4" />
+						</Button>
+					)}
+				</div>
 			</div>
 
 			<div className="container mx-auto p-6">
@@ -220,20 +243,21 @@ export default function ModelAnswerPage() {
 											{qa.marks_allocated || 0} marks
 										</span>
 									</div>
-									                                    <p className="mt-1 text-muted-foreground text-xs uppercase">
-									                                        {qa.question_type
-									                                            ? qa.question_type.replace(/_/g, " ")
-									                                            : "N/A"}
-									                                    </p>
-									                                    {qa.model_answer_summary && (
-									                                        <div className="mt-2">
-									                                            <p className="mb-1 font-medium text-muted-foreground text-xs">
-									                                                Summary:
-									                                            </p>
-									                                            <p className="text-sm">{qa.model_answer_summary}</p>
-									                                        </div>
-									                                    )}
-									                                </div>								<div className="space-y-4 p-4">
+									<p className="mt-1 text-muted-foreground text-xs uppercase">
+										{qa.question_type
+											? qa.question_type.replace(/_/g, " ")
+											: "N/A"}
+									</p>
+									{qa.model_answer_summary && (
+										<div className="mt-2">
+											<p className="mb-1 font-medium text-muted-foreground text-xs">
+												Summary:
+											</p>
+											<p className="text-sm">{qa.model_answer_summary}</p>
+										</div>
+									)}
+								</div>{" "}
+								<div className="space-y-4 p-4">
 									{qa.answer_components?.map((component) => (
 										<div
 											key={component.component_id}
@@ -247,10 +271,12 @@ export default function ModelAnswerPage() {
 																? component.component_type.replace(/_/g, " ")
 																: "N/A"}
 														</span>
-																												<span className="text-muted-foreground text-xs">
-																													{component.component_marks || 0}{" "}
-																													{component.component_marks === 1 ? "mark" : "marks"}
-																												</span>{" "}
+														<span className="text-muted-foreground text-xs">
+															{component.component_marks || 0}{" "}
+															{component.component_marks === 1
+																? "mark"
+																: "marks"}
+														</span>{" "}
 													</div>
 												</div>
 											</div>
@@ -262,23 +288,24 @@ export default function ModelAnswerPage() {
 													</p>
 													<ExpectedAnswer component={component} />
 												</div>
-												{component.keywords && component.keywords.length > 0 && (
-													<div>
-														<p className="mb-1 font-medium text-muted-foreground text-xs">
-															Keywords:
-														</p>
-														<div className="flex flex-wrap gap-1">
-															{component.keywords.map((keyword, idx) => (
-																<span
-																	key={idx}
-																	className="rounded-full bg-muted px-2 py-0.5 text-xs"
-																>
-																	{keyword}
-																</span>
-															))}
+												{component.keywords &&
+													component.keywords.length > 0 && (
+														<div>
+															<p className="mb-1 font-medium text-muted-foreground text-xs">
+																Keywords:
+															</p>
+															<div className="flex flex-wrap gap-1">
+																{component.keywords.map((keyword, idx) => (
+																	<span
+																		key={idx}
+																		className="rounded-full bg-muted px-2 py-0.5 text-xs"
+																	>
+																		{keyword}
+																	</span>
+																))}
+															</div>
 														</div>
-													</div>
-												)}
+													)}
 											</div>
 										</div>
 									))}
