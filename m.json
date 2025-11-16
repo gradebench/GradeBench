@@ -1,0 +1,144 @@
+{
+	"question_answers": [
+		{
+			"model_answer_summary": "Analysis of the role of government schemes in women's economic and social empowerment, followed by a discussion of administrative and socio-cultural challenges in their implementation.",
+			"marks_allocated": 10,
+			"question_type": "long_answer",
+			"question_id": "q_1",
+			"answer_components": [
+				{
+					"component_type": "concept_point",
+					"component_id": "q1_c1",
+					"component_marks": 2.5,
+					"component_text": "Role in Economic Empowerment: Schemes like PM Jan Dhan Yojana, Stand Up India/Start-up India, and MGNREGA provide financial inclusion, entrepreneurship support, and guaranteed employment, leading to financial independence.",
+					"keywords": [
+						"PMJDY",
+						"Stand Up India",
+						"MGNREGA",
+						"financial inclusion",
+						"entrepreneurship",
+						"economic empowerment"
+					]
+				},
+				{
+					"component_marks": 2.5,
+					"keywords": [
+						"BBBP",
+						"Ujjwala Yojana",
+						"One Stop Centre",
+						"education",
+						"health",
+						"safety",
+						"social empowerment"
+					],
+					"component_text": "Role in Social and Health Empowerment: Beti Bachao, Beti Padhao addresses skewed gender ratios and education; Ujjwala Yojana improves health by providing clean fuel; One Stop Centres offer safety and support to victims of violence.",
+					"component_type": "concept_point",
+					"component_id": "q1_c2"
+				},
+				{
+					"component_type": "concept_point",
+					"component_text": "Challenges (Administrative and Awareness): Implementation is hindered by lack of scheme awareness among beneficiaries, bureaucratic hurdles, corruption, and limited administrative reach, especially in rural and remote areas.",
+					"component_marks": 2.5,
+					"component_id": "q1_c3",
+					"keywords": [
+						"lack of awareness",
+						"bureaucracy",
+						"corruption",
+						"limited outreach",
+						"implementation challenge"
+					]
+				},
+				{
+					"component_id": "q1_c4",
+					"component_text": "Challenges (Socio-Cultural): Deep-rooted patriarchal norms, low female literacy rates, resistance from family members in accessing benefits, and severe constraints on women's mobility restrict scheme uptake and effectiveness.",
+					"keywords": [
+						"patriarchy",
+						"low literacy",
+						"family resistance",
+						"mobility constraints",
+						"socio-cultural barriers"
+					],
+					"component_marks": 2.5,
+					"component_type": "concept_point"
+				}
+			]
+		},
+		{
+			"model_answer_summary": "Examination of the mixed social and economic impacts of urbanization (positive and negative) and suggestion of key measures for sustainable urban development focusing on infrastructure, planning, and governance.",
+			"question_id": "q_2",
+			"question_type": "long_answer",
+			"marks_allocated": 15,
+			"answer_components": [
+				{
+					"component_text": "Positive Economic Impacts: Urban areas drive economic growth, contributing significantly to GDP, offering better formal employment opportunities, and fostering innovation through agglomeration economies.",
+					"component_type": "concept_point",
+					"component_id": "q2_c1",
+					"component_marks": 3,
+					"keywords": [
+						"GDP contribution",
+						"employment",
+						"agglomeration economies",
+						"innovation",
+						"positive economic impact"
+					]
+				},
+				{
+					"keywords": [
+						"cost of living",
+						"income inequality",
+						"municipal strain",
+						"negative economic impact"
+					],
+					"component_id": "q2_c2",
+					"component_text": "Negative Economic Impacts: Rapid urbanization often leads to inflated costs of living (especially housing), strain on municipal finances for service provision, and widening income disparities.",
+					"component_type": "concept_point",
+					"component_marks": 3
+				},
+				{
+					"component_marks": 3,
+					"component_type": "concept_point",
+					"component_text": "Social Impacts: Causes shifts in family structure (from joint to nuclear), increases cultural diversity, and offers greater social mobility, but also leads to the proliferation of slums, higher crime rates, and social exclusion.",
+					"keywords": [
+						"nuclear families",
+						"cultural diversity",
+						"social mobility",
+						"slums",
+						"crime",
+						"social exclusion"
+					],
+					"component_id": "q2_c3"
+				},
+				{
+					"component_id": "q2_c4",
+					"component_text": "Sustainable Measure (Infrastructure & Planning): Implement comprehensive 'Smart City' strategies, promote integrated, multi-modal public transport, and prioritize affordable housing schemes (like PMAY) coupled with regional decentralized planning.",
+					"keywords": [
+						"Smart Cities",
+						"integrated transport",
+						"PMAY",
+						"affordable housing",
+						"decentralized planning",
+						"sustainable measure"
+					],
+					"component_type": "concept_point",
+					"component_marks": 3
+				},
+				{
+					"component_text": "Sustainable Measure (Environmental & Governance): Focus on effective Solid Waste Management (SWM), water conservation, development of green infrastructure, and strengthening the financial and administrative capacity of Urban Local Bodies (ULBs).",
+					"keywords": [
+						"SWM",
+						"water conservation",
+						"green infrastructure",
+						"ULBs",
+						"governance",
+						"environmental measure"
+					],
+					"component_id": "q2_c5",
+					"component_marks": 3,
+					"component_type": "concept_point"
+				}
+			]
+		}
+	],
+	"question_paper_id": "ef1ad092-a496-4732-8635-6766f7ee6ee1",
+	"model_answer_id": "e46a7821-4f11-447e-a0e2-63234d70b777"
+}
