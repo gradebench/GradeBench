@@ -25,6 +25,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import type { AcademicTest } from "@/lib/academic-tests-api";
+import {
+	generateDynamicRubric,
+	getAcademicTest,
+	pollForDynamicRubric,
+} from "@/lib/academic-tests-api";
 import type { AnswerPaper } from "@/lib/answer-papers-api";
 import {
 	deleteAnswerPaper,
@@ -48,6 +54,7 @@ export function EvaluationDashboard({
 	const router = useRouter();
 	const [answerPapers, setAnswerPapers] =
 		useState<AnswerPaper[]>(initialAnswerPapers);
+	const [academicTest, setAcademicTest] = useState<AcademicTest | null>(null);
 	const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
@@ -91,6 +98,27 @@ export function EvaluationDashboard({
 		}
 		return () => {};
 	}, [isAnyProcessing, fetchPapers]);
+
+	useEffect(() => {
+		const fetchTest = async () => {
+			try {
+				const test = await getAcademicTest(testId);
+				setAcademicTest(test);
+				if (!test.dynamic_rubric) {
+					toast.info("Generating dynamic rubric...");
+					await generateDynamicRubric(testId);
+					const updatedTest = await pollForDynamicRubric(testId);
+					setAcademicTest(updatedTest);
+					toast.success("Dynamic rubric generated successfully.");
+				}
+			} catch (error) {
+				console.error("Error fetching academic test:", error);
+				toast.error("Failed to fetch academic test details.");
+			}
+		};
+
+		fetchTest();
+	}, [testId]);
 
 	const handleRefresh = async () => {
 		setIsRefreshing(true);
@@ -204,7 +232,12 @@ export function EvaluationDashboard({
 						<Button
 							size="sm"
 							onClick={handleAutomateClick}
-							disabled={!isAllProcessed || isAutomating || isAnyProcessing}
+							disabled={
+								!isAllProcessed ||
+								isAutomating ||
+								isAnyProcessing ||
+								!academicTest?.dynamic_rubric
+							}
 						>
 							<Zap className="mr-2 h-4 w-4" />
 							{isAutomating ? "Evaluating..." : "Automate Evaluation"}

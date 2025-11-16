@@ -32,6 +32,8 @@ export default function EvaluatePage() {
 		"loading",
 	);
 
+	const [isRubricGenerating, setIsRubricGenerating] = useState(false);
+
 	const fetchInitialData = useCallback(async () => {
 		try {
 			setLoading(true);
@@ -69,6 +71,36 @@ export default function EvaluatePage() {
 	}, [testId]);
 
 	useEffect(() => {
+		if (test && !test.dynamic_rubrics_url) {
+			const generateRubrics = async () => {
+				setIsRubricGenerating(true);
+				try {
+					const response = await fetch(
+						`${API_BASE_URL}/dynamic-rubrics/${testId}`,
+						{
+							method: "POST",
+						},
+					);
+					if (!response.ok) {
+						throw new Error("Failed to generate dynamic rubrics.");
+					}
+					await fetchInitialData();
+				} catch (error) {
+					console.error("Error generating dynamic rubrics:", error);
+					toast.error(
+						error instanceof Error
+							? error.message
+							: "Failed to generate dynamic rubrics.",
+					);
+				} finally {
+					setIsRubricGenerating(false);
+				}
+			};
+			generateRubrics();
+		}
+	}, [test, testId, fetchInitialData]);
+
+	useEffect(() => {
 		if (testId) {
 			fetchInitialData();
 		}
@@ -92,6 +124,19 @@ export default function EvaluatePage() {
 				<div className="text-center">
 					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
 					<p className="text-muted-foreground">Loading test data...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (isRubricGenerating) {
+		return (
+			<div className="flex min-h-screen items-center justify-center">
+				<div className="text-center">
+					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+					<p className="text-muted-foreground">
+						Generating dynamic rubrics...
+					</p>
 				</div>
 			</div>
 		);
