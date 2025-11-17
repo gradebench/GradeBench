@@ -31,7 +31,8 @@ export function UploadQuestionPaperDrawer({
 	const [file, setFile] = useState<File | null>(null);
 	const [loading, setLoading] = useState(false);
 
-	const API_BASE_URL = "http://localhost:8083/grade/v1";
+	const API_BASE_URL =
+		process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8083/grade/v1";
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files?.[0]) {

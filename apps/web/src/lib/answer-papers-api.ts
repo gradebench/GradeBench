@@ -2,7 +2,7 @@
  * Answer Papers API utilities for handling uploads, digitization, and related operations
  */
 
-const API_BASE_URL = "http://localhost:8083/grade/v1";
+import { GRADE_API_BASE as API_BASE_URL } from "./api";
 
 export interface AnswerPaper {
 	id: string;
@@ -61,6 +61,91 @@ export async function getAnswerPapers(testId: string): Promise<AnswerPaper[]> {
 		return data.data?.answer_papers || data.data || [];
 	} catch (error) {
 		console.error("Error fetching answer papers:", error);
+		throw error;
+	}
+}
+
+/**
+ * Fetch answer papers using the alternate endpoint
+ * GET /grade/v1/answer-papers/academic-test/:id
+ * This endpoint returns `data['answer-papers']` in some backends; adapt to
+ * that shape and normalize into `AnswerPaper[]`.
+ */
+export async function getAnswerPapersByAcademicTest(
+	testId: string,
+): Promise<AnswerPaper[]> {
+	try {
+		const response = await fetch(
+			`${API_BASE_URL}/answer-papers/academic-test/${testId}`,
+		);
+
+		if (!response.ok) {
+			throw new Error(`Failed to fetch answer papers: ${response.statusText}`);
+		}
+
+		const data = await response.json().catch(() => null);
+
+		// Support both `data.answer_papers` and `data['answer-papers']` shapes
+		const rawPapers: unknown =
+			(data?.data && (data.data["answer-papers"] || data.data.answer_papers)) ||
+			data?.data ||
+			[];
+
+		if (!Array.isArray(rawPapers)) return [];
+
+		const toStr = (v: unknown): string => (typeof v === "string" ? v : "");
+		const toNullableStr = (v: unknown): string | null =>
+			typeof v === "string" ? v : v === null ? null : null;
+		const toNumberOrNull = (v: unknown): number | null =>
+			typeof v === "number" ? v : null;
+
+		const normalize = (obj: unknown): AnswerPaper => {
+			const o = obj as Record<string, unknown>;
+			const id = toStr(o.id) || toStr(o.Id) || "";
+			const created_at = toStr(o.created_at) || new Date().toISOString();
+			const updated_at = toStr(o.updated_at) || created_at;
+
+			const rawEval = toStr(o.evaluation_status);
+			const allowed = ["pending", "in_progress", "completed", "failed"];
+			const evalStatus = allowed.includes(rawEval)
+				? (rawEval as AnswerPaper["evaluation_status"])
+				: "pending";
+
+			return {
+				id,
+				academic_test_id:
+					toStr(o.academic_test_id) || toStr(o.academicTestId) || testId,
+				student_name: toStr(o.name) || toStr(o.student_name) || "",
+				student_id: toNullableStr(o.student_id),
+				raw_document_url:
+					toStr(o.raw_document_url) || toStr(o.rawDocumentUrl) || "",
+				processed_document_url:
+					toNullableStr(o.processed_document_url) ||
+					toNullableStr(o.processedDocumentUrl),
+				digitized_document_url:
+					toNullableStr(o.digitized_document_url) ||
+					toNullableStr(o.digitizedDocumentUrl),
+				annotated_document_url:
+					toNullableStr(o.annotated_document_url) ||
+					toNullableStr(o.annotatedDocumentUrl),
+				evaluation_status: evalStatus,
+				total_score: toNumberOrNull(o.total_score),
+				max_score: toNumberOrNull(o.max_score),
+				percentage: toNumberOrNull(o.percentage),
+				grade: toNullableStr(o.grade),
+				submitted_at:
+					toStr(o.updated_at) ||
+					toStr(o.created_at) ||
+					new Date().toISOString(),
+				evaluated_at: toNullableStr(o.evaluated_at),
+				created_at,
+				updated_at,
+			};
+		};
+
+		return (rawPapers as unknown[]).map((r) => normalize(r));
+	} catch (error) {
+		console.error("Error fetching answer papers (by academic test):", error);
 		throw error;
 	}
 }
