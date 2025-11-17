@@ -95,6 +95,8 @@ export function EvaluatorConfigPanelV3({
 	onConfigSelected,
 	onSave,
 }: EvaluatorConfigPanelV3Props) {
+	const API_BASE_URL =
+		process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8083/grade/v1";
 	const [selectedTemplate, setSelectedTemplate] = useState<
 		keyof typeof TEMPLATE_CONFIGS | null
 	>("standard");
@@ -392,14 +394,11 @@ export function EvaluatorConfigPanelV3({
 				},
 			};
 
-			const response = await fetch(
-				"http://localhost:8083/grade/v1/evaluator-configurations",
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(simplifiedConfig),
-				},
-			);
+			const response = await fetch(`${API_BASE_URL}/evaluator-configurations`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(simplifiedConfig),
+			});
 
 			if (!response.ok) {
 				throw new Error(`API Error: ${response.status}`);

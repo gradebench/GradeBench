@@ -31,6 +31,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 // Types for the processed question paper data
 interface QuestionPaper {
@@ -117,7 +118,7 @@ export default function QuestionPaperDetailPage() {
 				// The backend GET by ID endpoint returns empty object, so we fetch from list
 				console.log("Fetching question paper:", questionPaperId);
 				const response = await fetch(
-					`http://localhost:8083/grade/v1/question-papers?pageSize=100`,
+					`${API_BASE_URL}/question-papers?pageSize=100`,
 				);
 
 				if (!response.ok) {

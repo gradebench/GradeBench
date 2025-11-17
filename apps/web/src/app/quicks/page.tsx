@@ -32,8 +32,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-
-const API_BASE_URL = "http://localhost:8083/grade/v1";
+import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 interface AcademicTest {
 	id: string;

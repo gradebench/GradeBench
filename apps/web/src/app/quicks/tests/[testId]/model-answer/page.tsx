@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
 	if (!component) return null;
@@ -76,8 +77,6 @@ interface ModelAnswerData {
 	question_paper_id: string;
 	question_answers: QuestionAnswer[];
 }
-
-const API_BASE_URL = "http://localhost:8083/grade/v1";
 
 export default function ModelAnswerPage() {
 	const params = useParams();

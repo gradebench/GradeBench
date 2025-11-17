@@ -35,6 +35,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 // ============================================================================
 // Types & Interfaces
@@ -94,8 +95,6 @@ interface EvaluationResult {
 // ============================================================================
 // Constants
 // ============================================================================
-
-const API_BASE_URL = "http://localhost:8083/grade/v1";
 
 // Mock data for testing/development
 const MOCK_EVALUATION: EvaluationResult = {

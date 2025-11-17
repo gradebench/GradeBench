@@ -53,7 +53,8 @@ export function CreateAcademicTestDrawer({
 	const [loading, setLoading] = useState(false);
 	const [fetching, setFetching] = useState(true);
 
-	const API_BASE_URL = "http://localhost:8083/grade/v1";
+	const API_BASE_URL =
+		process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8083/grade/v1";
 
 	const fetchData = useCallback(async () => {
 		setFetching(true);
@@ -82,7 +83,7 @@ export function CreateAcademicTestDrawer({
 		} finally {
 			setFetching(false);
 		}
-	}, []);
+	}, [API_BASE_URL]);
 
 	useEffect(() => {
 		if (open) {
