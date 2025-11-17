@@ -44,7 +44,9 @@ export interface AnswerPaperCreateRequest {
  */
 export async function getAnswerPapers(testId: string): Promise<AnswerPaper[]> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/tests/${testId}/answers`);
+		const response = await fetch(
+			`${API_BASE_URL}/academic-tests/${testId}/answer-papers`,
+		);
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch answer papers: ${response.statusText}`);
@@ -329,4 +331,29 @@ export async function pollForProcessedDocuments(
 			}
 		}, intervalMs);
 	});
+}
+
+/**
+ * Trigger bulk evaluation for an academic test
+ */
+export async function startEvaluation(testId: string): Promise<void> {
+	try {
+		const response = await fetch(`${API_BASE_URL}/tests/${testId}/evaluate`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(
+				errorData.error ||
+					`Failed to trigger evaluation: ${response.statusText}`,
+			);
+		}
+	} catch (error) {
+		console.error("Error triggering evaluation:", error);
+		throw error;
+	}
 }

@@ -16,11 +16,6 @@
 	"[markdown]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"geminicodeassist.chat.automaticScrolling": true,
-	"geminicodeassist.chat.enableStreaming": true,
-	"geminicodeassist.contextExclusionGitignore": true,
-	"geminicodeassist.enable": true,
-	"geminicodeassist.updateChannel": "Insiders",
 	"editor.cursorBlinking": "expand",
 	"editor.cursorSmoothCaretAnimation": "on",
 	"editor.smoothScrolling": true,

@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@gb/ui/src/components/ui/button";
-import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -24,70 +22,103 @@ const API_BASE_URL = "http://localhost:8083/grade/v1";
 
 export default function EvaluatePage() {
 	const params = useParams();
-	const router = useRouter();
+	const _router = useRouter();
 	const testId = params?.testId as string;
 
 	const [test, setTest] = useState<AcademicTest | null>(null);
 	const [answerPapers, setAnswerPapers] = useState<AnswerPaper[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [isRefreshing, setIsRefreshing] = useState(false);
+	const [viewMode, setViewMode] = useState<"loading" | "upload" | "dashboard">(
+		"loading",
+	);
 
-	const fetchAnswerPapers = useCallback(async () => {
-		try {
-			const papers = await getAnswerPapers(testId);
-			setAnswerPapers(papers);
-			return papers;
-		} catch (error) {
-			console.error("Error fetching answer papers:", error);
-			return [];
-		}
-	}, [testId]);
+	const [isRubricGenerating, setIsRubricGenerating] = useState(false);
 
-	const fetchData = useCallback(async () => {
+	const fetchInitialData = useCallback(async () => {
 		try {
 			setLoading(true);
 
+			// Fetch test details first
 			const testResponse = await fetch(
 				`${API_BASE_URL}/academic-tests/${testId}`,
 			);
 			if (testResponse.ok) {
 				const testData = await testResponse.json();
 				setTest(testData.data || testData);
+			} else {
+				throw new Error("Failed to load test details.");
 			}
 
-			await fetchAnswerPapers();
+			// Then, check for existing answer papers
+			const papers = await getAnswerPapers(testId);
+			setAnswerPapers(papers);
+
+			if (papers.length > 0) {
+				setViewMode("dashboard");
+			} else {
+				setViewMode("upload");
+			}
 		} catch (error) {
-			console.error("Error fetching data:", error);
+			console.error("Error fetching initial data:", error);
+			toast.error(
+				error instanceof Error ? error.message : "Failed to load page.",
+			);
+			// Fallback to upload view on error
+			setViewMode("upload");
 		} finally {
 			setLoading(false);
 		}
-	}, [testId, fetchAnswerPapers]);
+	}, [testId]);
 
 	useEffect(() => {
-		if (testId) fetchData();
-	}, [testId, fetchData]);
-
-	useEffect(() => {
-		if (answerPapers.length === 0) return;
-
-		const interval = setInterval(() => {
-			fetchAnswerPapers();
-		}, 3000);
-
-		return () => clearInterval(interval);
-	}, [fetchAnswerPapers, answerPapers.length]);
-
-	const handleRefresh = async () => {
-		setIsRefreshing(true);
-		try {
-			await fetchAnswerPapers();
-			toast.success("Papers refreshed successfully");
-		} finally {
-			setIsRefreshing(false);
+		if (test && !test.dynamic_rubrics_url) {
+			const generateRubrics = async () => {
+				setIsRubricGenerating(true);
+				try {
+					const response = await fetch(
+						`${API_BASE_URL}/dynamic-rubrics/${testId}`,
+						{
+							method: "POST",
+						},
+					);
+					if (!response.ok) {
+						throw new Error("Failed to generate dynamic rubrics.");
+					}
+					await fetchInitialData();
+				} catch (error) {
+					console.error("Error generating dynamic rubrics:", error);
+					toast.error(
+						error instanceof Error
+							? error.message
+							: "Failed to generate dynamic rubrics.",
+					);
+				} finally {
+					setIsRubricGenerating(false);
+				}
+			};
+			generateRubrics();
 		}
-	};
+	}, [test, testId, fetchInitialData]);
 
-	if (loading) {
+	useEffect(() => {
+		if (testId) {
+			fetchInitialData();
+		}
+	}, [testId, fetchInitialData]);
+
+	const handleUploadComplete = useCallback(async () => {
+		try {
+			toast.info("Fetching updated answer papers...");
+			const papers = await getAnswerPapers(testId);
+			setAnswerPapers(papers);
+			setViewMode("dashboard");
+			toast.success("Dashboard is ready.");
+		} catch (_error) {
+			toast.error("Failed to fetch answer papers after upload.");
+		}
+	}, [testId]);
+
+	if (loading || viewMode === "loading") {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="text-center">
@@ -98,65 +129,29 @@ export default function EvaluatePage() {
 		);
 	}
 
-	if (answerPapers.length === 0) {
+	if (isRubricGenerating) {
 		return (
-			<div className="space-y-6">
-				<div className="border-b bg-background p-6">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => router.push("/quicks")}
-					>
-						<ArrowLeft className="mr-2 h-4 w-4" />
-						Back to Dashboard
-					</Button>
-				</div>
-
-				<div className="container mx-auto p-6">
-					<div className="mb-6">
-						<h1 className="font-semibold text-3xl">Upload Answer Papers</h1>
-						<p className="text-muted-foreground text-sm">
-							Select and upload PDF files for evaluation
-						</p>
-					</div>
-					<UploadPanel testId={testId} onUploadComplete={() => fetchData()} />
+			<div className="flex min-h-screen items-center justify-center">
+				<div className="text-center">
+					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+					<p className="text-muted-foreground">Generating dynamic rubrics...</p>
 				</div>
 			</div>
 		);
 	}
 
-	return (
-		<div className="space-y-6">
-			<div className="border-b bg-background p-6">
-				<div className="flex items-center justify-between">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => router.push("/quicks")}
-					>
-						<ArrowLeft className="mr-2 h-4 w-4" />
-						Back to Dashboard
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={handleRefresh}
-						disabled={isRefreshing}
-					>
-						<RefreshCw
-							className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-						/>
-						{isRefreshing ? "Refreshing..." : "Refresh"}
-					</Button>
-				</div>
-			</div>
+	if (viewMode === "upload") {
+		return (
+			<UploadPanel testId={testId} onUploadComplete={handleUploadComplete} />
+		);
+	}
 
-			<EvaluationDashboard
-				testId={testId}
-				testName={test?.test_name || "Academic Test"}
-				initialAnswerPapers={answerPapers}
-				onRefresh={handleRefresh}
-			/>
-		</div>
+	return (
+		<EvaluationDashboard
+			testId={testId}
+			testName={test?.test_name || "Academic Test"}
+			initialAnswerPapers={answerPapers}
+			onUploadMore={() => setViewMode("upload")}
+		/>
 	);
 }

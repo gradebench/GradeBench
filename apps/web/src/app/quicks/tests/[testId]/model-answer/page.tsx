@@ -1,27 +1,73 @@
 "use client";
 
 import { Button } from "@gb/ui/src/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
+	if (!component) return null;
+
+	switch (component.component_type) {
+		case "concept_point":
+			return (
+				<p className="text-sm">{component.component_text || "No answer"}</p>
+			);
+		case "exact_match":
+			return <p className="text-sm">{component.exact_answer || "No answer"}</p>;
+		case "numerical":
+			return (
+				<div className="text-sm">
+					<p>Value: {component.numerical_answer?.value}</p>
+					{component.numerical_answer?.unit && (
+						<p>Unit: {component.numerical_answer.unit}</p>
+					)}
+				</div>
+			);
+		case "code_block":
+			return (
+				<pre className="rounded bg-muted p-2 text-sm">
+					<code>{component.code_answer?.expected_code}</code>
+				</pre>
+			);
+		default:
+			return (
+				<p className="text-sm">
+					{component.component_text ||
+						component.exact_answer ||
+						"No answer provided for this component type."}
+				</p>
+			);
+	}
+};
+
+interface NumericalAnswer {
+	value: number;
+	unit?: string;
+}
+
+interface CodeAnswer {
+	expected_code: string;
+}
+
 interface AnswerComponent {
 	component_id: string;
 	component_type: string;
-	expected_answer: string;
-	evaluation_criteria: string;
-	keywords: string[];
-	marks: number;
-	acceptable_variations?: string[];
+	component_text?: string;
+	keywords?: string[];
+	component_marks?: number;
+	exact_answer?: string;
+	numerical_answer?: NumericalAnswer;
+	code_answer?: CodeAnswer;
 }
 
 interface QuestionAnswer {
 	question_id: string;
-	question_number: string;
-	question_text: string;
+	question_number?: string;
 	question_type: string;
-	total_marks: number;
+	marks_allocated: number;
+	model_answer_summary?: string;
 	answer_components: AnswerComponent[];
 }
 
@@ -42,6 +88,8 @@ export default function ModelAnswerPage() {
 		useState<ModelAnswerData | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [generating, setGenerating] = useState(false);
+	const [needsGeneration, setNeedsGeneration] = useState(false);
+	const [generationFinished, setGenerationFinished] = useState(false);
 
 	const generateModelAnswers = useCallback(async () => {
 		if (!testId) {
@@ -50,6 +98,13 @@ export default function ModelAnswerPage() {
 		}
 
 		setGenerating(true);
+		toast.info(
+			"Starting model answer generation... Please do not leave or reload the page.",
+			{
+				duration: 10000, // Keep the toast visible for longer
+			},
+		);
+
 		try {
 			const response = await fetch(`${API_BASE_URL}/model-answers/${testId}`, {
 				method: "POST",
@@ -61,13 +116,13 @@ export default function ModelAnswerPage() {
 				throw new Error(errorData.message || `HTTP ${response.status}`);
 			}
 
-			const data = await response.json();
-			setModelAnswerData(data.data || data);
-			toast.success("Model answers generated successfully");
+			toast.success(
+				"Model answer generation started successfully. Fetching results...",
+			);
+			setGenerationFinished(true);
 		} catch (error) {
-			console.error("Error generating model answers:", error);
 			const message = error instanceof Error ? error.message : "Unknown error";
-			toast.error(`Failed to generate model answers: ${message}`);
+			toast.error(`Failed to start model answer generation: ${message}`);
 		} finally {
 			setGenerating(false);
 		}
@@ -78,53 +133,55 @@ export default function ModelAnswerPage() {
 
 		try {
 			setLoading(true);
+			setNeedsGeneration(false); // Reset on each fetch
 
 			const testResponse = await fetch(
 				`${API_BASE_URL}/academic-tests/${testId}`,
 			);
 			if (!testResponse.ok) {
-				console.error(`Test fetch failed: ${testResponse.status}`);
 				toast.error("Failed to load test details");
 				return;
 			}
 
 			const testData = await testResponse.json();
-			const test = testData.data || testData;
-			console.log("Full test response:", testData);
-			console.log("Extracted test:", test);
-			console.log("key_answers_url:", test?.key_answers_url);
+			console.log(testData);
 
-			if (test?.key_answers_url) {
-				console.log("Fetching from S3:", test.key_answers_url);
-				const s3Response = await fetch(test.key_answers_url);
-				console.log("S3 response status:", s3Response.status);
+			const test = testData.data || testData;
+
+			if (test?.academic_tests?.key_answers_url) {
+				const s3Response = await fetch(test.academic_tests.key_answers_url);
 
 				if (s3Response.ok) {
 					const data = await s3Response.json();
-					console.log("Raw S3 data:", data);
 					setModelAnswerData(data);
 					toast.success("Model answers loaded");
 					return;
 				}
 
-				const errorText = await s3Response.text();
-				console.error("S3 fetch failed:", s3Response.status, errorText);
+				const _errorText = await s3Response.text();
 				toast.error(`Failed to fetch from S3: ${s3Response.status}`);
 			} else {
-				console.log("No key_answers_url, generating...");
-				await generateModelAnswers();
+				setNeedsGeneration(true);
 			}
-		} catch (error) {
-			console.error("Error in fetchModelAnswers:", error);
+		} catch (_error) {
 			toast.error("Failed to load model answers");
 		} finally {
 			setLoading(false);
 		}
-	}, [testId, generateModelAnswers]);
+	}, [testId]);
 
 	useEffect(() => {
-		if (testId) fetchModelAnswers();
+		if (testId) {
+			fetchModelAnswers();
+		}
 	}, [testId, fetchModelAnswers]);
+
+	useEffect(() => {
+		if (generationFinished) {
+			fetchModelAnswers();
+			setGenerationFinished(false); // Reset the trigger
+		}
+	}, [generationFinished, fetchModelAnswers]);
 
 	if (loading || generating) {
 		return (
@@ -142,14 +199,25 @@ export default function ModelAnswerPage() {
 	return (
 		<div className="space-y-6">
 			<div className="border-b bg-background p-6">
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => router.push("/quicks")}
-				>
-					<ArrowLeft className="mr-2 h-4 w-4" />
-					Back to Dashboard
-				</Button>
+				<div className="container mx-auto flex items-center justify-between">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={() => router.push("/quicks")}
+					>
+						<ArrowLeft className="mr-2 h-4 w-4" />
+						Back to Dashboard
+					</Button>
+					{modelAnswerData && (
+						<Button
+							size="sm"
+							onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
+						>
+							Proceed to Evaluation
+							<ArrowRight className="ml-2 h-4 w-4" />
+						</Button>
+					)}
+				</div>
 			</div>
 
 			<div className="container mx-auto p-6">
@@ -160,39 +228,37 @@ export default function ModelAnswerPage() {
 							Reference answers for evaluation
 						</p>
 					</div>
-					<Button variant="outline" onClick={fetchModelAnswers}>
-						Reload
-					</Button>
 				</div>
 
-				{!modelAnswerData?.question_answers?.length ? (
-					<div className="rounded-lg border p-8 text-center">
-						<p className="text-muted-foreground">No model answers available</p>
-						<p className="mt-2 text-muted-foreground text-xs">
-							Check console for errors
-						</p>
-					</div>
-				) : (
+				{modelAnswerData?.question_answers?.length ? (
 					<div className="space-y-6">
 						{modelAnswerData.question_answers.map((qa) => (
 							<div key={qa.question_id} className="rounded-lg border">
 								<div className="border-b bg-muted/50 p-4">
 									<div className="flex items-center justify-between">
 										<h3 className="font-semibold text-lg">
-											Question {qa.question_number}
+											Question {qa.question_number || "N/A"}
 										</h3>
 										<span className="rounded-full bg-primary/10 px-3 py-1 font-medium text-primary text-sm">
-											{qa.total_marks} marks
+											{qa.marks_allocated || 0} marks
 										</span>
 									</div>
-									<p className="mt-2 text-sm">{qa.question_text}</p>
 									<p className="mt-1 text-muted-foreground text-xs uppercase">
-										{qa.question_type.replace("_", " ")}
+										{qa.question_type
+											? qa.question_type.replace(/_/g, " ")
+											: "N/A"}
 									</p>
-								</div>
-
+									{qa.model_answer_summary && (
+										<div className="mt-2">
+											<p className="mb-1 font-medium text-muted-foreground text-xs">
+												Summary:
+											</p>
+											<p className="text-sm">{qa.model_answer_summary}</p>
+										</div>
+									)}
+								</div>{" "}
 								<div className="space-y-4 p-4">
-									{qa.answer_components.map((component) => (
+									{qa.answer_components?.map((component) => (
 										<div
 											key={component.component_id}
 											className="rounded-lg border bg-card p-4"
@@ -201,12 +267,16 @@ export default function ModelAnswerPage() {
 												<div className="flex-1">
 													<div className="mb-1 flex items-center gap-2">
 														<span className="rounded bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs uppercase">
-															{component.component_type.replace("_", " ")}
+															{component.component_type
+																? component.component_type.replace(/_/g, " ")
+																: "N/A"}
 														</span>
 														<span className="text-muted-foreground text-xs">
-															{component.marks}{" "}
-															{component.marks === 1 ? "mark" : "marks"}
-														</span>
+															{component.component_marks || 0}{" "}
+															{component.component_marks === 1
+																? "mark"
+																: "marks"}
+														</span>{" "}
 													</div>
 												</div>
 											</div>
@@ -216,53 +286,23 @@ export default function ModelAnswerPage() {
 													<p className="mb-1 font-medium text-muted-foreground text-xs">
 														Expected Answer:
 													</p>
-													<p className="text-sm">{component.expected_answer}</p>
+													<ExpectedAnswer component={component} />
 												</div>
-
-												{component.keywords.length > 0 && (
-													<div>
-														<p className="mb-1 font-medium text-muted-foreground text-xs">
-															Keywords:
-														</p>
-														<div className="flex flex-wrap gap-1">
-															{component.keywords.map((keyword, idx) => (
-																<span
-																	key={idx}
-																	className="rounded-full bg-muted px-2 py-0.5 text-xs"
-																>
-																	{keyword}
-																</span>
-															))}
-														</div>
-													</div>
-												)}
-
-												<div>
-													<p className="mb-1 font-medium text-muted-foreground text-xs">
-														Evaluation Criteria:
-													</p>
-													<p className="text-muted-foreground text-xs">
-														{component.evaluation_criteria}
-													</p>
-												</div>
-
-												{component.acceptable_variations &&
-													component.acceptable_variations.length > 0 && (
+												{component.keywords &&
+													component.keywords.length > 0 && (
 														<div>
 															<p className="mb-1 font-medium text-muted-foreground text-xs">
-																Acceptable Variations:
+																Keywords:
 															</p>
 															<div className="flex flex-wrap gap-1">
-																{component.acceptable_variations.map(
-																	(variation, idx) => (
-																		<span
-																			key={idx}
-																			className="rounded-full bg-muted px-2 py-0.5 text-xs"
-																		>
-																			{variation}
-																		</span>
-																	),
-																)}
+																{component.keywords.map((keyword, idx) => (
+																	<span
+																		key={idx}
+																		className="rounded-full bg-muted px-2 py-0.5 text-xs"
+																	>
+																		{keyword}
+																	</span>
+																))}
 															</div>
 														</div>
 													)}
@@ -272,6 +312,24 @@ export default function ModelAnswerPage() {
 								</div>
 							</div>
 						))}
+					</div>
+				) : needsGeneration ? (
+					<div className="rounded-lg border p-8 text-center">
+						<p className="text-muted-foreground">
+							Model answers have not been generated yet.
+						</p>
+						<Button
+							variant="outline"
+							onClick={generateModelAnswers}
+							className="mt-4"
+							disabled={generating}
+						>
+							{generating ? "Generating..." : "Generate Model Answers"}
+						</Button>
+					</div>
+				) : (
+					<div className="rounded-lg border p-8 text-center">
+						<p className="text-muted-foreground">No model answers available</p>
 					</div>
 				)}
 			</div>

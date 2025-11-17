@@ -13,38 +13,59 @@ import { Badge } from "@gb/ui/src/components/ui/badge";
 import { Button } from "@gb/ui/src/components/ui/button";
 import { Card, CardContent } from "@gb/ui/src/components/ui/card";
 import { Progress } from "@gb/ui/src/components/ui/progress";
-import { BarChart3, CheckCircle2, Clock, FileText, X, Zap } from "lucide-react";
+import {
+	BarChart3,
+	CheckCircle2,
+	Clock,
+	RefreshCw,
+	Upload,
+	X,
+	Zap,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import type { AcademicTest } from "@/lib/academic-tests-api";
+import {
+	generateDynamicRubric,
+	getAcademicTest,
+	pollForDynamicRubric,
+} from "@/lib/academic-tests-api";
 import type { AnswerPaper } from "@/lib/answer-papers-api";
-import { deleteAnswerPaper, getAnswerPapers } from "@/lib/answer-papers-api";
+import {
+	deleteAnswerPaper,
+	getAnswerPapers,
+	startEvaluation,
+} from "@/lib/answer-papers-api";
 
 interface EvaluationDashboardProps {
 	testId: string;
 	testName: string;
 	initialAnswerPapers: AnswerPaper[];
-	onRefresh?: () => Promise<void>;
+	onUploadMore: () => void;
 }
 
 export function EvaluationDashboard({
 	testId,
 	testName,
 	initialAnswerPapers,
+	onUploadMore,
 }: EvaluationDashboardProps) {
 	const router = useRouter();
 	const [answerPapers, setAnswerPapers] =
 		useState<AnswerPaper[]>(initialAnswerPapers);
+	const [academicTest, setAcademicTest] = useState<AcademicTest | null>(null);
 	const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isRefreshing, setIsRefreshing] = useState(false);
+	const [isAutomating, setIsAutomating] = useState(false);
 
-	// Determine processing status
 	const isAnyProcessing = answerPapers.some(
 		(p) => p.processed_document_url === null,
 	);
-	const isAllProcessed = answerPapers.every(
-		(p) => p.processed_document_url !== null,
-	);
+	const isAllProcessed =
+		answerPapers.length > 0 &&
+		answerPapers.every((p) => p.processed_document_url !== null);
 
 	const processingStatus = isAnyProcessing ? "Processing" : "Processed";
 	const processedCount = answerPapers.filter(
@@ -54,19 +75,57 @@ export function EvaluationDashboard({
 	const processingPercentage =
 		totalCount > 0 ? (processedCount / totalCount) * 100 : 0;
 
-	// Poll for updates every 3 seconds
-	useEffect(() => {
-		const pollInterval = setInterval(async () => {
-			try {
-				const updated = await getAnswerPapers(testId);
-				setAnswerPapers(updated);
-			} catch (error) {
-				console.error("Error polling answer papers:", error);
-			}
-		}, 3000);
-
-		return () => clearInterval(pollInterval);
+	const fetchPapers = useCallback(async () => {
+		try {
+			const updated = await getAnswerPapers(testId);
+			setAnswerPapers(updated);
+			return updated;
+		} catch (error) {
+			console.error("Error fetching answer papers:", error);
+			toast.error("Failed to refresh answer papers.");
+			return [];
+		}
 	}, [testId]);
+
+	useEffect(() => {
+		setAnswerPapers(initialAnswerPapers);
+	}, [initialAnswerPapers]);
+
+	useEffect(() => {
+		if (isAnyProcessing) {
+			const pollInterval = setInterval(fetchPapers, 5000); // Poll every 5s
+			return () => clearInterval(pollInterval);
+		}
+		return () => {};
+	}, [isAnyProcessing, fetchPapers]);
+
+	useEffect(() => {
+		const fetchTest = async () => {
+			try {
+				const test = await getAcademicTest(testId);
+				setAcademicTest(test);
+				if (!test.dynamic_rubric) {
+					toast.info("Generating dynamic rubric...");
+					await generateDynamicRubric(testId);
+					const updatedTest = await pollForDynamicRubric(testId);
+					setAcademicTest(updatedTest);
+					toast.success("Dynamic rubric generated successfully.");
+				}
+			} catch (error) {
+				console.error("Error fetching academic test:", error);
+				toast.error("Failed to fetch academic test details.");
+			}
+		};
+
+		fetchTest();
+	}, [testId]);
+
+	const handleRefresh = async () => {
+		setIsRefreshing(true);
+		await fetchPapers();
+		setIsRefreshing(false);
+		toast.success("Answer papers have been updated.");
+	};
 
 	const handleDeleteClick = useCallback((paperId: string) => {
 		setDeleteConfirm(paperId);
@@ -89,17 +148,43 @@ export function EvaluationDashboard({
 		}
 	}, []);
 
+	const handleAutomateClick = async () => {
+		setIsAutomating(true);
+		toast.info("Starting automated evaluation for all processed papers...");
+		try {
+			await startEvaluation(testId);
+			toast.success(
+				"Automated evaluation started. Grades will appear as they are completed.",
+			);
+			// Trigger a refresh to get latest status
+			setTimeout(handleRefresh, 2000);
+		} catch (error) {
+			console.error("Error starting automated evaluation:", error);
+			toast.error(
+				error instanceof Error
+					? error.message
+					: "Failed to start automated evaluation.",
+			);
+		} finally {
+			setIsAutomating(false);
+		}
+	};
+
 	const handlePaperClick = useCallback(
-		(paperId: string) => {
-			router.push(`/quicks/tests/${testId}/view/${paperId}`);
+		(paper: AnswerPaper) => {
+			if (paper.processed_document_url) {
+				router.push(`/quicks/tests/${testId}/view/${paper.id}`);
+			} else {
+				toast.info("This paper is still processing and cannot be viewed yet.");
+			}
 		},
 		[testId, router],
 	);
 
 	return (
 		<div className="container mx-auto space-y-6 p-6">
-			{/* Header with Status and Action Buttons */}
-			<div className="-mx-6 -mt-6 sticky top-0 z-10 space-y-4 bg-background p-6 shadow-sm">
+			{/* Header */}
+			<div className="-mx-6 -mt-6 sticky top-0 z-10 space-y-4 border-b bg-background p-6">
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="font-semibold text-3xl">{testName}</h1>
@@ -121,108 +206,125 @@ export function EvaluationDashboard({
 						</div>
 					</div>
 
-					{/* Action Buttons */}
 					<div className="flex gap-2">
-						<Button variant="outline">
-							<CheckCircle2 className="mr-2 h-4 w-4" />
-							Verify
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={handleRefresh}
+							disabled={isRefreshing || isAnyProcessing}
+						>
+							<RefreshCw
+								className={`mr-2 h-4 w-4 ${
+									isRefreshing || isAnyProcessing ? "animate-spin" : ""
+								}`}
+							/>
+							{isRefreshing || isAnyProcessing ? "Refreshing..." : "Refresh"}
 						</Button>
-						<Button variant="outline">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={onUploadMore}
+							disabled={isAutomating}
+						>
+							<Upload className="mr-2 h-4 w-4" />
+							Upload More
+						</Button>
+						<Button
+							size="sm"
+							onClick={handleAutomateClick}
+							disabled={
+								!isAllProcessed ||
+								isAutomating ||
+								isAnyProcessing ||
+								!academicTest?.dynamic_rubric
+							}
+						>
 							<Zap className="mr-2 h-4 w-4" />
-							Automate
+							{isAutomating ? "Evaluating..." : "Automate Evaluation"}
 						</Button>
 						{isAllProcessed && (
-							<Button variant="outline">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => router.push(`/quicks/tests/${testId}/report`)}
+							>
 								<BarChart3 className="mr-2 h-4 w-4" />
-								Report
+								View Report
 							</Button>
 						)}
 					</div>
 				</div>
 
-				{/* Progress Bar */}
-				<div className="space-y-2">
-					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">Processing Progress</span>
-						<span className="font-medium">
-							{processedCount}/{totalCount}
-						</span>
+				{totalCount > 0 && (
+					<div className="space-y-2">
+						<div className="flex items-center justify-between text-sm">
+							<span className="text-muted-foreground">
+								Digitization Progress
+							</span>
+							<span className="font-medium">
+								{processedCount}/{totalCount}
+							</span>
+						</div>
+						<Progress value={processingPercentage} className="h-2" />
 					</div>
-					<Progress value={processingPercentage} className="h-2" />
-				</div>
+				)}
 			</div>
 
-			{/* Answer Papers List */}
+			{/* Papers List */}
 			<div className="space-y-4">
 				<div>
 					<h2 className="font-semibold text-lg">Answer Papers</h2>
 					<p className="text-muted-foreground text-sm">
-						Click on a paper to view details. Processing status is updated in
+						Click on a processed paper to view details. Status is updated in
 						real-time.
 					</p>
 				</div>
 
 				{answerPapers.length === 0 ? (
 					<Card>
-						<CardContent className="flex flex-col items-center justify-center py-12">
+						<CardContent className="flex flex-col items-center justify-center py-16 text-center">
 							<div className="mb-4 text-5xl">📝</div>
-							<h3 className="mb-2 font-semibold text-lg">No answer papers</h3>
-							<p className="text-muted-foreground text-sm">
-								There are no answer papers for this test yet.
+							<h3 className="mb-2 font-semibold text-lg">
+								No Answer Papers Yet
+							</h3>
+							<p className="mb-6 text-muted-foreground text-sm">
+								Upload answer papers to begin the evaluation process.
 							</p>
+							<Button onClick={onUploadMore}>
+								<Upload className="mr-2 h-4 w-4" />
+								Upload Papers
+							</Button>
 						</CardContent>
 					</Card>
 				) : (
-					<div className="space-y-2">
+					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
 						{answerPapers.map((paper) => (
 							<Card
 								key={paper.id}
-								className="cursor-pointer border-primary/50 transition-all hover:shadow-md"
-								onClick={() => handlePaperClick(paper.id)}
+								className={`border-primary/50 transition-all ${
+									paper.processed_document_url
+										? "cursor-pointer hover:shadow-md"
+										: "cursor-not-allowed opacity-70"
+								}`}
+								onClick={() => handlePaperClick(paper)}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" || e.key === " ") {
-										handlePaperClick(paper.id);
+										handlePaperClick(paper);
 									}
 								}}
 								role="button"
-								tabIndex={0}
+								tabIndex={paper.processed_document_url ? 0 : -1}
 							>
-								<CardContent className="flex items-center justify-between p-4">
-									<div className="flex flex-1 items-center gap-4">
-										<FileText className="h-5 w-5 text-muted-foreground" />
+								<CardContent className="flex flex-col justify-between p-4">
+									<div className="flex w-full items-start justify-between">
 										<div className="flex-1">
-											<p className="font-medium">{paper.student_name}</p>
+											<p className="truncate font-medium">
+												{paper.student_name}
+											</p>
 											<p className="text-muted-foreground text-xs">
-												{new Date(paper.created_at).toLocaleDateString()} •{" "}
-												{paper.total_score || 0} / {paper.max_score || 0} points
+												ID: {paper.id.slice(0, 8)}...
 											</p>
 										</div>
-									</div>
-
-									<div className="flex items-center gap-3">
-										{/* Processing Status */}
-										<div className="flex items-center gap-2">
-											{paper.processed_document_url === null ? (
-												<div className="flex items-center gap-1">
-													<div className="h-2 w-2 animate-spin rounded-full border-2 border-current border-r-transparent" />
-													<span className="text-muted-foreground text-xs">
-														Processing
-													</span>
-												</div>
-											) : (
-												<div className="flex items-center gap-1 text-green-600">
-													<CheckCircle2 className="h-4 w-4" />
-													<span className="text-xs">Processed</span>
-												</div>
-											)}
-										</div>
-
-										{/* Grade Badge */}
-										{paper.grade && (
-											<Badge variant="secondary">{paper.grade}</Badge>
-										)}
-
-										{/* Delete Button */}
 										<button
 											type="button"
 											onClick={(e) => {
@@ -235,6 +337,37 @@ export function EvaluationDashboard({
 											<X className="h-4 w-4 text-destructive" />
 										</button>
 									</div>
+
+									<div className="mt-4 flex items-end justify-between">
+										<div className="space-y-2">
+											<div className="flex items-center gap-2">
+												{paper.processed_document_url === null ? (
+													<div className="flex items-center gap-1">
+														<div className="h-2 w-2 animate-spin rounded-full border-2 border-current border-r-transparent" />
+														<span className="text-muted-foreground text-xs">
+															Processing
+														</span>
+													</div>
+												) : (
+													<div className="flex items-center gap-1 text-green-600">
+														<CheckCircle2 className="h-4 w-4" />
+														<span className="text-xs">Processed</span>
+													</div>
+												)}
+											</div>
+											{paper.grade && (
+												<Badge variant="secondary">{paper.grade}</Badge>
+											)}
+										</div>
+										<div className="text-right">
+											<p className="font-bold text-lg">
+												{paper.total_score ?? "N/A"}
+											</p>
+											<p className="text-muted-foreground text-xs">
+												/ {paper.max_score || 0} pts
+											</p>
+										</div>
+									</div>
 								</CardContent>
 							</Card>
 						))}
@@ -242,36 +375,25 @@ export function EvaluationDashboard({
 				)}
 			</div>
 
-			{/* Delete Confirmation Dialog */}
+			{/* Delete Confirmation */}
 			<AlertDialog
 				open={deleteConfirm !== null}
-				onOpenChange={(open) => {
-					if (!open) {
-						setDeleteConfirm(null);
-					}
-				}}
+				onOpenChange={(open) => !open && setDeleteConfirm(null)}
 			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Delete Answer Paper</AlertDialogTitle>
 						<AlertDialogDescription>
 							Are you sure you want to delete this answer paper? This action
-							cannot be undone.
+							cannot be undone and will remove all associated data.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
-					<div className="rounded-lg bg-destructive/10 p-3 text-sm">
-						<p className="font-medium text-destructive">
-							This will permanently remove the paper and all associated data.
-						</p>
-					</div>
-					<div className="flex justify-end gap-2">
+					<div className="flex justify-end gap-2 pt-4">
 						<AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={() => {
-								if (deleteConfirm) {
-									handleConfirmDelete(deleteConfirm);
-								}
-							}}
+							onClick={() =>
+								deleteConfirm && handleConfirmDelete(deleteConfirm)
+							}
 							disabled={isDeleting}
 							className="bg-destructive hover:bg-destructive/90"
 						>
