@@ -44,27 +44,72 @@ export interface AnswerPaperCreateRequest {
  */
 export async function getAnswerPapers(testId: string): Promise<AnswerPaper[]> {
 	try {
+		// Use the academic-test specific answer-papers endpoint
 		const response = await fetch(
-			`${API_BASE_URL}/academic-tests/${testId}/answer-papers`,
+			`${API_BASE_URL}/answer-papers/academic-test/${testId}`,
 		);
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch answer papers: ${response.statusText}`);
 		}
 
-		const data = await response.json();
+		const data = await response.json().catch(() => null);
 
-		// Handle various response structures
-		if (data.success && data.data) {
-			return data.data.answer_papers || [];
-		}
-		return data.data?.answer_papers || data.data || [];
+		// Normalize expected shapes: data.data.answer_papers or data.data['answer-papers']
+		const raw =
+			(data?.data && (data.data.answer_papers || data.data["answer-papers"])) ||
+			data?.data ||
+			[];
+
+		if (!Array.isArray(raw)) return [];
+
+		// If the shape already matches AnswerPaper[], do a lightweight normalization
+		return raw.map((r: unknown) => {
+			const o = r as Record<string, unknown>;
+			return {
+				id: typeof o.id === "string" ? o.id : String(o.id ?? ""),
+				academic_test_id:
+					typeof o.academic_test_id === "string"
+						? o.academic_test_id
+						: String(o.academic_test_id ?? ""),
+				student_name: (o.name as string) || (o.student_name as string) || "",
+				student_id: typeof o.student_id === "string" ? o.student_id : null,
+				raw_document_url:
+					(o.raw_document_url as string) || (o.rawDocumentUrl as string) || "",
+				processed_document_url: (o.processed_document_url as string) || null,
+				digitized_document_url: (o.digitized_document_url as string) || null,
+				annotated_document_url: (o.annotated_document_url as string) || null,
+				evaluation_status:
+					typeof o.evaluation_status === "string" &&
+					["pending", "in_progress", "completed", "failed"].includes(
+						o.evaluation_status as string,
+					)
+						? (o.evaluation_status as AnswerPaper["evaluation_status"])
+						: "pending",
+				total_score: typeof o.total_score === "number" ? o.total_score : null,
+				max_score: typeof o.max_score === "number" ? o.max_score : null,
+				percentage: typeof o.percentage === "number" ? o.percentage : null,
+				grade: typeof o.grade === "string" ? o.grade : null,
+				submitted_at:
+					(o.updated_at as string) ||
+					(o.created_at as string) ||
+					new Date().toISOString(),
+				evaluated_at:
+					typeof o.evaluated_at === "string"
+						? (o.evaluated_at as string)
+						: null,
+				created_at: (o.created_at as string) || new Date().toISOString(),
+				updated_at:
+					(o.updated_at as string) ||
+					(o.created_at as string) ||
+					new Date().toISOString(),
+			} as AnswerPaper;
+		});
 	} catch (error) {
 		console.error("Error fetching answer papers:", error);
 		throw error;
 	}
 }
-
 /**
  * Fetch answer papers using the alternate endpoint
  * GET /grade/v1/answer-papers/academic-test/:id
@@ -179,20 +224,55 @@ export async function getPreSignedUrls(
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
+				// API expects the key `file_name` (singular) with an array of file names
 				file_names: fileNames,
 			}),
 		});
 
 		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(
-				errorData.error ||
-					`Failed to get pre-signed URLs: ${response.statusText}`,
-			);
+			// Try to parse JSON error body and extract a useful message
+			let errorBody: unknown = null;
+			try {
+				errorBody = await response.json();
+			} catch {
+				// ignore parse errors
+			}
+
+			let msg = `Failed to get pre-signed URLs: ${response.status} ${response.statusText}`;
+			if (errorBody && typeof errorBody === "object") {
+				const eb = errorBody as Record<string, unknown>;
+				msg =
+					(typeof eb.error === "string" && eb.error) ||
+					(typeof eb.message === "string" && eb.message) ||
+					(typeof eb.status_message === "string" && eb.status_message) ||
+					JSON.stringify(errorBody);
+			} else if (typeof errorBody === "string") {
+				msg = errorBody;
+			}
+
+			throw new Error(msg);
 		}
 
-		const data: UploadBatchResponse = await response.json();
-		return data.answer_papers || [];
+		const parsed = await response.json().catch(() => null);
+
+		// Normalize response shapes: prefer parsed.data.answer_papers or parsed.answer_papers
+		const candidates: unknown =
+			(parsed &&
+				(parsed.data?.answer_papers || parsed.data?.["answer-papers"])) ||
+			parsed?.answer_papers ||
+			parsed ||
+			[];
+
+		if (!Array.isArray(candidates)) return [];
+
+		// Map to PreSignedUrlResponse if needed
+		return (candidates as unknown[]).map((c) => {
+			const o = c as Record<string, unknown>;
+			return {
+				upload_url: (o.upload_url as string) || (o.uploadUrl as string) || "",
+				file_url: (o.file_url as string) || (o.fileUrl as string) || "",
+			} as PreSignedUrlResponse;
+		});
 	} catch (error) {
 		console.error("Error getting pre-signed URLs:", error);
 		throw error;
@@ -256,7 +336,7 @@ export async function createAnswerPaper(
 	request: AnswerPaperCreateRequest,
 ): Promise<AnswerPaper> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/answer-papers/`, {
+		const response = await fetch(`${API_BASE_URL}/answer-papers`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -400,8 +480,8 @@ export async function pollForProcessedDocuments(
 		const pollInterval = setInterval(async () => {
 			try {
 				attempts++;
-
 				const papers = await getAnswerPapers(testId);
+
 				const allProcessed = papers.every(
 					(p) => p.processed_document_url !== null,
 				);
