@@ -31,32 +31,6 @@ export async function getAcademicTest(testId: string): Promise<AcademicTest> {
 		throw error;
 	}
 }
-
-export async function generateDynamicRubric(testId: string): Promise<void> {
-	try {
-		const response = await fetch(
-			`${API_BASE_URL}/academic-tests/${testId}/generate-dynamic-rubric`,
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			},
-		);
-
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(
-				errorData.error ||
-					`Failed to generate dynamic rubric: ${response.statusText}`,
-			);
-		}
-	} catch (error) {
-		console.error("Error generating dynamic rubric:", error);
-		throw error;
-	}
-}
-
 export async function pollForDynamicRubric(
 	testId: string,
 	intervalMs: number = 3000,

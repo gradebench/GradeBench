@@ -27,16 +27,16 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { AcademicTest } from "@/lib/academic-tests-api";
 import {
-	generateDynamicRubric,
 	getAcademicTest,
 	pollForDynamicRubric,
 } from "@/lib/academic-tests-api";
 import type { AnswerPaper } from "@/lib/answer-papers-api";
 import {
 	deleteAnswerPaper,
-	getAnswerPapers,
+	getAnswerPapersByAcademicTest,
 	startEvaluation,
 } from "@/lib/answer-papers-api";
+import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 interface EvaluationDashboardProps {
 	testId: string;
@@ -77,7 +77,7 @@ export function EvaluationDashboard({
 
 	const fetchPapers = useCallback(async () => {
 		try {
-			const updated = await getAnswerPapers(testId);
+			const updated = await getAnswerPapersByAcademicTest(testId);
 			setAnswerPapers(updated);
 			return updated;
 		} catch (error) {
@@ -106,10 +106,49 @@ export function EvaluationDashboard({
 				setAcademicTest(test);
 				if (!test.dynamic_rubric) {
 					toast.info("Generating dynamic rubric...");
-					await generateDynamicRubric(testId);
-					const updatedTest = await pollForDynamicRubric(testId);
-					setAcademicTest(updatedTest);
-					toast.success("Dynamic rubric generated successfully.");
+					// POST to the dynamic rubrics endpoint directly (deprecated helper removed)
+					try {
+						const resp = await fetch(
+							`${API_BASE_URL}/dynamic-rubrics/${testId}`,
+							{
+								method: "POST",
+							},
+						);
+
+						if (!resp.ok) {
+							// attempt to parse error body
+							let body: unknown = null;
+							try {
+								body = await resp.json();
+							} catch {
+								/* ignore */
+							}
+
+							let msg = `Failed to request dynamic rubrics: ${resp.status}`;
+							if (body && typeof body === "object") {
+								const b = body as Record<string, unknown>;
+								if (typeof b.message === "string") msg = b.message;
+								else if (typeof b.status_message === "string")
+									msg = b.status_message;
+								else if (typeof b.error === "string") msg = b.error;
+								else msg = JSON.stringify(b);
+							} else if (typeof body === "string") {
+								msg = body;
+							}
+							throw new Error(msg as string);
+						}
+
+						const updatedTest = await pollForDynamicRubric(testId);
+						setAcademicTest(updatedTest);
+						toast.success("Dynamic rubric generated successfully.");
+					} catch (err) {
+						console.error("Failed to generate dynamic rubric:", err);
+						toast.error(
+							err instanceof Error
+								? err.message
+								: "Failed to generate dynamic rubric",
+						);
+					}
 				}
 			} catch (error) {
 				console.error("Error fetching academic test:", error);
