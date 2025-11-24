@@ -1,245 +1,211 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { UploadPanel } from "@/components/evaluation/UploadPanel";
 import type { AnswerPaper } from "@/lib/answer-papers-api";
 import {
-	getAnswerPapers,
-	getAnswerPapersByAcademicTest,
+  getAnswerPapers,
+  getAnswerPapersByAcademicTest,
 } from "@/lib/answer-papers-api";
 import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 interface AcademicTest {
-	id: string;
-	test_name: string;
-	question_paper_id: string;
-	evaluator_configuration_id: string;
-	key_answers_url: string | null;
-	dynamic_rubrics_url: string | null;
-	created_at: string;
+  id: string;
+  test_name: string;
+  question_paper_id: string;
+  evaluator_configuration_id: string;
+  key_answers_url: string | null;
+  dynamic_rubrics_url: string | null;
+  created_at: string;
+}
+
+interface AcademicTestResp {
+  success?: boolean;
+  status_code?: number;
+  status_message?: string;
+  data?: { academic_tests?: AcademicTest } | AcademicTest;
+  metadata?: unknown;
 }
 
 export default function EvaluatePage() {
-	const params = useParams();
-	const _router = useRouter();
-	const testId = params?.testId as string;
+  const params = useParams();
+  const _router = useRouter();
+  const testId = params?.testId as string;
 
-	const [test, setTest] = useState<AcademicTest | null>(null);
-	const [answerPapers, setAnswerPapers] = useState<AnswerPaper[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [viewMode, setViewMode] = useState<"loading" | "upload" | "dashboard">(
-		"loading",
-	);
+  const [test, setTest] = useState<AcademicTest | null>(null);
+  const [answerPapers, setAnswerPapers] = useState<AnswerPaper[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"loading" | "upload" | "dashboard">(
+    "loading"
+  );
 
-	const [isRubricGenerating, setIsRubricGenerating] = useState(false);
+  const [isRubricGenerating, setIsRubricGenerating] = useState(false);
+  const hasInitialized = useRef(false);
 
-	interface ApiResp {
-		success?: boolean;
-		status_code?: number;
-		status_message?: string;
-		message?: string;
-		data?: { message?: string };
-		metadata?: unknown;
-	}
+  useEffect(() => {
+    if (!testId || hasInitialized.current) return;
+    hasInitialized.current = true;
 
-	interface AcademicTestResp {
-		success?: boolean;
-		status_code?: number;
-		status_message?: string;
-		data?: { academic_tests?: AcademicTest } | AcademicTest;
-		metadata?: unknown;
-	}
+    const ensureRubricsAndPrepare = async () => {
+      setLoading(true);
+      setIsRubricGenerating(true);
+      try {
+        // GET academic test details
+        const resp = await fetch(`${API_BASE_URL}/academic-tests/${testId}`);
+        let parsed: AcademicTestResp | null = null;
+        try {
+          parsed = await resp.json();
+        } catch (_) {
+          // ignore parse errors
+        }
 
-	useEffect(() => {
-		if (!testId) return;
+        if (!resp.ok) {
+          console.warn("Failed to fetch academic test", resp.status);
+          toast.error("Failed to load test details");
+          setViewMode("upload");
+          return;
+        }
 
-		const ensureRubricsAndPrepare = async () => {
-			setLoading(true);
-			setIsRubricGenerating(true);
-			try {
-				// GET academic test details
-				const resp = await fetch(`${API_BASE_URL}/academic-tests/${testId}`);
-				let parsed: AcademicTestResp | null = null;
-				try {
-					parsed = await resp.json();
-				} catch (_) {
-					// ignore parse errors
-				}
+        const extractAcademicTest = (data: unknown): AcademicTest | null => {
+          if (!data) return null;
+          if (typeof data !== "object") return null;
+          const obj = data as Record<string, unknown>;
+          if (
+            "academic_tests" in obj &&
+            obj.academic_tests &&
+            typeof obj.academic_tests === "object"
+          ) {
+            return obj.academic_tests as AcademicTest;
+          }
+          return obj as unknown as AcademicTest;
+        };
 
-				if (!resp.ok) {
-					console.warn("Failed to fetch academic test", resp.status);
-					toast.error("Failed to load test details");
-					setViewMode("upload");
-					return;
-				}
+        const fetchedTest = extractAcademicTest(parsed?.data);
+        if (fetchedTest) setTest(fetchedTest);
 
-				const extractAcademicTest = (data: unknown): AcademicTest | null => {
-					if (!data) return null;
-					if (typeof data !== "object") return null;
-					const obj = data as Record<string, unknown>;
-					if (
-						"academic_tests" in obj &&
-						obj.academic_tests &&
-						typeof obj.academic_tests === "object"
-					) {
-						return obj.academic_tests as AcademicTest;
-					}
-					return obj as unknown as AcademicTest;
-				};
+        // Check if dynamic rubrics exist
+        if (fetchedTest?.dynamic_rubrics_url) {
+          try {
+            // Prefer the academic-test specific endpoint, fallback to legacy
+            let papers = await getAnswerPapersByAcademicTest(testId);
+            if (!Array.isArray(papers) || papers.length === 0) {
+              papers = await getAnswerPapers(testId);
+            }
+            setAnswerPapers(papers);
+            setViewMode(papers.length > 0 ? "dashboard" : "upload");
+          } catch (err) {
+            console.warn("Failed to load answer papers", err);
+            try {
+              const papers = await getAnswerPapers(testId);
+              setAnswerPapers(papers);
+              setViewMode(papers.length > 0 ? "dashboard" : "upload");
+            } catch (err2) {
+              console.warn("Fallback also failed", err2);
+              setViewMode("upload");
+            }
+          }
+          return;
+        }
 
-				const fetchedTest = extractAcademicTest(parsed?.data);
-				if (fetchedTest) setTest(fetchedTest);
+        // No rubrics found - notify user
+        console.warn("Dynamic rubrics not found for this test");
 
-				// If dynamic rubrics already exist, fetch answer papers and show UI
-				if (fetchedTest?.dynamic_rubrics_url) {
-					try {
-						// Prefer the academic-test specific endpoint, fallback to legacy
-						let papers = await getAnswerPapersByAcademicTest(testId);
-						if (!Array.isArray(papers) || papers.length === 0) {
-							papers = await getAnswerPapers(testId);
-						}
-						setAnswerPapers(papers);
-						setViewMode(papers.length > 0 ? "dashboard" : "upload");
-					} catch (err) {
-						console.warn("Failed to load answer papers", err);
-						try {
-							const papers = await getAnswerPapers(testId);
-							setAnswerPapers(papers);
-							setViewMode(papers.length > 0 ? "dashboard" : "upload");
-						} catch (err2) {
-							console.warn("Fallback also failed", err2);
-							setViewMode("upload");
-						}
-					}
-					return;
-				}
+        // Fetch answer papers anyway to show upload panel
+        // Allow user to upload while generation proceeds; fetch answer papers
+        try {
+          let papers = await getAnswerPapersByAcademicTest(testId);
+          if (!Array.isArray(papers) || papers.length === 0) {
+            papers = await getAnswerPapers(testId);
+          }
+          setAnswerPapers(papers);
+          setViewMode(papers.length > 0 ? "dashboard" : "upload");
+        } catch (err) {
+          console.warn(
+            "Failed to load answer papers after generation start",
+            err
+          );
+          try {
+            const papers = await getAnswerPapers(testId);
+            setAnswerPapers(papers);
+            setViewMode(papers.length > 0 ? "dashboard" : "upload");
+          } catch (err2) {
+            console.warn("Fallback also failed", err2);
+            setViewMode("upload");
+          }
+        }
+      } catch (err) {
+        console.error("Error during setup:", err);
+        toast.error(err instanceof Error ? err.message : "Unexpected error");
+        setViewMode("upload");
+      } finally {
+        setIsRubricGenerating(false);
+        setLoading(false);
+      }
+    };
 
-				// No rubrics - request generation (POST)
-				const postResp = await fetch(
-					`${API_BASE_URL}/dynamic-rubrics/${testId}`,
-					{
-						method: "POST",
-					},
-				);
+    ensureRubricsAndPrepare();
+  }, [testId]);
 
-				let postParsed: ApiResp | null = null;
-				try {
-					postParsed = await postResp.json();
-				} catch (_) {
-					// ignore
-				}
+  const handleUploadComplete = useCallback(async () => {
+    try {
+      toast.info("Fetching updated answer papers...");
+      let papers = await getAnswerPapersByAcademicTest(testId);
+      if (!Array.isArray(papers) || papers.length === 0) {
+        papers = await getAnswerPapers(testId);
+      }
+      setAnswerPapers(papers);
+      setViewMode("dashboard");
+      toast.success("Dashboard is ready.");
+    } catch (_error) {
+      // final fallback
+      try {
+        const papers = await getAnswerPapers(testId);
+        setAnswerPapers(papers);
+        setViewMode("dashboard");
+        toast.success("Dashboard is ready.");
+      } catch (__err) {
+        toast.error("Failed to fetch answer papers after upload.");
+      }
+    }
+  }, [testId]);
 
-				if (!postResp.ok || !postParsed?.success) {
-					const message =
-						postParsed?.status_message ??
-						postParsed?.message ??
-						`Request failed: ${postResp.status}`;
-					console.error("Failed to request dynamic rubrics:", message);
-					toast.error(message);
-					setViewMode("upload");
-					return;
-				}
+  if (loading || viewMode === "loading") {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+          <p className="text-muted-foreground">Loading test data...</p>
+        </div>
+      </div>
+    );
+  }
 
-				toast.success(
-					postParsed.data?.message || "Dynamic rubrics generation started",
-				);
+  if (isRubricGenerating) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+          <p className="text-muted-foreground">Generating dynamic rubrics...</p>
+        </div>
+      </div>
+    );
+  }
 
-				// Allow user to upload while generation proceeds; fetch answer papers
-				// Allow user to upload while generation proceeds; fetch answer papers
-				try {
-					let papers = await getAnswerPapersByAcademicTest(testId);
-					if (!Array.isArray(papers) || papers.length === 0) {
-						papers = await getAnswerPapers(testId);
-					}
-					setAnswerPapers(papers);
-					setViewMode(papers.length > 0 ? "dashboard" : "upload");
-				} catch (err) {
-					console.warn(
-						"Failed to load answer papers after generation start",
-						err,
-					);
-					try {
-						const papers = await getAnswerPapers(testId);
-						setAnswerPapers(papers);
-						setViewMode(papers.length > 0 ? "dashboard" : "upload");
-					} catch (err2) {
-						console.warn("Fallback also failed", err2);
-						setViewMode("upload");
-					}
-				}
-			} catch (err) {
-				console.error("Error during setup:", err);
-				toast.error(err instanceof Error ? err.message : "Unexpected error");
-				setViewMode("upload");
-			} finally {
-				setIsRubricGenerating(false);
-				setLoading(false);
-			}
-		};
+  if (viewMode === "upload") {
+    return (
+      <UploadPanel testId={testId} onUploadComplete={handleUploadComplete} />
+    );
+  }
 
-		ensureRubricsAndPrepare();
-	}, [testId]);
-
-	const handleUploadComplete = useCallback(async () => {
-		try {
-			toast.info("Fetching updated answer papers...");
-			let papers = await getAnswerPapersByAcademicTest(testId);
-			if (!Array.isArray(papers) || papers.length === 0) {
-				papers = await getAnswerPapers(testId);
-			}
-			setAnswerPapers(papers);
-			setViewMode("dashboard");
-			toast.success("Dashboard is ready.");
-		} catch (_error) {
-			// final fallback
-			try {
-				const papers = await getAnswerPapers(testId);
-				setAnswerPapers(papers);
-				setViewMode("dashboard");
-				toast.success("Dashboard is ready.");
-			} catch (__err) {
-				toast.error("Failed to fetch answer papers after upload.");
-			}
-		}
-	}, [testId]);
-
-	if (loading || viewMode === "loading") {
-		return (
-			<div className="flex min-h-screen items-center justify-center">
-				<div className="text-center">
-					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
-					<p className="text-muted-foreground">Loading test data...</p>
-				</div>
-			</div>
-		);
-	}
-
-	if (isRubricGenerating) {
-		return (
-			<div className="flex min-h-screen items-center justify-center">
-				<div className="text-center">
-					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
-					<p className="text-muted-foreground">Generating dynamic rubrics...</p>
-				</div>
-			</div>
-		);
-	}
-
-	if (viewMode === "upload") {
-		return (
-			<UploadPanel testId={testId} onUploadComplete={handleUploadComplete} />
-		);
-	}
-
-	return (
-		<EvaluationDashboard
-			testId={testId}
-			testName={test?.test_name || "Academic Test"}
-			initialAnswerPapers={answerPapers}
-			onUploadMore={() => setViewMode("upload")}
-		/>
-	);
+  return (
+    <EvaluationDashboard
+      testId={testId}
+      testName={test?.test_name || "Academic Test"}
+      initialAnswerPapers={answerPapers}
+      onUploadMore={() => setViewMode("upload")}
+    />
+  );
 }
