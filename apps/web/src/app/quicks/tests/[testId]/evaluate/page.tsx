@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { EvaluationDashboard } from "@/components/evaluation/EvaluationDashboard";
 import { UploadPanel } from "@/components/evaluation/UploadPanel";
@@ -22,6 +22,14 @@ interface AcademicTest {
 	created_at: string;
 }
 
+interface AcademicTestResp {
+	success?: boolean;
+	status_code?: number;
+	status_message?: string;
+	data?: { academic_tests?: AcademicTest } | AcademicTest;
+	metadata?: unknown;
+}
+
 export default function EvaluatePage() {
 	const params = useParams();
 	const _router = useRouter();
@@ -35,26 +43,11 @@ export default function EvaluatePage() {
 	);
 
 	const [isRubricGenerating, setIsRubricGenerating] = useState(false);
-
-	interface ApiResp {
-		success?: boolean;
-		status_code?: number;
-		status_message?: string;
-		message?: string;
-		data?: { message?: string };
-		metadata?: unknown;
-	}
-
-	interface AcademicTestResp {
-		success?: boolean;
-		status_code?: number;
-		status_message?: string;
-		data?: { academic_tests?: AcademicTest } | AcademicTest;
-		metadata?: unknown;
-	}
+	const hasInitialized = useRef(false);
 
 	useEffect(() => {
-		if (!testId) return;
+		if (!testId || hasInitialized.current) return;
+		hasInitialized.current = true;
 
 		const ensureRubricsAndPrepare = async () => {
 			setLoading(true);
@@ -93,7 +86,7 @@ export default function EvaluatePage() {
 				const fetchedTest = extractAcademicTest(parsed?.data);
 				if (fetchedTest) setTest(fetchedTest);
 
-				// If dynamic rubrics already exist, fetch answer papers and show UI
+				// Check if dynamic rubrics exist
 				if (fetchedTest?.dynamic_rubrics_url) {
 					try {
 						// Prefer the academic-test specific endpoint, fallback to legacy
@@ -117,37 +110,10 @@ export default function EvaluatePage() {
 					return;
 				}
 
-				// No rubrics - request generation (POST)
-				const postResp = await fetch(
-					`${API_BASE_URL}/dynamic-rubrics/${testId}`,
-					{
-						method: "POST",
-					},
-				);
+				// No rubrics found - notify user
+				console.warn("Dynamic rubrics not found for this test");
 
-				let postParsed: ApiResp | null = null;
-				try {
-					postParsed = await postResp.json();
-				} catch (_) {
-					// ignore
-				}
-
-				if (!postResp.ok || !postParsed?.success) {
-					const message =
-						postParsed?.status_message ??
-						postParsed?.message ??
-						`Request failed: ${postResp.status}`;
-					console.error("Failed to request dynamic rubrics:", message);
-					toast.error(message);
-					setViewMode("upload");
-					return;
-				}
-
-				toast.success(
-					postParsed.data?.message || "Dynamic rubrics generation started",
-				);
-
-				// Allow user to upload while generation proceeds; fetch answer papers
+				// Fetch answer papers anyway to show upload panel
 				// Allow user to upload while generation proceeds; fetch answer papers
 				try {
 					let papers = await getAnswerPapersByAcademicTest(testId);

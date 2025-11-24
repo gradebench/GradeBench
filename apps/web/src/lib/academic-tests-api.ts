@@ -11,6 +11,7 @@ export interface AcademicTest {
 	created_at: string;
 	updated_at: string;
 	dynamic_rubric: Record<string, unknown> | null;
+	dynamic_rubrics_url?: string | null;
 }
 export async function getAcademicTest(testId: string): Promise<AcademicTest> {
 	try {
@@ -45,7 +46,11 @@ export async function pollForDynamicRubric(
 
 				const test = await getAcademicTest(testId);
 
-				if (test.dynamic_rubric || attempts >= maxAttempts) {
+				if (
+					test.dynamic_rubric ||
+					test.dynamic_rubrics_url ||
+					attempts >= maxAttempts
+				) {
 					clearInterval(pollInterval);
 					resolve(test);
 				}

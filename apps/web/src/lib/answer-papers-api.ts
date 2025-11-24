@@ -522,3 +522,58 @@ export async function startEvaluation(testId: string): Promise<void> {
 		throw error;
 	}
 }
+
+/**
+ * Trigger evaluation for a single answer paper
+ */
+export async function evaluateAnswerPaper(
+	paperId: string,
+	studentId?: string | null,
+): Promise<void> {
+	try {
+		// Use studentId if available, otherwise fall back to paperId
+		// The backend expects a user identifier in the URL to create an agent session
+		const id = studentId || paperId;
+		const response = await fetch(`${API_BASE_URL}/evaluations/${id}/evaluate`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ paper_id: paperId }),
+		});
+
+		if (!response.ok) {
+			throw new Error(
+				`Failed to evaluate answer paper: ${response.statusText}`,
+			);
+		}
+	} catch (error) {
+		console.error("Error evaluating answer paper:", error);
+		throw error;
+	}
+}
+
+/**
+ * Trigger annotation for a single answer paper
+ */
+export async function annotateAnswerPaper(
+	paperId: string,
+	studentId?: string | null,
+): Promise<void> {
+	try {
+		// Use studentId if available, otherwise fall back to paperId
+		const id = studentId || paperId;
+		const response = await fetch(`${API_BASE_URL}/annotations/${id}/annotate`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ paper_id: paperId }),
+		});
+
+		if (!response.ok) {
+			throw new Error(
+				`Failed to annotate answer paper: ${response.statusText}`,
+			);
+		}
+	} catch (error) {
+		console.error("Error annotating answer paper:", error);
+		throw error;
+	}
+}

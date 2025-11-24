@@ -11,12 +11,26 @@ import {
 } from "@gb/ui/src/components/ui/alert-dialog";
 import { Badge } from "@gb/ui/src/components/ui/badge";
 import { Button } from "@gb/ui/src/components/ui/button";
-import { Card, CardContent } from "@gb/ui/src/components/ui/card";
+import { Card, CardContent, CardHeader } from "@gb/ui/src/components/ui/card";
 import { Progress } from "@gb/ui/src/components/ui/progress";
 import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@gb/ui/src/components/ui/table";
+import {
+	AlertCircle,
 	BarChart3,
 	CheckCircle2,
 	Clock,
+	Dices,
+	Eye,
+	FileCheck,
+	FileText,
+	Loader2,
 	RefreshCw,
 	Upload,
 	X,
@@ -25,18 +39,13 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { AcademicTest } from "@/lib/academic-tests-api";
 import {
-	getAcademicTest,
-	pollForDynamicRubric,
-} from "@/lib/academic-tests-api";
-import type { AnswerPaper } from "@/lib/answer-papers-api";
-import {
+	type AnswerPaper,
+	annotateAnswerPaper,
 	deleteAnswerPaper,
+	evaluateAnswerPaper,
 	getAnswerPapersByAcademicTest,
-	startEvaluation,
 } from "@/lib/answer-papers-api";
-import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 interface EvaluationDashboardProps {
 	testId: string;
@@ -54,22 +63,35 @@ export function EvaluationDashboard({
 	const router = useRouter();
 	const [answerPapers, setAnswerPapers] =
 		useState<AnswerPaper[]>(initialAnswerPapers);
-	const [academicTest, setAcademicTest] = useState<AcademicTest | null>(null);
 	const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [isAutomating, setIsAutomating] = useState(false);
+	const [evaluatingPapers, setEvaluatingPapers] = useState<Set<string>>(
+		new Set(),
+	);
+	const [hasAutoEvaluatedFirst, setHasAutoEvaluatedFirst] = useState(false);
+	const [calibrationPaperId, setCalibrationPaperId] = useState<string | null>(
+		null,
+	);
+	const [isCalibrationVerified, setIsCalibrationVerified] = useState(false);
 
 	const isAnyProcessing = answerPapers.some(
-		(p) => p.processed_document_url === null,
+		(p) => p.digitized_document_url === null,
 	);
-	const isAllProcessed =
+	const isAllDigitized =
+		answerPapers.length > 0 &&
+		answerPapers.every((p) => p.digitized_document_url !== null);
+	const hasAnyEvaluated = answerPapers.some(
+		(p) => p.processed_document_url !== null,
+	);
+	const isAllEvaluated =
 		answerPapers.length > 0 &&
 		answerPapers.every((p) => p.processed_document_url !== null);
 
-	const processingStatus = isAnyProcessing ? "Processing" : "Processed";
+	const processingStatus = isAnyProcessing ? "Processing" : "Digitized";
 	const processedCount = answerPapers.filter(
-		(p) => p.processed_document_url !== null,
+		(p) => p.digitized_document_url !== null,
 	).length;
 	const totalCount = answerPapers.length;
 	const processingPercentage =
@@ -92,72 +114,160 @@ export function EvaluationDashboard({
 	}, [initialAnswerPapers]);
 
 	useEffect(() => {
-		if (isAnyProcessing) {
-			const pollInterval = setInterval(fetchPapers, 5000); // Poll every 5s
-			return () => clearInterval(pollInterval);
-		}
-		return () => {};
+		if (!isAnyProcessing) return;
+		const pollInterval = setInterval(fetchPapers, 10000);
+		return () => clearInterval(pollInterval);
 	}, [isAnyProcessing, fetchPapers]);
 
+	const pickRandomPaper = useCallback(
+		(papers: AnswerPaper[], excludeId?: string) => {
+			const candidates = papers.filter(
+				(p) =>
+					p.digitized_document_url !== null &&
+					p.processed_document_url === null && // Not yet evaluated
+					p.id !== excludeId,
+			);
+			if (candidates.length === 0) return null;
+			const randomIndex = Math.floor(Math.random() * candidates.length);
+			return candidates[randomIndex];
+		},
+		[],
+	);
+
 	useEffect(() => {
-		const fetchTest = async () => {
-			try {
-				const test = await getAcademicTest(testId);
-				setAcademicTest(test);
-				if (!test.dynamic_rubric) {
-					toast.info("Generating dynamic rubric...");
-					// POST to the dynamic rubrics endpoint directly (deprecated helper removed)
-					try {
-						const resp = await fetch(
-							`${API_BASE_URL}/dynamic-rubrics/${testId}`,
-							{
-								method: "POST",
-							},
-						);
+		if (!isAllDigitized || hasAutoEvaluatedFirst || calibrationPaperId) return;
 
-						if (!resp.ok) {
-							// attempt to parse error body
-							let body: unknown = null;
-							try {
-								body = await resp.json();
-							} catch {
-								/* ignore */
-							}
+		// If some papers are already evaluated, skip calibration
+		if (answerPapers.some((p) => p.processed_document_url !== null)) {
+			setHasAutoEvaluatedFirst(true);
+			return;
+		}
 
-							let msg = `Failed to request dynamic rubrics: ${resp.status}`;
-							if (body && typeof body === "object") {
-								const b = body as Record<string, unknown>;
-								if (typeof b.message === "string") msg = b.message;
-								else if (typeof b.status_message === "string")
-									msg = b.status_message;
-								else if (typeof b.error === "string") msg = b.error;
-								else msg = JSON.stringify(b);
-							} else if (typeof body === "string") {
-								msg = body;
-							}
-							throw new Error(msg as string);
-						}
+		const randomPaper = pickRandomPaper(answerPapers);
+		if (randomPaper) {
+			setCalibrationPaperId(randomPaper.id);
+			setHasAutoEvaluatedFirst(true);
 
-						const updatedTest = await pollForDynamicRubric(testId);
-						setAcademicTest(updatedTest);
-						toast.success("Dynamic rubric generated successfully.");
-					} catch (err) {
-						console.error("Failed to generate dynamic rubric:", err);
-						toast.error(
-							err instanceof Error
-								? err.message
-								: "Failed to generate dynamic rubric",
-						);
-					}
+			console.log(`🎲 Selected random paper: ${randomPaper.student_name}`);
+			toast.info(`Calibrating with ${randomPaper.student_name}...`);
+
+			const calibrate = async () => {
+				setEvaluatingPapers((prev) => new Set(prev).add(randomPaper.id));
+				try {
+					await evaluateAnswerPaper(randomPaper.id, randomPaper.student_id);
+					await annotateAnswerPaper(randomPaper.id, randomPaper.student_id);
+					toast.success(`Calibration paper ready: ${randomPaper.student_name}`);
+				} catch (error) {
+					console.error(error);
+					toast.error(`Failed to calibrate ${randomPaper.student_name}`);
+				} finally {
+					setEvaluatingPapers((prev) => {
+						const newSet = new Set(prev);
+						newSet.delete(randomPaper.id);
+						return newSet;
+					});
+					fetchPapers();
 				}
-			} catch (error) {
-				console.error("Error fetching academic test:", error);
-				toast.error("Failed to fetch academic test details.");
-			}
-		};
+			};
+			calibrate();
+		}
+	}, [
+		isAllDigitized,
+		hasAutoEvaluatedFirst,
+		calibrationPaperId,
+		answerPapers,
+		pickRandomPaper,
+		fetchPapers,
+	]);
 
-		fetchTest();
-	}, [testId]);
+	const handleReshuffle = async () => {
+		if (!calibrationPaperId) return;
+
+		const newPaper = pickRandomPaper(answerPapers, calibrationPaperId);
+		if (!newPaper) {
+			toast.error("No other pending papers available to shuffle.");
+			return;
+		}
+
+		setCalibrationPaperId(newPaper.id);
+		setIsCalibrationVerified(false); // Reset verification
+
+		toast.info(`Reshuffling... New candidate: ${newPaper.student_name}`);
+		setEvaluatingPapers((prev) => new Set(prev).add(newPaper.id));
+
+		try {
+			await evaluateAnswerPaper(newPaper.id, newPaper.student_id);
+			await annotateAnswerPaper(newPaper.id, newPaper.student_id);
+			toast.success(`Now calibrating: ${newPaper.student_name}`);
+		} catch (error) {
+			console.error(error);
+			toast.error("Failed to evaluate new calibration paper");
+		} finally {
+			setEvaluatingPapers((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(newPaper.id);
+				return newSet;
+			});
+			fetchPapers();
+		}
+	};
+
+	const handleAutomateRest = async () => {
+		setIsAutomating(true);
+		const pendingPapers = answerPapers.filter(
+			(p) =>
+				p.digitized_document_url !== null &&
+				p.processed_document_url === null &&
+				p.id !== calibrationPaperId,
+		);
+
+		if (pendingPapers.length === 0) {
+			toast.info("No pending papers to automate.");
+			setIsAutomating(false);
+			return;
+		}
+
+		toast.info(
+			`Starting batch evaluation for ${pendingPapers.length} papers...`,
+		);
+
+		let successCount = 0;
+		let failureCount = 0;
+
+		for (const paper of pendingPapers) {
+			setEvaluatingPapers((prev) => new Set(prev).add(paper.id));
+			try {
+				if (paper.processed_document_url === null) {
+					await evaluateAnswerPaper(paper.id, paper.student_id);
+				}
+				if (paper.annotated_document_url === null) {
+					await annotateAnswerPaper(paper.id, paper.student_id);
+				}
+				successCount++;
+			} catch (error) {
+				failureCount++;
+				console.error(`❌ Error processing ${paper.student_name}:`, error);
+			} finally {
+				setEvaluatingPapers((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(paper.id);
+					return newSet;
+				});
+			}
+			// Small delay to prevent overwhelming the server
+			await new Promise((resolve) => setTimeout(resolve, 500));
+		}
+
+		if (successCount > 0) {
+			toast.success(`Batch complete: ${successCount} processed.`);
+		}
+		if (failureCount > 0) {
+			toast.warning(`${failureCount} papers failed to process.`);
+		}
+
+		setIsAutomating(false);
+		fetchPapers();
+	};
 
 	const handleRefresh = async () => {
 		setIsRefreshing(true);
@@ -187,232 +297,420 @@ export function EvaluationDashboard({
 		}
 	}, []);
 
-	const handleAutomateClick = async () => {
-		setIsAutomating(true);
-		toast.info("Starting automated evaluation for all processed papers...");
-		try {
-			await startEvaluation(testId);
+	const handleVerifyClick = () => {
+		// If we are in calibration mode, mark as verified
+		if (calibrationPaperId && !isCalibrationVerified) {
+			setIsCalibrationVerified(true);
 			toast.success(
-				"Automated evaluation started. Grades will appear as they are completed.",
+				"Calibration paper verified! You can now automate the rest.",
 			);
-			// Trigger a refresh to get latest status
-			setTimeout(handleRefresh, 2000);
-		} catch (error) {
-			console.error("Error starting automated evaluation:", error);
-			toast.error(
-				error instanceof Error
-					? error.message
-					: "Failed to start automated evaluation.",
-			);
-		} finally {
-			setIsAutomating(false);
 		}
+		const query = calibrationPaperId ? `?paperId=${calibrationPaperId}` : "";
+		router.push(`/quicks/tests/${testId}/verify${query}`);
 	};
-
-	const handlePaperClick = useCallback(
-		(paper: AnswerPaper) => {
-			if (paper.processed_document_url) {
-				router.push(`/quicks/tests/${testId}/view/${paper.id}`);
-			} else {
-				toast.info("This paper is still processing and cannot be viewed yet.");
-			}
-		},
-		[testId, router],
-	);
 
 	return (
 		<div className="container mx-auto space-y-6 p-6">
-			{/* Header */}
-			<div className="-mx-6 -mt-6 sticky top-0 z-10 space-y-4 border-b bg-background p-6">
-				<div className="flex items-center justify-between">
-					<div>
-						<h1 className="font-semibold text-3xl">{testName}</h1>
-						<div className="mt-2 flex items-center gap-2">
-							<Badge
-								variant={isAnyProcessing ? "secondary" : "default"}
-								className="gap-1"
-							>
-								{isAnyProcessing ? (
-									<Clock className="h-3 w-3 animate-spin" />
-								) : (
-									<CheckCircle2 className="h-3 w-3" />
-								)}
-								{processingStatus}
-							</Badge>
-							<span className="text-muted-foreground text-sm">
-								{processedCount}/{totalCount} papers processed
-							</span>
+			{/* Header Section */}
+			<Card>
+				<CardHeader className="space-y-4">
+					<div className="flex items-start justify-between">
+						<div className="space-y-2">
+							<h1 className="font-bold text-3xl tracking-tight">{testName}</h1>
+							<div className="flex items-center gap-3">
+								<Badge
+									variant={isAnyProcessing ? "secondary" : "default"}
+									className="gap-1.5"
+								>
+									{isAnyProcessing ? (
+										<Clock className="h-3.5 w-3.5 animate-pulse" />
+									) : (
+										<CheckCircle2 className="h-3.5 w-3.5" />
+									)}
+									{processingStatus}
+								</Badge>
+								<span className="text-muted-foreground text-sm">
+									{processedCount} of {totalCount} papers digitized
+								</span>
+							</div>
 						</div>
-					</div>
 
-					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={handleRefresh}
-							disabled={isRefreshing || isAnyProcessing}
-						>
-							<RefreshCw
-								className={`mr-2 h-4 w-4 ${
-									isRefreshing || isAnyProcessing ? "animate-spin" : ""
-								}`}
-							/>
-							{isRefreshing || isAnyProcessing ? "Refreshing..." : "Refresh"}
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={onUploadMore}
-							disabled={isAutomating}
-						>
-							<Upload className="mr-2 h-4 w-4" />
-							Upload More
-						</Button>
-						<Button
-							size="sm"
-							onClick={handleAutomateClick}
-							disabled={
-								!isAllProcessed ||
-								isAutomating ||
-								isAnyProcessing ||
-								!academicTest?.dynamic_rubric
-							}
-						>
-							<Zap className="mr-2 h-4 w-4" />
-							{isAutomating ? "Evaluating..." : "Automate Evaluation"}
-						</Button>
-						{isAllProcessed && (
+						<div className="flex gap-2">
+							{(isCalibrationVerified ||
+								(!calibrationPaperId && hasAnyEvaluated)) &&
+								!isAllEvaluated && (
+									<Button
+										variant="default"
+										size="sm"
+										onClick={handleAutomateRest}
+										disabled={isAutomating || evaluatingPapers.size > 0}
+										className="bg-green-600 hover:bg-green-700"
+									>
+										<Zap className="mr-2 h-4 w-4" />
+										Automate Rest
+									</Button>
+								)}
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() => router.push(`/quicks/tests/${testId}/report`)}
+								onClick={handleRefresh}
+								disabled={isRefreshing}
 							>
-								<BarChart3 className="mr-2 h-4 w-4" />
-								View Report
+								<RefreshCw
+									className={`mr-2 h-4 w-4 ${
+										isRefreshing ? "animate-spin" : ""
+									}`}
+								/>
+								Refresh
 							</Button>
-						)}
-					</div>
-				</div>
-
-				{totalCount > 0 && (
-					<div className="space-y-2">
-						<div className="flex items-center justify-between text-sm">
-							<span className="text-muted-foreground">
-								Digitization Progress
-							</span>
-							<span className="font-medium">
-								{processedCount}/{totalCount}
-							</span>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={onUploadMore}
+								disabled={isAutomating}
+							>
+								<Upload className="mr-2 h-4 w-4" />
+								Upload More
+							</Button>
 						</div>
-						<Progress value={processingPercentage} className="h-2" />
 					</div>
-				)}
-			</div>
 
-			{/* Papers List */}
-			<div className="space-y-4">
-				<div>
-					<h2 className="font-semibold text-lg">Answer Papers</h2>
-					<p className="text-muted-foreground text-sm">
-						Click on a processed paper to view details. Status is updated in
-						real-time.
-					</p>
-				</div>
+					{/* Progress Bar */}
+					{totalCount > 0 && (
+						<div className="space-y-2 pt-2">
+							<div className="flex items-center justify-between text-sm">
+								<span className="font-medium text-muted-foreground">
+									Digitization Progress
+								</span>
+								<span className="font-semibold">
+									{Math.round(processingPercentage)}%
+								</span>
+							</div>
+							<Progress value={processingPercentage} className="h-2" />
+						</div>
+					)}
+				</CardHeader>
+			</Card>
 
-				{answerPapers.length === 0 ? (
-					<Card>
-						<CardContent className="flex flex-col items-center justify-center py-16 text-center">
-							<div className="mb-4 text-5xl">📝</div>
+			{/* Calibration Banner */}
+			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
+				<Card className="border-amber-200 bg-amber-50 shadow-sm">
+					<CardContent className="p-6">
+						<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+							<div className="flex items-start gap-4">
+								<div className="rounded-full bg-amber-100 p-3">
+									<AlertCircle className="h-6 w-6 text-amber-600" />
+								</div>
+								<div className="space-y-1">
+									<div className="flex items-center gap-2">
+										<h3 className="font-semibold text-amber-900 text-lg">
+											Calibration Required
+										</h3>
+										<Badge
+											variant="outline"
+											className="border-amber-500 bg-amber-100 text-amber-700"
+										>
+											Step 1 of 2
+										</Badge>
+									</div>
+									<p className="max-w-xl text-amber-800">
+										We've selected a random paper (
+										<span className="font-medium">
+											{
+												answerPapers.find((p) => p.id === calibrationPaperId)
+													?.student_name
+											}
+										</span>
+										) to calibrate the AI's grading standards. Please review and
+										verify the grading for this paper before automating the
+										rest.
+									</p>
+								</div>
+							</div>
+
+							<div className="flex flex-col gap-3 sm:flex-row">
+								<Button
+									variant="outline"
+									onClick={handleReshuffle}
+									disabled={isAutomating || evaluatingPapers.size > 0}
+									className="border-amber-300 bg-white text-amber-900 hover:bg-amber-50 hover:text-amber-900"
+								>
+									<Dices className="mr-2 h-4 w-4" />
+									Reshuffle Paper
+								</Button>
+								<Button
+									variant="default"
+									onClick={handleVerifyClick}
+									className="bg-amber-600 text-white hover:bg-amber-700"
+								>
+									<Eye className="mr-2 h-4 w-4" />
+									Review & Verify
+								</Button>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Answer Papers List */}
+			<Card>
+				<CardHeader>
+					<div className="flex items-center justify-between">
+						<div>
+							<h2 className="font-semibold text-xl">Answer Papers</h2>
+							<p className="text-muted-foreground text-sm">
+								Click on a digitized paper to view and verify details
+							</p>
+						</div>
+					</div>
+				</CardHeader>
+				<CardContent>
+					{answerPapers.length === 0 ? (
+						<div className="flex flex-col items-center justify-center py-12 text-center">
+							<div className="mb-4 rounded-full bg-muted p-6">
+								<FileText className="h-12 w-12 text-muted-foreground" />
+							</div>
 							<h3 className="mb-2 font-semibold text-lg">
 								No Answer Papers Yet
 							</h3>
-							<p className="mb-6 text-muted-foreground text-sm">
-								Upload answer papers to begin the evaluation process.
+							<p className="mb-6 max-w-sm text-muted-foreground text-sm">
+								Upload answer papers to begin the digitization and evaluation
+								process.
 							</p>
-							<Button onClick={onUploadMore}>
+							<Button onClick={onUploadMore} size="lg">
 								<Upload className="mr-2 h-4 w-4" />
 								Upload Papers
 							</Button>
-						</CardContent>
-					</Card>
-				) : (
-					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-						{answerPapers.map((paper) => (
-							<Card
-								key={paper.id}
-								className={`border-primary/50 transition-all ${
-									paper.processed_document_url
-										? "cursor-pointer hover:shadow-md"
-										: "cursor-not-allowed opacity-70"
-								}`}
-								onClick={() => handlePaperClick(paper)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === " ") {
-										handlePaperClick(paper);
-									}
-								}}
-								role="button"
-								tabIndex={paper.processed_document_url ? 0 : -1}
-							>
-								<CardContent className="flex flex-col justify-between p-4">
-									<div className="flex w-full items-start justify-between">
-										<div className="flex-1">
-											<p className="truncate font-medium">
-												{paper.student_name}
-											</p>
-											<p className="text-muted-foreground text-xs">
-												ID: {paper.id.slice(0, 8)}...
-											</p>
-										</div>
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												handleDeleteClick(paper.id);
-											}}
-											className="rounded p-1 hover:bg-destructive/10"
-											title="Delete paper"
-										>
-											<X className="h-4 w-4 text-destructive" />
-										</button>
-									</div>
+						</div>
+					) : (
+						<div className="overflow-x-auto">
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead className="w-12">#</TableHead>
+										<TableHead>Student Name</TableHead>
+										<TableHead className="text-center">Status</TableHead>
+										<TableHead className="text-center">Digitized</TableHead>
+										<TableHead className="text-center">Evaluated</TableHead>
+										<TableHead className="text-center">Annotated</TableHead>
+										<TableHead className="text-right">Actions</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									{answerPapers.map((paper, index) => {
+										const isEvaluating = evaluatingPapers.has(paper.id);
+										const isDigitized = paper.digitized_document_url !== null;
+										const isEvaluated = paper.processed_document_url !== null;
+										const isAnnotated = paper.annotated_document_url !== null;
 
-									<div className="mt-4 flex items-end justify-between">
-										<div className="space-y-2">
-											<div className="flex items-center gap-2">
-												{paper.processed_document_url === null ? (
-													<div className="flex items-center gap-1">
-														<div className="h-2 w-2 animate-spin rounded-full border-2 border-current border-r-transparent" />
-														<span className="text-muted-foreground text-xs">
+										const isCalibrationTarget = paper.id === calibrationPaperId;
+
+										return (
+											<TableRow
+												key={paper.id}
+												className={`${
+													isDigitized
+														? "cursor-pointer hover:bg-muted/50"
+														: "opacity-60"
+												} ${isEvaluating ? "bg-blue-50" : ""} ${
+													isCalibrationTarget ? "bg-amber-50" : ""
+												}`}
+												onClick={() => {
+													if (isDigitized && !isEvaluating) {
+														// If it's the calibration paper, clicking it should verify it
+														if (isCalibrationTarget && !isCalibrationVerified) {
+															handleVerifyClick();
+														} else {
+															router.push(
+																`/quicks/tests/${testId}/result/${paper.id}`,
+															);
+														}
+													}
+												}}
+											>
+												<TableCell className="font-medium">
+													{index + 1}
+													{isCalibrationTarget && (
+														<Badge
+															variant="outline"
+															className="ml-2 border-amber-500 text-amber-700"
+														>
+															Calibration
+														</Badge>
+													)}
+												</TableCell>
+												<TableCell>
+													<div className="flex items-center gap-3">
+														<div
+															className={`flex h-10 w-10 items-center justify-center rounded-full ${
+																isDigitized
+																	? "bg-green-100 text-green-700"
+																	: "bg-orange-100 text-orange-700"
+															}`}
+														>
+															{paper.student_name.charAt(0).toUpperCase()}
+														</div>
+														<div>
+															<div className="font-medium">
+																{paper.student_name}
+															</div>
+															<div className="text-muted-foreground text-xs">
+																ID: {paper.id.slice(0, 8)}...
+															</div>
+														</div>
+													</div>
+												</TableCell>
+												<TableCell className="text-center">
+													{isEvaluating ? (
+														<Badge
+															variant="secondary"
+															className="gap-1.5 bg-blue-100 text-blue-700"
+														>
+															<Loader2 className="h-3 w-3 animate-spin" />
+															Evaluating
+														</Badge>
+													) : isEvaluated ? (
+														<Badge
+															variant="default"
+															className="gap-1.5 bg-green-100 text-green-700"
+														>
+															<CheckCircle2 className="h-3 w-3" />
+															Evaluated
+														</Badge>
+													) : isDigitized ? (
+														<Badge variant="secondary" className="gap-1.5">
+															<FileCheck className="h-3 w-3" />
+															Ready
+														</Badge>
+													) : (
+														<Badge
+															variant="secondary"
+															className="gap-1.5 bg-orange-100 text-orange-700"
+														>
+															<Clock className="h-3 w-3" />
 															Processing
-														</span>
+														</Badge>
+													)}
+												</TableCell>
+												<TableCell className="text-center">
+													{isDigitized ? (
+														<CheckCircle2 className="mx-auto h-5 w-5 text-green-600" />
+													) : (
+														<div className="flex items-center justify-center gap-2">
+															<div className="h-2 w-2 animate-pulse rounded-full bg-orange-500" />
+															<span className="text-muted-foreground text-xs">
+																Digitizing...
+															</span>
+														</div>
+													)}
+												</TableCell>
+												<TableCell className="text-center">
+													{isEvaluated ? (
+														<CheckCircle2 className="mx-auto h-5 w-5 text-green-600" />
+													) : (
+														<span className="text-muted-foreground">—</span>
+													)}
+												</TableCell>
+												<TableCell className="text-center">
+													{isAnnotated ? (
+														<CheckCircle2 className="mx-auto h-5 w-5 text-green-600" />
+													) : (
+														<span className="text-muted-foreground">—</span>
+													)}
+												</TableCell>
+												<TableCell className="text-right">
+													<div className="flex items-center justify-end gap-2">
+														{isDigitized && (
+															<Button
+																variant="ghost"
+																size="sm"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	router.push(
+																		`/quicks/tests/${testId}/result/${paper.id}`,
+																	);
+																}}
+															>
+																<Eye className="h-4 w-4" />
+															</Button>
+														)}
+														<Button
+															variant="ghost"
+															size="sm"
+															onClick={(e) => {
+																e.stopPropagation();
+																handleDeleteClick(paper.id);
+															}}
+															className="text-red-600 hover:bg-red-50 hover:text-red-700"
+														>
+															<X className="h-4 w-4" />
+														</Button>
 													</div>
-												) : (
-													<div className="flex items-center gap-1 text-green-600">
-														<CheckCircle2 className="h-4 w-4" />
-														<span className="text-xs">Processed</span>
-													</div>
-												)}
-											</div>
-											{paper.grade && (
-												<Badge variant="secondary">{paper.grade}</Badge>
-											)}
-										</div>
-										<div className="text-right">
-											<p className="font-bold text-lg">
-												{paper.total_score ?? "N/A"}
-											</p>
-											<p className="text-muted-foreground text-xs">
-												/ {paper.max_score || 0} pts
-											</p>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				)}
-			</div>
+												</TableCell>
+											</TableRow>
+										);
+									})}
+								</TableBody>
+							</Table>
+						</div>
+					)}
+				</CardContent>
+			</Card>
+
+			{/* Action Buttons */}
+			{totalCount > 0 && (
+				<Card>
+					<CardContent className="p-6">
+						<div className="flex flex-col gap-4 sm:flex-row">
+							<Button
+								variant="default"
+								size="lg"
+								onClick={handleVerifyClick}
+								disabled={!hasAnyEvaluated}
+								className={`flex-1 ${
+									calibrationPaperId && !isCalibrationVerified
+										? "bg-amber-600 hover:bg-amber-700"
+										: ""
+								}`}
+							>
+								<Eye className="mr-2 h-5 w-5" />
+								{calibrationPaperId && !isCalibrationVerified
+									? "Verify Calibration Paper"
+									: "View Papers"}
+							</Button>
+							{hasAnyEvaluated && (
+								<Button
+									variant="outline"
+									size="lg"
+									onClick={() => router.push(`/quicks/tests/${testId}/report`)}
+									className="flex-1"
+								>
+									<BarChart3 className="mr-2 h-5 w-5" />
+									View Report
+								</Button>
+							)}
+						</div>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Info Banners */}
+			{!isAllDigitized && totalCount > 0 && (
+				<Card className="border-blue-200 bg-blue-50">
+					<CardContent className="flex items-start gap-3 py-4">
+						<AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+						<div className="text-sm">
+							<p className="font-medium text-blue-900">
+								Papers are being digitized
+							</p>
+							<p className="text-blue-700">
+								The page will automatically refresh. You can start evaluation
+								once all papers are digitized.
+							</p>
+						</div>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* Delete Confirmation */}
 			<AlertDialog
