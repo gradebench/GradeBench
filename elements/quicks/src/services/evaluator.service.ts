@@ -7,11 +7,8 @@ import type { EvaluatorConfigurationV3 } from "../types/evaluator-config-v3";
 // Get API base URL - works in both browser and server
 const getBaseURL = () => {
 	// In browser, check window.location for production
-	if (typeof window !== "undefined") {
-		return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8083";
-	}
 	// On server
-	return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8083";
+	return process.env.NEXT_PUBLIC_API_URL as string;
 };
 
 // Create API client for Grade service

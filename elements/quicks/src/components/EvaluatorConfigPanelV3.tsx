@@ -95,8 +95,7 @@ export function EvaluatorConfigPanelV3({
 	onConfigSelected,
 	onSave,
 }: EvaluatorConfigPanelV3Props) {
-	const API_BASE_URL =
-		process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8083/grade/v1";
+	const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL as string}/grade/v1`;
 	const [selectedTemplate, setSelectedTemplate] = useState<
 		keyof typeof TEMPLATE_CONFIGS | null
 	>("standard");

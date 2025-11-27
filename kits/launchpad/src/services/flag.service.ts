@@ -2,10 +2,7 @@ import { createApiClient, type StandardResponse } from "@gb/fetch";
 import type { FlagResult } from "../types/flag.types";
 
 const launchpadAPI = createApiClient({
-	baseURL:
-		process.env.NODE_ENV === "production"
-			? process.env.NEXT_PUBLIC_API_URL
-			: "http://localhost:8081",
+	baseURL: process.env.NEXT_PUBLIC_API_URL as string,
 
 	defaultHeaders: {
 		"Content-Type": "application/json",
