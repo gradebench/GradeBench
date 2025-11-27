@@ -7,7 +7,7 @@ import {
 	SiteHeader,
 	SiteLayout,
 	SitePage,
-} from "../components/templetes";
+} from "../components/templates";
 import { siteConfig } from "../configs/site";
 
 // Mock next/link so Vitest doesn't break
@@ -50,9 +50,24 @@ const mockNavMenu = [
 	},
 ];
 
-// Mock ScreenRootLayout component
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+	writable: true,
+	value: vi.fn().mockImplementation((query) => ({
+		matches: false,
+		media: query,
+		onchange: null,
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		addListener: vi.fn(),
+		removeListener: vi.fn(),
+		dispatchEvent: vi.fn(),
+	})),
+});
+
+// Mock DefaultRootLayout component
 vi.mock("@/components/providers/Screen", () => ({
-	ScreenRootLayout: ({ children }: { children: React.ReactNode }) => (
+	DefaultRootLayout: ({ children }: { children: React.ReactNode }) => (
 		<div data-testid="screen-root-layout">{children}</div>
 	),
 }));
@@ -65,8 +80,8 @@ describe("SiteLayout", () => {
 			</SiteLayout>,
 		);
 
-		expect(screen.getByTestId("screen-root-layout")).toBeDefined();
 		expect(screen.getByTestId("site-content")).toBeDefined();
+		expect(screen.getByRole("banner")).toBeDefined();
 	});
 });
 

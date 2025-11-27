@@ -1,8 +1,8 @@
 import { screen } from "@testing-library/dom";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { FeatureDetails } from "../components/features/Details";
-import { FeaturesHero } from "../components/features/Hero";
+import { FeatureDetails } from "../components/pages/features/Details";
+import { FeaturesHero } from "../components/pages/features/Hero";
 
 describe("Features Hero Section", () => {
 	it("Renders Headline", () => {

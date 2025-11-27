@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SitePage } from "@/features/site/components/templetes";
+import { SitePage } from "@/features/site/components/templates";
 import { siteConfig } from "@/features/site/configs/site";
 
 export const generateMetadata = async ({

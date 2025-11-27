@@ -18,7 +18,7 @@ import {
 import { cleanup } from "@testing-library/react";
 import { afterEach, expect, vi } from "vitest";
 
-import "@testing-library/jest-dom/vitest";
+// import "@testing-library/jest-dom/vitest";
 
 // Explicitly extend Vitest's expect with individual matchers
 expect.extend({

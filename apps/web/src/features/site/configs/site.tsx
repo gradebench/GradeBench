@@ -1,9 +1,10 @@
-import { GradeBench } from "@/components/anim/GradeBench1";
+import { GradeBench } from "@/components/anim/GradeBench";
 
-import { About } from "../components/about/About";
-import { Features } from "../components/features/Features";
-import { Home } from "../components/home/Home";
-import { Solutions } from "../components/solutions/Solutions";
+import { About } from "../components/pages/about/About";
+import { Features } from "../components/pages/features/Features";
+import { Home } from "../components/pages/home/Home";
+import { Solutions } from "../components/pages/solutions/Solutions";
+
 import type { SiteConfigType } from "../types/site";
 
 export const siteConfig: SiteConfigType = {

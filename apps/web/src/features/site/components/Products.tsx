@@ -1,5 +1,5 @@
 import { H1, H2, Lead, P } from "@gb/ui/src/components/ui/typography";
-import { GradeBench } from "@/components/anim/GradeBench1";
+import { GradeBench } from "@/components/anim/GradeBench";
 
 export const Products = () => {
 	return (

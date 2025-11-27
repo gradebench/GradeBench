@@ -1,9 +1,9 @@
 import { screen } from "@testing-library/dom";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { SolutionHero } from "../components/solutions/Hero";
-import { SolutionRoadmap } from "../components/solutions/Roadmap";
-import { SolutionTargeted } from "../components/solutions/TargetedSolution";
+import { SolutionHero } from "../components/pages/solutions/Hero";
+import { SolutionRoadmap } from "../components/pages/solutions/Roadmap";
+import { SolutionTargeted } from "../components/pages/solutions/TargetedSolution";
 
 describe("Solution Hero Section", () => {
 	it("Renders Headline", () => {

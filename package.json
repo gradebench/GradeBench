@@ -9,10 +9,9 @@
 		"check-types": "turbo run check-types"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.4",
-		"prettier": "^3.6.2",
-		"turbo": "^2.5.6",
-		"typescript": "5.8.3"
+		"@biomejs/biome": "^2.3.0",
+		"msw": "^2.12.2",
+		"turbo": "^2.5.6"
 	},
 	"engines": {
 		"node": ">=18"
@@ -20,6 +19,8 @@
 	"packageManager": "npm@11.4.2",
 	"workspaces": [
 		"apps/*",
-		"packages/*"
+		"packages/*",
+		"kits/*",
+		"elements/*"
 	]
 }

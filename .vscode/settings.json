@@ -16,11 +16,6 @@
 	"[markdown]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"geminicodeassist.chat.automaticScrolling": true,
-	"geminicodeassist.chat.enableStreaming": true,
-	"geminicodeassist.contextExclusionGitignore": true,
-	"geminicodeassist.enable": true,
-	"geminicodeassist.updateChannel": "Insiders",
 	"editor.cursorBlinking": "expand",
 	"editor.cursorSmoothCaretAnimation": "on",
 	"editor.smoothScrolling": true,
@@ -31,7 +26,9 @@
 	"python.analysis.autoImportCompletions": false,
 	"docker.languageserver.formatter.ignoreMultilineInstructions": false,
 	"[json]": {
-		"editor.defaultFormatter": "vscode.json-language-features"
+		"editor.defaultFormatter": "biomejs.biome"
 	},
-	"cSpell.words": ["biomejs", "Turborepo"]
+	"cSpell.words": ["biomejs", "gradebench", "turbopack", "Turborepo"],
+	"css.validate": false,
+	"css.lint.unknownAtRules": "ignore"
 }
