@@ -336,20 +336,18 @@ export function EvaluationDashboard({
 						</div>
 
 						<div className="flex gap-2">
-							{(isCalibrationVerified ||
-								(!calibrationPaperId && hasAnyEvaluated)) &&
-								!isAllEvaluated && (
-									<Button
-										variant="default"
-										size="sm"
-										onClick={handleAutomateRest}
-										disabled={isAutomating || evaluatingPapers.size > 0}
-										className="bg-green-600 hover:bg-green-700"
-									>
-										<Zap className="mr-2 h-4 w-4" />
-										Automate Rest
-									</Button>
-								)}
+							{isCalibrationVerified && !isAllEvaluated && (
+								<Button
+									variant="default"
+									size="sm"
+									onClick={handleAutomateRest}
+									disabled={isAutomating || evaluatingPapers.size > 0}
+									className="bg-green-600 hover:bg-green-700"
+								>
+									<Zap className="mr-2 h-4 w-4" />
+									Automate Rest
+								</Button>
+							)}
 							<Button
 								variant="outline"
 								size="sm"
