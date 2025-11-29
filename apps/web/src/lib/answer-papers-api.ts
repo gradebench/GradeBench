@@ -528,17 +528,16 @@ export async function startEvaluation(testId: string): Promise<void> {
  */
 export async function evaluateAnswerPaper(
 	paperId: string,
-	studentId?: string | null,
+	_studentId?: string | null,
 ): Promise<void> {
 	try {
-		// Use studentId if available, otherwise fall back to paperId
-		// The backend expects a user identifier in the URL to create an agent session
-		const id = studentId || paperId;
-		const response = await fetch(`${API_BASE_URL}/evaluations/${id}/evaluate`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ paper_id: paperId }),
-		});
+		const response = await fetch(
+			`${API_BASE_URL}/answer-papers/${paperId}/evaluate`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 
 		if (!response.ok) {
 			throw new Error(
@@ -556,16 +555,16 @@ export async function evaluateAnswerPaper(
  */
 export async function annotateAnswerPaper(
 	paperId: string,
-	studentId?: string | null,
+	_studentId?: string | null,
 ): Promise<void> {
 	try {
-		// Use studentId if available, otherwise fall back to paperId
-		const id = studentId || paperId;
-		const response = await fetch(`${API_BASE_URL}/annotations/${id}/annotate`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ paper_id: paperId }),
-		});
+		const response = await fetch(
+			`${API_BASE_URL}/answer-papers/${paperId}/annotate`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 
 		if (!response.ok) {
 			throw new Error(
