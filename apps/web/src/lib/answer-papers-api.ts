@@ -528,13 +528,16 @@ export async function startEvaluation(testId: string): Promise<void> {
  */
 export async function evaluateAnswerPaper(
 	paperId: string,
-	studentId?: string | null,
+	_studentId?: string | null,
 ): Promise<void> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/answer-papers/${paperId}/evaluate`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-		});
+		const response = await fetch(
+			`${API_BASE_URL}/answer-papers/${paperId}/evaluate`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 
 		if (!response.ok) {
 			throw new Error(
@@ -552,13 +555,16 @@ export async function evaluateAnswerPaper(
  */
 export async function annotateAnswerPaper(
 	paperId: string,
-	studentId?: string | null,
+	_studentId?: string | null,
 ): Promise<void> {
 	try {
-		const response = await fetch(`${API_BASE_URL}/answer-papers/${paperId}/annotate`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-		});
+		const response = await fetch(
+			`${API_BASE_URL}/answer-papers/${paperId}/annotate`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			},
+		);
 
 		if (!response.ok) {
 			throw new Error(
