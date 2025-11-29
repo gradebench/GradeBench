@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { pollForDynamicRubric } from "@/lib/academic-tests-api";
 import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
@@ -89,6 +90,7 @@ export default function ModelAnswerPage() {
 	const [generating, setGenerating] = useState(false);
 	const [needsGeneration, setNeedsGeneration] = useState(false);
 	const [generationFinished, setGenerationFinished] = useState(false);
+	const [isProceeding, setIsProceeding] = useState(false);
 
 	const generateModelAnswers = useCallback(async () => {
 		if (!testId) {
@@ -182,6 +184,49 @@ export default function ModelAnswerPage() {
 		}
 	}, [generationFinished, fetchModelAnswers]);
 
+	const handleProceedToEvaluation = async () => {
+		if (!testId) return;
+		setIsProceeding(true);
+
+		try {
+			// 1. Trigger Dynamic Rubric Generation
+			toast.info("Initializing evaluation rubrics...");
+			const response = await fetch(
+				`${API_BASE_URL}/dynamic-rubrics/${testId}`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+				},
+			);
+
+			if (!response.ok) {
+				// If it fails, it might be because it already exists or other error.
+				// We'll log it but try to proceed after polling.
+				console.warn(
+					"Rubric generation trigger failed or already exists:",
+					response.status,
+				);
+			}
+
+			// 2. Poll until rubrics are ready
+			toast.loading("Generating rubrics, please wait...");
+			await pollForDynamicRubric(testId);
+			toast.dismiss();
+			toast.success("Rubrics ready! Proceeding to evaluation.");
+
+			// 3. Navigate
+			router.push(`/quicks/tests/${testId}/evaluate`);
+		} catch (error) {
+			console.error("Error preparing evaluation:", error);
+			toast.dismiss();
+			toast.error("Failed to generate rubrics. Proceeding anyway...");
+			// Fallback: navigate anyway
+			router.push(`/quicks/tests/${testId}/evaluate`);
+		} finally {
+			setIsProceeding(false);
+		}
+	};
+
 	if (loading || generating) {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
@@ -210,10 +255,20 @@ export default function ModelAnswerPage() {
 					{modelAnswerData && (
 						<Button
 							size="sm"
-							onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
+							onClick={handleProceedToEvaluation}
+							disabled={isProceeding}
 						>
-							Proceed to Evaluation
-							<ArrowRight className="ml-2 h-4 w-4" />
+							{isProceeding ? (
+								<>
+									<div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+									Preparing...
+								</>
+							) : (
+								<>
+									Proceed to Evaluation
+									<ArrowRight className="ml-2 h-4 w-4" />
+								</>
+							)}
 						</Button>
 					)}
 				</div>
