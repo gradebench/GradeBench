@@ -532,7 +532,7 @@ export async function evaluateAnswerPaper(
 ): Promise<void> {
 	try {
 		const response = await fetch(
-			`${API_BASE_URL}/answer-papers/${paperId}/evaluate`,
+			`${API_BASE_URL}/evaluations/${paperId}/evaluate`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -559,7 +559,7 @@ export async function annotateAnswerPaper(
 ): Promise<void> {
 	try {
 		const response = await fetch(
-			`${API_BASE_URL}/answer-papers/${paperId}/annotate`,
+			`${API_BASE_URL}/annotations/${paperId}/annotate`,
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -573,6 +573,32 @@ export async function annotateAnswerPaper(
 		}
 	} catch (error) {
 		console.error("Error annotating answer paper:", error);
+		throw error;
+	}
+}
+
+/**
+ * Trigger review for a single answer paper
+ */
+export async function reviewAnswerPaper(
+	paperId: string,
+	reviewComment?: string,
+): Promise<void> {
+	try {
+		const response = await fetch(
+			`${API_BASE_URL}/evaluations/${paperId}/review`,
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ review_comment: reviewComment || "" }),
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(`Failed to review answer paper: ${response.statusText}`);
+		}
+	} catch (error) {
+		console.error("Error reviewing answer paper:", error);
 		throw error;
 	}
 }
