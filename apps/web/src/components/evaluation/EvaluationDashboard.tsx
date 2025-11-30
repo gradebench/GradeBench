@@ -438,11 +438,16 @@ export function EvaluationDashboard({
 								</Button>
 								<Button
 									variant="default"
-									onClick={handleVerifyClick}
+									onClick={() => {
+										setIsCalibrationVerified(true);
+										toast.success(
+											"Calibration verified! Automate Rest button is now available.",
+										);
+									}}
 									className="bg-amber-600 text-white hover:bg-amber-700"
 								>
-									<Eye className="mr-2 h-4 w-4" />
-									Review & Verify
+									<CheckCircle2 className="mr-2 h-4 w-4" />
+									Verify & Save
 								</Button>
 							</div>
 						</div>
