@@ -282,8 +282,7 @@ export default function VerifyPage() {
 						{paper.annotated_document_url ? (
 							<iframe
 								src={paper.annotated_document_url}
-								className="h-full w-full"
-								title="Annotated PDF"
+								title="Annotated Submission PDF"
 							/>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-muted-foreground">

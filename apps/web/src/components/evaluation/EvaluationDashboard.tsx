@@ -21,9 +21,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@gb/ui/src/components/ui/table";
+
 import {
 	AlertCircle,
-	BarChart3,
 	CheckCircle2,
 	Clock,
 	Dices,
@@ -36,6 +36,7 @@ import {
 	X,
 	Zap,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -310,17 +311,17 @@ export function EvaluationDashboard({
 	};
 
 	return (
-		<div className="container mx-auto space-y-6 p-6">
+		<div className="container mx-auto max-w-7xl space-y-8 p-6 py-8">
 			{/* Header Section */}
-			<Card>
-				<CardHeader className="space-y-4">
-					<div className="flex items-start justify-between">
-						<div className="space-y-2">
-							<h1 className="font-bold text-3xl tracking-tight">{testName}</h1>
-							<div className="flex items-center gap-3">
+			<Card className="shadow-sm">
+				<CardHeader className="space-y-6 pb-8">
+					<div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+						<div className="space-y-3">
+							<h1 className="font-bold text-4xl tracking-tight">{testName}</h1>
+							<div className="flex flex-wrap items-center gap-4">
 								<Badge
 									variant={isAnyProcessing ? "secondary" : "default"}
-									className="gap-1.5"
+									className="gap-2 px-3 py-1.5 text-sm"
 								>
 									{isAnyProcessing ? (
 										<Clock className="h-3.5 w-3.5 animate-pulse" />
@@ -329,33 +330,34 @@ export function EvaluationDashboard({
 									)}
 									{processingStatus}
 								</Badge>
-								<span className="text-muted-foreground text-sm">
-									{processedCount} of {totalCount} papers digitized
+								<span className="font-medium text-base text-muted-foreground">
+									{processedCount} / {totalCount} papers digitized
 								</span>
 							</div>
 						</div>
 
-						<div className="flex gap-2">
-							{isCalibrationVerified && !isAllEvaluated && (
+						<div className="flex flex-wrap gap-3">
+							{hasAnyEvaluated && !isAllEvaluated && (
 								<Button
 									variant="default"
-									size="sm"
+									size="default"
 									onClick={handleAutomateRest}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="bg-green-600 hover:bg-green-700"
+									className="bg-green-600 font-semibold shadow-sm hover:bg-green-700"
 								>
-									<Zap className="mr-2 h-4 w-4" />
+									<Zap className="mr-2 h-5 w-5" />
 									Automate Rest
 								</Button>
 							)}
 							<Button
 								variant="outline"
-								size="sm"
+								size="default"
 								onClick={handleRefresh}
 								disabled={isRefreshing}
+								className="shadow-sm"
 							>
 								<RefreshCw
-									className={`mr-2 h-4 w-4 ${
+									className={`mr-2 h-5 w-5 ${
 										isRefreshing ? "animate-spin" : ""
 									}`}
 								/>
@@ -363,11 +365,12 @@ export function EvaluationDashboard({
 							</Button>
 							<Button
 								variant="outline"
-								size="sm"
+								size="default"
 								onClick={onUploadMore}
 								disabled={isAutomating}
+								className="shadow-sm"
 							>
-								<Upload className="mr-2 h-4 w-4" />
+								<Upload className="mr-2 h-5 w-5" />
 								Upload More
 							</Button>
 						</div>
@@ -375,16 +378,16 @@ export function EvaluationDashboard({
 
 					{/* Progress Bar */}
 					{totalCount > 0 && (
-						<div className="space-y-2 pt-2">
-							<div className="flex items-center justify-between text-sm">
-								<span className="font-medium text-muted-foreground">
+						<div className="space-y-3 pt-4">
+							<div className="flex items-center justify-between">
+								<span className="font-semibold text-base text-muted-foreground">
 									Digitization Progress
 								</span>
-								<span className="font-semibold">
+								<span className="font-bold text-lg">
 									{Math.round(processingPercentage)}%
 								</span>
 							</div>
-							<Progress value={processingPercentage} className="h-2" />
+							<Progress value={processingPercentage} className="h-3" />
 						</div>
 					)}
 				</CardHeader>
@@ -392,7 +395,7 @@ export function EvaluationDashboard({
 
 			{/* Calibration Banner */}
 			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
-				<Card className="border-amber-200 bg-amber-50 shadow-sm">
+				<Card className="border-2 border-amber-300 bg-amber-50 shadow-md">
 					<CardContent className="p-6">
 						<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 							<div className="flex items-start gap-4">
@@ -456,12 +459,12 @@ export function EvaluationDashboard({
 			)}
 
 			{/* Answer Papers List */}
-			<Card>
-				<CardHeader>
+			<Card className="shadow-sm">
+				<CardHeader className="pb-6">
 					<div className="flex items-center justify-between">
-						<div>
-							<h2 className="font-semibold text-xl">Answer Papers</h2>
-							<p className="text-muted-foreground text-sm">
+						<div className="space-y-1">
+							<h2 className="font-bold text-2xl">Answer Papers</h2>
+							<p className="text-base text-muted-foreground">
 								Click on a digitized paper to view and verify details
 							</p>
 						</div>
@@ -662,36 +665,19 @@ export function EvaluationDashboard({
 
 			{/* Action Buttons */}
 			{totalCount > 0 && (
-				<Card>
-					<CardContent className="p-6">
-						<div className="flex flex-col gap-4 sm:flex-row">
+				<Card className="shadow-sm">
+					<CardContent className="p-8">
+						<div className="flex justify-center">
 							<Button
 								variant="default"
 								size="lg"
 								onClick={handleVerifyClick}
 								disabled={!hasAnyEvaluated}
-								className={`flex-1 ${
-									calibrationPaperId && !isCalibrationVerified
-										? "bg-amber-600 hover:bg-amber-700"
-										: ""
-								}`}
+								className="min-w-[300px] py-6 font-semibold text-base shadow-md"
 							>
-								<Eye className="mr-2 h-5 w-5" />
-								{calibrationPaperId && !isCalibrationVerified
-									? "Verify Calibration Paper"
-									: "View Papers"}
+								<Eye className="mr-2 h-6 w-6" />
+								Verify Calibration
 							</Button>
-							{hasAnyEvaluated && (
-								<Button
-									variant="outline"
-									size="lg"
-									onClick={() => router.push(`/quicks/tests/${testId}/report`)}
-									className="flex-1"
-								>
-									<BarChart3 className="mr-2 h-5 w-5" />
-									View Report
-								</Button>
-							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -699,7 +685,7 @@ export function EvaluationDashboard({
 
 			{/* Info Banners */}
 			{!isAllDigitized && totalCount > 0 && (
-				<Card className="border-blue-200 bg-blue-50">
+				<Card className="border-2 border-blue-200 bg-blue-50 shadow-sm">
 					<CardContent className="flex items-start gap-3 py-4">
 						<AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
 						<div className="text-sm">

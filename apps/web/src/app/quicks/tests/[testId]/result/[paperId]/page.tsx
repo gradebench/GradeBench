@@ -12,7 +12,6 @@ import {
 	ArrowLeft,
 	Edit2,
 	ExternalLink,
-	FileText,
 	Loader2,
 	MessageSquare,
 	Target,
@@ -303,29 +302,13 @@ export default function ResultPage() {
 					</div>
 					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
 						{paper.annotated_document_url ? (
-							<div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
-								<div className="rounded-full bg-primary/10 p-6">
-									<FileText className="h-16 w-16 text-primary" />
-								</div>
-								<div>
-									<h3 className="mb-2 font-semibold text-lg">
-										Annotated PDF Ready
-									</h3>
-									<p className="mb-4 text-muted-foreground text-sm">
-										Click below to view the annotated submission
-									</p>
-								</div>
-								<Button
-									size="lg"
-									onClick={() =>
-										paper.annotated_document_url &&
-										window.open(paper.annotated_document_url, "_blank")
-									}
-								>
-									<ExternalLink className="mr-2 h-5 w-5" />
-									Open PDF in New Tab
-								</Button>
-							</div>
+							<iframe
+								src={paper.annotated_document_url}
+								title="Annotated Submission PDF"
+								width="100%"
+								height="800px"
+								style={{ border: "none" }}
+							/>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-muted-foreground">
 								<Loader2 className="h-8 w-8 animate-spin" />
