@@ -281,7 +281,7 @@ export default function VerifyPage() {
 					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-white shadow-sm">
 						{paper.annotated_document_url ? (
 							<iframe
-								src={paper.annotated_document_url}
+								src={`https://docs.google.com/viewer?url=${encodeURIComponent(paper.annotated_document_url)}&embedded=true`}
 								className="h-full w-full"
 								title="Annotated PDF"
 							/>
