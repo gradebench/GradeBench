@@ -666,34 +666,17 @@ export function EvaluationDashboard({
 			{totalCount > 0 && (
 				<Card className="shadow-sm">
 					<CardContent className="p-8">
-						<div className="flex flex-col gap-4 sm:flex-row">
+						<div className="flex justify-center">
 							<Button
 								variant="default"
 								size="lg"
 								onClick={handleVerifyClick}
 								disabled={!hasAnyEvaluated}
-								className={`flex-1 py-6 font-semibold text-base shadow-md ${
-									calibrationPaperId && !isCalibrationVerified
-										? "bg-amber-600 hover:bg-amber-700"
-										: ""
-								}`}
+								className="min-w-[300px] py-6 font-semibold text-base shadow-md"
 							>
 								<Eye className="mr-2 h-6 w-6" />
-								{calibrationPaperId && !isCalibrationVerified
-									? "Verify Calibration Paper"
-									: "View Papers"}
+								Verify Calibration
 							</Button>
-							{hasAnyEvaluated && (
-								<Button
-									variant="outline"
-									size="lg"
-									onClick={() => router.push(`/quicks/tests/${testId}/report`)}
-									className="flex-1 py-6 font-semibold text-base shadow-sm"
-								>
-									<BarChart3 className="mr-2 h-6 w-6" />
-									View Report
-								</Button>
-							)}
 						</div>
 					</CardContent>
 				</Card>
