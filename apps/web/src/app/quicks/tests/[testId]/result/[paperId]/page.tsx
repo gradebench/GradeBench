@@ -301,11 +301,17 @@ export default function ResultPage() {
 					</div>
 					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-background shadow-sm">
 						{paper.annotated_document_url ? (
-							<iframe
-								src={paper.annotated_document_url}
+							<object
+								data={paper.annotated_document_url}
+								type="application/pdf"
 								className="h-full w-full"
-								title="Annotated PDF"
-							/>
+							>
+								<embed
+									src={paper.annotated_document_url}
+									type="application/pdf"
+									className="h-full w-full"
+								/>
+							</object>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-muted-foreground">
 								<Loader2 className="h-8 w-8 animate-spin" />
