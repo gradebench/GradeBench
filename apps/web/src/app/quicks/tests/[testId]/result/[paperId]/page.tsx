@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Edit2,
   ExternalLink,
-  FileText,
   Loader2,
   MessageSquare,
   Target,
