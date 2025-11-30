@@ -21,9 +21,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@gb/ui/src/components/ui/table";
+
 import {
 	AlertCircle,
-	BarChart3,
 	CheckCircle2,
 	Clock,
 	Dices,
@@ -36,6 +36,7 @@ import {
 	X,
 	Zap,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
