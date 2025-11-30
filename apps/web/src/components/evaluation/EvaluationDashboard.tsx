@@ -440,7 +440,9 @@ export function EvaluationDashboard({
 									variant="default"
 									onClick={() => {
 										setIsCalibrationVerified(true);
-										toast.success("Calibration verified! Automate Rest button is now available.");
+										toast.success(
+											"Calibration verified! Automate Rest button is now available.",
+										);
 									}}
 									className="bg-amber-600 text-white hover:bg-amber-700"
 								>
