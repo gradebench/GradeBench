@@ -179,10 +179,7 @@ export function UploadPanel({ testId, onUploadComplete }: UploadPanelProps) {
 			{/* Upload Area */}
 			<Card className="border-2 border-dashed">
 				<div className="p-8">
-					<label
-						htmlFor={fileInputId}
-						className="flex cursor-pointer flex-col items-center justify-center"
-					>
+					<div className="flex cursor-pointer flex-col items-center justify-center">
 						<div className="mb-4 text-5xl">📄</div>
 						<h3 className="mb-2 font-semibold text-lg">
 							Drag and drop your files here
@@ -190,14 +187,18 @@ export function UploadPanel({ testId, onUploadComplete }: UploadPanelProps) {
 						<p className="mb-6 text-center text-muted-foreground text-sm">
 							or click to browse
 						</p>
-						<Button type="button" variant="outline">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={() => document.getElementById(fileInputId)?.click()}
+						>
 							<Upload className="mr-2 h-4 w-4" />
 							Browse Files
 						</Button>
 						<p className="mt-4 text-muted-foreground text-xs">
 							Only PDF files allowed • Maximum 100 files per upload
 						</p>
-					</label>
+					</div>
 					<input
 						id={fileInputId}
 						type="file"

@@ -256,7 +256,7 @@ export default function VerifyPage() {
 					<div>
 						<h1 className="font-semibold text-base sm:text-lg">Verification</h1>
 						<p className="text-muted-foreground text-xs">
-							<span className="hidden sm:inline">Calibration Mode • </span>
+							<span className="hidden sm:inline">Verifying • </span>
 							Student: {paper.student_name}
 						</p>
 					</div>
@@ -264,7 +264,7 @@ export default function VerifyPage() {
 				<div className="flex items-center gap-2">
 					<Badge
 						variant="outline"
-						className="border-blue-500 bg-blue-300 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+						className="border-blue-500 bg-blue-500/10 text-blue-600"
 					>
 						<span className="hidden sm:inline">Calibration Active</span>
 						<span className="sm:hidden">Active</span>
@@ -290,11 +290,12 @@ export default function VerifyPage() {
 								src={paper.annotated_document_url}
 								title="Annotated Submission PDF"
 								width="100%"
-								height="800px"
+								height="100%"
+								className="h-full w-full"
 								style={{ border: "none" }}
 							/>
 						) : (
-							<div className="flex flex-col items-center gap-2 text-muted-foreground">
+							<div className="flex flex-col items-center gap-2 text-slate-500">
 								<Loader2 className="h-8 w-8 animate-spin" />
 								<p>Loading PDF...</p>
 							</div>
@@ -359,10 +360,10 @@ export default function VerifyPage() {
 										{q.feedback.strengths &&
 											q.feedback.strengths.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-green-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-green-400 text-xs">
 														<ThumbsUp className="h-3 w-3" /> Strengths
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.strengths.map((s, i) => (
 															<li key={i}>{s}</li>
 														))}
@@ -372,10 +373,10 @@ export default function VerifyPage() {
 										{q.feedback.weaknesses &&
 											q.feedback.weaknesses.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-red-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-red-400 text-xs">
 														<ThumbsDown className="h-3 w-3" /> Weaknesses
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.weaknesses.map((w, i) => (
 															<li key={i}>{w}</li>
 														))}
@@ -385,10 +386,10 @@ export default function VerifyPage() {
 										{q.feedback.suggestions &&
 											q.feedback.suggestions.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-amber-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-amber-400 text-xs">
 														<Edit2 className="h-3 w-3" /> Suggestions
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.suggestions.map((s, i) => (
 															<li key={i}>{s}</li>
 														))}
@@ -466,10 +467,10 @@ export default function VerifyPage() {
 								<div
 									className={`font-bold text-xl ${
 										percentage >= 80
-											? "text-green-600"
+											? "text-green-400"
 											: percentage >= 50
-												? "text-amber-600"
-												: "text-red-600"
+												? "text-amber-400"
+												: "text-red-400"
 									}`}
 								>
 									{Math.round(percentage)}%
