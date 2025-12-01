@@ -141,6 +141,13 @@ export function EvaluationDashboard({
 		// If some papers are already evaluated, skip calibration
 		if (answerPapers.some((p) => p.processed_document_url !== null)) {
 			setHasAutoEvaluatedFirst(true);
+			// Check if calibration was already verified
+			const wasVerified = localStorage.getItem(
+				`calibration_verified_${testId}`,
+			);
+			if (wasVerified === "true") {
+				setIsCalibrationVerified(true);
+			}
 			return;
 		}
 
@@ -178,9 +185,9 @@ export function EvaluationDashboard({
 		calibrationPaperId,
 		answerPapers,
 		pickRandomPaper,
+		testId,
 		fetchPapers,
 	]);
-
 	const handleReshuffle = async () => {
 		if (!calibrationPaperId) return;
 
@@ -302,6 +309,7 @@ export function EvaluationDashboard({
 		// If we are in calibration mode, mark as verified
 		if (calibrationPaperId && !isCalibrationVerified) {
 			setIsCalibrationVerified(true);
+			localStorage.setItem(`calibration_verified_${testId}`, "true");
 			toast.success(
 				"Calibration paper verified! You can now automate the rest.",
 			);
@@ -311,41 +319,42 @@ export function EvaluationDashboard({
 	};
 
 	return (
-		<div className="container mx-auto max-w-7xl space-y-8 p-6 py-8">
+		<div className="container mx-auto max-w-7xl space-y-4 p-4 py-4 sm:space-y-6 sm:p-6 sm:py-8 md:space-y-8">
 			{/* Header Section */}
 			<Card className="shadow-sm">
-				<CardHeader className="space-y-6 pb-8">
-					<div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-						<div className="space-y-3">
-							<h1 className="font-bold text-4xl tracking-tight">{testName}</h1>
-							<div className="flex flex-wrap items-center gap-4">
+				<CardHeader className="space-y-4 pb-6 sm:space-y-6 sm:pb-8">
+					<div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
+						<div className="space-y-2 sm:space-y-3">
+							<h1 className="font-bold text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+								{testName}
+							</h1>
+							<div className="flex flex-wrap items-center gap-2 sm:gap-4">
 								<Badge
 									variant={isAnyProcessing ? "secondary" : "default"}
-									className="gap-2 px-3 py-1.5 text-sm"
+									className="gap-2 px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm"
 								>
 									{isAnyProcessing ? (
-										<Clock className="h-3.5 w-3.5 animate-pulse" />
+										<Clock className="h-3 w-3 animate-pulse sm:h-3.5 sm:w-3.5" />
 									) : (
-										<CheckCircle2 className="h-3.5 w-3.5" />
+										<CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
 									)}
 									{processingStatus}
 								</Badge>
-								<span className="font-medium text-base text-muted-foreground">
+								<span className="font-medium text-muted-foreground text-sm sm:text-base">
 									{processedCount} / {totalCount} papers digitized
 								</span>
 							</div>
-						</div>
-
-						<div className="flex flex-wrap gap-3">
+						</div>{" "}
+						<div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
 							{hasAnyEvaluated && !isAllEvaluated && (
 								<Button
 									variant="default"
 									size="default"
 									onClick={handleAutomateRest}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="bg-green-600 font-semibold shadow-sm hover:bg-green-700"
+									className="w-full bg-green-600 font-semibold shadow-sm hover:bg-green-700 sm:w-auto"
 								>
-									<Zap className="mr-2 h-5 w-5" />
+									<Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
 									Automate Rest
 								</Button>
 							)}
@@ -354,10 +363,10 @@ export function EvaluationDashboard({
 								size="default"
 								onClick={handleRefresh}
 								disabled={isRefreshing}
-								className="shadow-sm"
+								className="w-full shadow-sm sm:w-auto"
 							>
 								<RefreshCw
-									className={`mr-2 h-5 w-5 ${
+									className={`mr-2 h-4 w-4 sm:h-5 sm:w-5 ${
 										isRefreshing ? "animate-spin" : ""
 									}`}
 								/>
@@ -368,9 +377,9 @@ export function EvaluationDashboard({
 								size="default"
 								onClick={onUploadMore}
 								disabled={isAutomating}
-								className="shadow-sm"
+								className="w-full shadow-sm sm:w-auto"
 							>
-								<Upload className="mr-2 h-5 w-5" />
+								<Upload className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
 								Upload More
 							</Button>
 						</div>
@@ -378,21 +387,20 @@ export function EvaluationDashboard({
 
 					{/* Progress Bar */}
 					{totalCount > 0 && (
-						<div className="space-y-3 pt-4">
+						<div className="space-y-2 pt-2 sm:space-y-3 sm:pt-4">
 							<div className="flex items-center justify-between">
-								<span className="font-semibold text-base text-muted-foreground">
+								<span className="font-semibold text-muted-foreground text-sm sm:text-base">
 									Digitization Progress
 								</span>
-								<span className="font-bold text-lg">
+								<span className="font-bold text-base sm:text-lg">
 									{Math.round(processingPercentage)}%
 								</span>
 							</div>
-							<Progress value={processingPercentage} className="h-3" />
+							<Progress value={processingPercentage} className="h-2 sm:h-3" />
 						</div>
 					)}
 				</CardHeader>
 			</Card>
-
 			{/* Calibration Banner */}
 			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
 				<Card className="border-2 border-amber-300 bg-amber-50 shadow-md">
@@ -457,7 +465,6 @@ export function EvaluationDashboard({
 					</CardContent>
 				</Card>
 			)}
-
 			{/* Answer Papers List */}
 			<Card className="shadow-sm">
 				<CardHeader className="pb-6">
@@ -662,33 +669,31 @@ export function EvaluationDashboard({
 					)}
 				</CardContent>
 			</Card>
-
 			{/* Action Buttons */}
-			{totalCount > 0 && (
+			{totalCount > 0 && !isCalibrationVerified && (
 				<Card className="shadow-sm">
-					<CardContent className="p-8">
+					<CardContent className="p-4 sm:p-6 md:p-8">
 						<div className="flex justify-center">
 							<Button
 								variant="default"
 								size="lg"
 								onClick={handleVerifyClick}
 								disabled={!hasAnyEvaluated}
-								className="min-w-[300px] py-6 font-semibold text-base shadow-md"
+								className="w-full font-semibold text-sm shadow-md sm:min-w-[300px] sm:text-base md:py-6"
 							>
-								<Eye className="mr-2 h-6 w-6" />
+								<Eye className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
 								Verify Calibration
 							</Button>
 						</div>
 					</CardContent>
 				</Card>
-			)}
-
+			)}{" "}
 			{/* Info Banners */}
 			{!isAllDigitized && totalCount > 0 && (
 				<Card className="border-2 border-blue-200 bg-blue-50 shadow-sm">
-					<CardContent className="flex items-start gap-3 py-4">
-						<AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
-						<div className="text-sm">
+					<CardContent className="flex items-start gap-2 py-3 sm:gap-3 sm:py-4">
+						<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 sm:h-5 sm:w-5" />
+						<div className="text-xs sm:text-sm">
 							<p className="font-medium text-blue-900">
 								Papers are being digitized
 							</p>
@@ -699,8 +704,7 @@ export function EvaluationDashboard({
 						</div>
 					</CardContent>
 				</Card>
-			)}
-
+			)}{" "}
 			{/* Delete Confirmation */}
 			<AlertDialog
 				open={deleteConfirm !== null}
