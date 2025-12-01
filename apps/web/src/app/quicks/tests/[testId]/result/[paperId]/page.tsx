@@ -250,19 +250,21 @@ export default function ResultPage() {
 
 	return (
 		<div className="flex h-screen flex-col bg-background">
-			<header className="flex h-16 items-center justify-between border-b px-6">
-				<div className="flex items-center gap-4">
+			<header className="flex h-14 flex-col items-start justify-between gap-2 border-b px-3 py-2 sm:h-16 sm:flex-row sm:items-center sm:px-6 sm:py-0">
+				<div className="flex items-center gap-2 sm:gap-4">
 					<Button
 						variant="ghost"
 						size="sm"
 						onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
 					>
-						<ArrowLeft className="mr-2 h-4 w-4" />
-						Back
+						<ArrowLeft className="mr-1 h-4 w-4 sm:mr-2" />
+						<span className="hidden sm:inline">Back</span>
 					</Button>
-					<div className="h-6 w-px bg-border" />
+					<div className="hidden h-6 w-px bg-border sm:block" />
 					<div>
-						<h1 className="font-semibold text-lg">Evaluation Result</h1>
+						<h1 className="font-semibold text-base sm:text-lg">
+							Evaluation Result
+						</h1>
 						<p className="text-muted-foreground text-xs">
 							Student: {paper.student_name}
 						</p>
@@ -271,11 +273,14 @@ export default function ResultPage() {
 				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
+						size="sm"
 						onClick={() => {
 							if (paper.annotated_document_url) {
-								window.open(paper.annotated_document_url, "_blank");
+								if (paper.annotated_document_url)
+									window.open(paper.annotated_document_url, "_blank");
 							}
 						}}
+						className="hidden sm:flex"
 					>
 						<ExternalLink className="mr-2 h-4 w-4" />
 						View Annotation
@@ -289,8 +294,8 @@ export default function ResultPage() {
 				</div>
 			</header>
 
-			<main className="flex flex-1 overflow-hidden">
-				<div className="flex w-1/2 flex-col border-r bg-muted/30 p-4">
+			<main className="flex flex-1 flex-col overflow-hidden lg:flex-row">
+				<div className="hidden w-full flex-col border-r bg-muted/30 p-2 lg:flex lg:w-1/2 lg:p-4">
 					<div className="mb-2 flex items-center justify-between">
 						<h2 className="font-medium text-muted-foreground text-sm">
 							Annotated Submission
@@ -299,12 +304,14 @@ export default function ResultPage() {
 							PDF
 						</Badge>
 					</div>
-					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-background shadow-sm">
+					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
 						{paper.annotated_document_url ? (
 							<iframe
 								src={paper.annotated_document_url}
-								className="h-full w-full"
-								title="Annotated PDF"
+								title="Annotated Submission PDF"
+								width="100%"
+								height="800px"
+								style={{ border: "none" }}
 							/>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -315,13 +322,13 @@ export default function ResultPage() {
 					</div>
 				</div>
 
-				<div className="flex w-1/2 flex-col bg-background">
-					<div className="border-b bg-muted/10 p-6 shadow-sm">
-						<div className="mb-6">
-							<h2 className="font-bold text-2xl tracking-tight">
+				<div className="flex w-full flex-col bg-background lg:w-1/2">
+					<div className="border-b bg-muted/10 p-3 shadow-sm sm:p-4 md:p-6">
+						<div className="mb-4 sm:mb-6">
+							<h2 className="font-bold text-xl tracking-tight sm:text-2xl">
 								Performance Report
 							</h2>
-							<p className="text-muted-foreground text-sm">
+							<p className="text-muted-foreground text-xs sm:text-sm">
 								Comprehensive analysis of student performance
 							</p>
 						</div>
@@ -330,7 +337,7 @@ export default function ResultPage() {
 						<QuestionGrid questions={questions} />
 					</div>
 
-					<div className="flex-1 space-y-4 overflow-y-auto p-6">
+					<div className="flex-1 space-y-3 overflow-y-auto p-3 sm:space-y-4 sm:p-4 md:p-6">
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}

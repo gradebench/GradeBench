@@ -82,6 +82,7 @@ export default function VerifyPage() {
 	const [questions, setQuestions] = useState<QuestionEvaluation[]>([]);
 	const [generalFeedback, setGeneralFeedback] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
+	const [isVerifying, setIsVerifying] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -182,6 +183,8 @@ export default function VerifyPage() {
 			return;
 		}
 
+		setIsVerifying(true);
+
 		try {
 			const updatedMarksStr = questions
 				.map((q) => `Q${q.question_number}: ${q.marks_awarded}`)
@@ -213,6 +216,7 @@ export default function VerifyPage() {
 		} catch (error) {
 			console.error(error);
 			toast.error("Failed to verify paper");
+			setIsVerifying(false);
 		}
 	};
 
@@ -238,38 +242,40 @@ export default function VerifyPage() {
 	return (
 		<div className="flex h-screen flex-col bg-background">
 			{/* Header */}
-			<header className="flex h-16 items-center justify-between border-b px-6">
-				<div className="flex items-center gap-4">
+			<header className="flex h-14 items-center justify-between border-b px-3 sm:h-16 sm:px-6">
+				<div className="flex items-center gap-2 sm:gap-4">
 					<Button
 						variant="ghost"
 						size="sm"
 						onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
 					>
-						<ArrowLeft className="mr-2 h-4 w-4" />
-						Back
+						<ArrowLeft className="mr-1 h-4 w-4 sm:mr-2" />
+						<span className="hidden sm:inline">Back</span>
 					</Button>
-					<div className="h-6 w-px bg-border" />
+					<div className="hidden h-6 w-px bg-border sm:block" />
 					<div>
-						<h1 className="font-semibold text-lg">Verification</h1>
+						<h1 className="font-semibold text-base sm:text-lg">Verification</h1>
 						<p className="text-muted-foreground text-xs">
-							Calibration Mode • Student: {paper.student_name}
+							<span className="hidden sm:inline">Verifying • </span>
+							Student: {paper.student_name}
 						</p>
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
 					<Badge
 						variant="outline"
-						className="border-amber-500 bg-amber-50 text-amber-700"
+						className="border-blue-500 bg-blue-500/10 text-blue-600"
 					>
-						Calibration Active
+						<span className="hidden sm:inline">Calibration Active</span>
+						<span className="sm:hidden">Active</span>
 					</Badge>
 				</div>
 			</header>
 
 			{/* Main Content - 3 Columns */}
-			<main className="flex flex-1 overflow-hidden">
-				{/* Left Column: Annotated PDF (45%) */}
-				<div className="flex w-[45%] flex-col border-r bg-muted/30 p-4">
+			<main className="flex flex-1 flex-col overflow-hidden lg:flex-row">
+				{/* Left Column: Annotated PDF (45%) - Hidden on mobile */}
+				<div className="hidden w-full flex-col border-r bg-muted/30 p-2 lg:flex lg:w-[45%] lg:p-4">
 					<div className="mb-2 flex items-center justify-between">
 						<h2 className="font-medium text-muted-foreground text-sm">
 							Annotated Submission
@@ -278,15 +284,18 @@ export default function VerifyPage() {
 							PDF
 						</Badge>
 					</div>
-					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-white shadow-sm">
+					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
 						{paper.annotated_document_url ? (
 							<iframe
 								src={paper.annotated_document_url}
+								title="Annotated Submission PDF"
+								width="100%"
+								height="100%"
 								className="h-full w-full"
-								title="Annotated PDF"
+								style={{ border: "none" }}
 							/>
 						) : (
-							<div className="flex flex-col items-center gap-2 text-muted-foreground">
+							<div className="flex flex-col items-center gap-2 text-slate-500">
 								<Loader2 className="h-8 w-8 animate-spin" />
 								<p>Loading PDF...</p>
 							</div>
@@ -295,14 +304,16 @@ export default function VerifyPage() {
 				</div>
 
 				{/* Middle Column: Evaluation Breakdown (30%) */}
-				<div className="flex w-[30%] flex-col border-r bg-background">
-					<div className="border-b bg-muted/10 p-4">
-						<h2 className="font-semibold">Evaluation Breakdown</h2>
+				<div className="flex w-full flex-col border-r bg-background lg:w-[30%]">
+					<div className="border-b bg-muted/10 p-3 sm:p-4">
+						<h2 className="font-semibold text-base sm:text-lg">
+							Evaluation Breakdown
+						</h2>
 						<p className="text-muted-foreground text-xs">
 							Review and edit the AI's grading logic.
 						</p>
 					</div>
-					<div className="flex-1 space-y-4 overflow-y-auto p-4">
+					<div className="flex-1 space-y-3 overflow-y-auto p-3 sm:space-y-4 sm:p-4">
 						{questions.map((q, index) => (
 							<Card
 								key={index}
@@ -349,10 +360,10 @@ export default function VerifyPage() {
 										{q.feedback.strengths &&
 											q.feedback.strengths.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-green-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-green-400 text-xs">
 														<ThumbsUp className="h-3 w-3" /> Strengths
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.strengths.map((s, i) => (
 															<li key={i}>{s}</li>
 														))}
@@ -362,10 +373,10 @@ export default function VerifyPage() {
 										{q.feedback.weaknesses &&
 											q.feedback.weaknesses.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-red-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-red-400 text-xs">
 														<ThumbsDown className="h-3 w-3" /> Weaknesses
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.weaknesses.map((w, i) => (
 															<li key={i}>{w}</li>
 														))}
@@ -375,10 +386,10 @@ export default function VerifyPage() {
 										{q.feedback.suggestions &&
 											q.feedback.suggestions.length > 0 && (
 												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-amber-600 text-xs">
+													<p className="mb-1 flex items-center gap-1 font-medium text-amber-400 text-xs">
 														<Edit2 className="h-3 w-3" /> Suggestions
 													</p>
-													<ul className="list-inside list-disc text-muted-foreground text-xs">
+													<ul className="list-inside list-disc text-blue-100 text-xs">
 														{q.feedback.suggestions.map((s, i) => (
 															<li key={i}>{s}</li>
 														))}
@@ -429,13 +440,15 @@ export default function VerifyPage() {
 				</div>
 
 				{/* Right Column: Summary & Controls (25%) */}
-				<div className="flex w-[25%] flex-col space-y-4 bg-muted/10 p-4">
+				<div className="flex w-full flex-col space-y-3 bg-muted/10 p-3 sm:space-y-4 sm:p-4 lg:w-[25%]">
 					{/* Summary Card */}
 					<Card>
 						<CardHeader className="pb-2">
-							<CardTitle className="text-base">Grading Summary</CardTitle>
+							<CardTitle className="text-sm sm:text-base">
+								Grading Summary
+							</CardTitle>
 						</CardHeader>
-						<CardContent className="space-y-4">
+						<CardContent className="space-y-3 sm:space-y-4">
 							<div className="flex items-end justify-between">
 								<div>
 									<p className="text-muted-foreground text-sm">Total Score</p>
@@ -454,10 +467,10 @@ export default function VerifyPage() {
 								<div
 									className={`font-bold text-xl ${
 										percentage >= 80
-											? "text-green-600"
+											? "text-green-400"
 											: percentage >= 50
-												? "text-amber-600"
-												: "text-red-600"
+												? "text-amber-400"
+												: "text-red-400"
 									}`}
 								>
 									{Math.round(percentage)}%
@@ -499,9 +512,19 @@ export default function VerifyPage() {
 						<Button
 							className="h-12 w-full bg-green-600 text-base hover:bg-green-700"
 							onClick={handleVerify}
+							disabled={isVerifying}
 						>
-							<CheckCircle2 className="mr-2 h-5 w-5" />
-							Verify & Save
+							{isVerifying ? (
+								<>
+									<Loader2 className="mr-2 h-5 w-5 animate-spin" />
+									Verifying...
+								</>
+							) : (
+								<>
+									<CheckCircle2 className="mr-2 h-5 w-5" />
+									Verify & Save
+								</>
+							)}
 						</Button>
 						<p className="px-2 text-center text-muted-foreground text-xs">
 							Verifying this paper will lock the grading standard for the
