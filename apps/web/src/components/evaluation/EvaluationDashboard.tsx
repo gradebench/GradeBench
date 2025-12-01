@@ -403,28 +403,28 @@ export function EvaluationDashboard({
 			</Card>
 			{/* Calibration Banner */}
 			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
-				<Card className="border-2 border-amber-300 bg-amber-50 shadow-md">
+				<Card className="border-2 border-amber-600 bg-gradient-to-r from-amber-950 to-amber-900 shadow-md">
 					<CardContent className="p-6">
 						<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 							<div className="flex items-start gap-4">
-								<div className="rounded-full bg-amber-100 p-3">
-									<AlertCircle className="h-6 w-6 text-amber-600" />
+								<div className="rounded-full bg-amber-800 p-3">
+									<AlertCircle className="h-6 w-6 text-amber-200" />
 								</div>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<h3 className="font-semibold text-amber-900 text-lg">
+										<h3 className="font-semibold text-amber-100 text-lg">
 											Calibration Required
 										</h3>
 										<Badge
 											variant="outline"
-											className="border-amber-500 bg-amber-100 text-amber-700"
+											className="border-amber-400 bg-amber-800 text-amber-200"
 										>
 											Step 1 of 2
 										</Badge>
 									</div>
-									<p className="max-w-xl text-amber-800">
+									<p className="max-w-xl text-amber-200">
 										We've selected a random paper (
-										<span className="font-medium">
+										<span className="font-medium text-amber-100">
 											{
 												answerPapers.find((p) => p.id === calibrationPaperId)
 													?.student_name
@@ -442,7 +442,7 @@ export function EvaluationDashboard({
 									variant="outline"
 									onClick={handleReshuffle}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="border-amber-300 bg-white text-amber-900 hover:bg-amber-50 hover:text-amber-900"
+									className="border-amber-400 bg-amber-800 text-amber-200 hover:bg-amber-700 hover:text-amber-100"
 								>
 									<Dices className="mr-2 h-4 w-4" />
 									Reshuffle Paper
@@ -455,7 +455,7 @@ export function EvaluationDashboard({
 											"Calibration verified! Automate Rest button is now available.",
 										);
 									}}
-									className="bg-amber-600 text-white hover:bg-amber-700"
+									className="bg-amber-600 text-white hover:bg-amber-500"
 								>
 									<CheckCircle2 className="mr-2 h-4 w-4" />
 									Verify & Save
@@ -525,8 +525,10 @@ export function EvaluationDashboard({
 													isDigitized
 														? "cursor-pointer hover:bg-muted/50"
 														: "opacity-60"
-												} ${isEvaluating ? "bg-blue-50" : ""} ${
-													isCalibrationTarget ? "bg-amber-50" : ""
+												} ${isEvaluating ? "bg-blue-950/20" : ""} ${
+													isCalibrationTarget
+														? "border-l-4 border-l-amber-600 bg-amber-950/30"
+														: ""
 												}`}
 												onClick={() => {
 													if (isDigitized && !isEvaluating) {
@@ -546,7 +548,7 @@ export function EvaluationDashboard({
 													{isCalibrationTarget && (
 														<Badge
 															variant="outline"
-															className="ml-2 border-amber-500 text-amber-700"
+															className="ml-2 border-amber-600 bg-amber-950 text-amber-200"
 														>
 															Calibration
 														</Badge>
@@ -690,14 +692,14 @@ export function EvaluationDashboard({
 			)}{" "}
 			{/* Info Banners */}
 			{!isAllDigitized && totalCount > 0 && (
-				<Card className="border-2 border-blue-200 bg-blue-50 shadow-sm">
+				<Card className="border-2 border-blue-600 bg-blue-950 shadow-sm">
 					<CardContent className="flex items-start gap-2 py-3 sm:gap-3 sm:py-4">
-						<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 sm:h-5 sm:w-5" />
+						<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400 sm:h-5 sm:w-5" />
 						<div className="text-xs sm:text-sm">
-							<p className="font-medium text-blue-900">
+							<p className="font-medium text-blue-100">
 								Papers are being digitized
 							</p>
-							<p className="text-blue-700">
+							<p className="text-blue-200">
 								The page will automatically refresh. You can start evaluation
 								once all papers are digitized.
 							</p>

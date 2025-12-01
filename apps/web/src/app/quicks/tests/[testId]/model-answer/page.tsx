@@ -5,7 +5,10 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { pollForDynamicRubric } from "@/lib/academic-tests-api";
+import {
+	type AcademicTest,
+	pollForDynamicRubric,
+} from "@/lib/academic-tests-api";
 import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 
 const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
@@ -91,7 +94,7 @@ export default function ModelAnswerPage() {
 	const [needsGeneration, setNeedsGeneration] = useState(false);
 	const [generationFinished, setGenerationFinished] = useState(false);
 	const [isProceeding, setIsProceeding] = useState(false);
-
+	const [testDetails, setTestDetails] = useState<AcademicTest | null>(null);
 	const generateModelAnswers = useCallback(async () => {
 		if (!testId) {
 			toast.error("Invalid test ID");
@@ -148,6 +151,7 @@ export default function ModelAnswerPage() {
 			console.log(testData);
 
 			const test = testData.data || testData;
+			setTestDetails(test);
 
 			if (test?.academic_tests?.key_answers_url) {
 				const s3Response = await fetch(test.academic_tests.key_answers_url);
@@ -187,6 +191,22 @@ export default function ModelAnswerPage() {
 	const handleProceedToEvaluation = async () => {
 		if (!testId) {
 			toast.error("Invalid test ID");
+			return;
+		}
+
+		// Check if rubrics already exist
+		const hasRubrics =
+			testDetails?.dynamic_rubrics_url ||
+			(
+				testDetails as unknown as {
+					academic_tests?: { dynamic_rubrics_url?: string };
+				}
+			)?.academic_tests?.dynamic_rubrics_url ||
+			testDetails?.dynamic_rubric;
+
+		if (hasRubrics) {
+			toast.success("Rubrics already generated. Proceeding to evaluation...");
+			router.push(`/quicks/tests/${testId}/evaluate`);
 			return;
 		}
 
