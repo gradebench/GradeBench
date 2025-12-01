@@ -259,7 +259,7 @@ export default function VerifyPage() {
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className="border-amber-500 bg-amber-50 text-amber-700"
+            className="border-blue-500 bg-blue-300 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
           >
             Calibration Active
           </Badge>
