@@ -82,6 +82,7 @@ export default function VerifyPage() {
   const [questions, setQuestions] = useState<QuestionEvaluation[]>([]);
   const [generalFeedback, setGeneralFeedback] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -182,6 +183,8 @@ export default function VerifyPage() {
       return;
     }
 
+    setIsVerifying(true);
+
     try {
       const updatedMarksStr = questions
         .map((q) => `Q${q.question_number}: ${q.marks_awarded}`)
@@ -213,6 +216,7 @@ export default function VerifyPage() {
     } catch (error) {
       console.error(error);
       toast.error("Failed to verify paper");
+      setIsVerifying(false);
     }
   };
 
@@ -501,9 +505,19 @@ export default function VerifyPage() {
             <Button
               className="h-12 w-full bg-green-600 text-base hover:bg-green-700"
               onClick={handleVerify}
+              disabled={isVerifying}
             >
-              <CheckCircle2 className="mr-2 h-5 w-5" />
-              Verify & Save
+              {isVerifying ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="mr-2 h-5 w-5" />
+                  Verify & Save
+                </>
+              )}
             </Button>
             <p className="px-2 text-center text-muted-foreground text-xs">
               Verifying this paper will lock the grading standard for the
