@@ -185,12 +185,18 @@ export default function ModelAnswerPage() {
 	}, [generationFinished, fetchModelAnswers]);
 
 	const handleProceedToEvaluation = async () => {
-		if (!testId) return;
+		if (!testId) {
+			toast.error("Invalid test ID");
+			return;
+		}
+
 		setIsProceeding(true);
+		let loadingToastId: string | number | undefined;
 
 		try {
-			// 1. Trigger Dynamic Rubric Generation
-			toast.info("Initializing evaluation rubrics...");
+			// Step 1: Trigger Dynamic Rubric Generation
+			loadingToastId = toast.loading("Initializing evaluation rubrics...");
+
 			const response = await fetch(
 				`${API_BASE_URL}/dynamic-rubrics/${testId}`,
 				{
@@ -200,28 +206,72 @@ export default function ModelAnswerPage() {
 			);
 
 			if (!response.ok) {
-				// If it fails, it might be because it already exists or other error.
-				// We'll log it but try to proceed after polling.
+				// Rubric generation endpoint returned an error
+				// This might mean rubrics already exist or there was an actual error
+				const errorText = await response.text();
 				console.warn(
-					"Rubric generation trigger failed or already exists:",
+					"Rubric generation trigger response:",
 					response.status,
+					errorText,
 				);
+
+				// Don't fail immediately - try to poll for existing rubrics
+				if (response.status === 409 || response.status === 400) {
+					console.info("Rubrics may already exist, attempting to verify...");
+				} else {
+					toast.dismiss(loadingToastId);
+					throw new Error(
+						`Rubric generation failed with status ${response.status}`,
+					);
+				}
 			}
 
-			// 2. Poll until rubrics are ready
-			toast.loading("Generating rubrics, please wait...");
-			await pollForDynamicRubric(testId);
-			toast.dismiss();
-			toast.success("Rubrics ready! Proceeding to evaluation.");
+			// Step 2: Poll until rubrics are ready
+			toast.dismiss(loadingToastId);
+			loadingToastId = toast.loading(
+				"Generating evaluation rubrics... This may take a moment.",
+			);
 
-			// 3. Navigate
+			const testWithRubrics = await pollForDynamicRubric(testId);
+
+			// Step 3: Verify rubrics are available
+			if (
+				!testWithRubrics.dynamic_rubric &&
+				!testWithRubrics.dynamic_rubrics_url
+			) {
+				throw new Error("Rubrics generation timed out or failed to complete");
+			}
+
+			// Step 4: Success - Navigate to evaluation page
+			toast.dismiss(loadingToastId);
+			toast.success("Evaluation rubrics ready! Redirecting...");
+
+			// Small delay to show success message before navigation
+			await new Promise((resolve) => setTimeout(resolve, 500));
 			router.push(`/quicks/tests/${testId}/evaluate`);
 		} catch (error) {
-			console.error("Error preparing evaluation:", error);
-			toast.dismiss();
-			toast.error("Failed to generate rubrics. Proceeding anyway...");
-			// Fallback: navigate anyway
-			router.push(`/quicks/tests/${testId}/evaluate`);
+			// Cleanup any loading toasts
+			if (loadingToastId) {
+				toast.dismiss(loadingToastId);
+			}
+
+			const errorMessage =
+				error instanceof Error ? error.message : "Unknown error occurred";
+			console.error("Error preparing evaluation:", errorMessage, error);
+
+			// Show error but allow user to proceed manually if they want
+			toast.error(
+				`Failed to generate rubrics: ${errorMessage}. You may proceed anyway, but evaluation might not work correctly.`,
+				{
+					duration: 6000,
+					action: {
+						label: "Proceed Anyway",
+						onClick: () => {
+							router.push(`/quicks/tests/${testId}/evaluate`);
+						},
+					},
+				},
+			);
 		} finally {
 			setIsProceeding(false);
 		}
