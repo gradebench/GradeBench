@@ -3,7 +3,13 @@
 import { Badge } from "@gb/ui/src/components/ui/badge";
 import { Button } from "@gb/ui/src/components/ui/button";
 import { Card } from "@gb/ui/src/components/ui/card";
-import { ArrowLeft, ArrowRight, CheckCircle, Circle } from "lucide-react";
+import {
+	ArrowLeft,
+	ArrowRight,
+	CheckCircle,
+	Circle,
+	FileCheck,
+} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -629,15 +635,17 @@ export default function ModelAnswerPage() {
 			</div>
 
 			<div className="container mx-auto p-6">
-				<div className="mb-6 flex items-center justify-between">
-					<div>
-						<h1 className="font-semibold text-3xl">Model Answers</h1>
-						<p className="text-muted-foreground text-sm">
-							Reference answers for evaluation
-						</p>
-					</div>
-				</div>
-
+				<div className="mb-8 space-y-1">
+					<h1 className="flex items-center gap-3 font-bold text-3xl tracking-tight">
+						<div className="rounded-lg bg-primary/10 p-2.5">
+							<FileCheck className="h-6 w-6 text-primary" />
+						</div>
+						Model Answers
+					</h1>
+					<p className="ml-14 text-muted-foreground">
+						Reference answers and marking criteria for evaluation
+					</p>
+				</div>{" "}
 				{modelAnswerData?.question_answers?.length ? (
 					<div className="space-y-6">
 						{modelAnswerData.question_answers.map((qa) => (
@@ -664,31 +672,44 @@ export default function ModelAnswerPage() {
 											<p className="text-sm">{qa.model_answer_summary}</p>
 										</div>
 									)}
-								</div>{" "}
-								<div className="space-y-4 p-4">
-									{qa.answer_components?.map((component) => (
+								</div>
+								<div className="space-y-4 p-5">
+									{qa.answer_components?.map((component, idx) => (
 										<div
 											key={component.component_id}
-											className="rounded-lg border bg-card p-4"
+											className="rounded-xl border-2 bg-card p-4 shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
 										>
 											<div className="mb-3 flex items-start justify-between gap-4">
 												<div className="flex-1">
-													<div className="mb-1 flex items-center gap-2">
-														<span className="rounded bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs uppercase">
+													<div className="mb-2 flex flex-wrap items-center gap-2">
+														<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 font-bold text-primary text-xs">
+															{idx + 1}
+														</div>
+														<Badge
+															variant="secondary"
+															className="font-medium text-xs"
+														>
 															{component.component_type
 																? component.component_type.replace(/_/g, " ")
 																: "N/A"}
-														</span>
-														<span className="text-muted-foreground text-xs">
-															{component.component_marks || 0}{" "}
-															{component.component_marks === 1
-																? "mark"
-																: "marks"}
-														</span>{" "}
+														</Badge>
+														{component.is_mandatory && (
+															<Badge variant="destructive" className="text-xs">
+																Required
+															</Badge>
+														)}
 													</div>
 												</div>
-											</div>
-
+												<Badge variant="outline" className="font-semibold">
+													{component.marks_allocated ||
+														component.component_marks ||
+														0}{" "}
+													{(component.marks_allocated ||
+														component.component_marks) === 1
+														? "mark"
+														: "marks"}
+												</Badge>
+											</div>{" "}
 											<div className="space-y-3">
 												<div>
 													<p className="mb-1 font-medium text-muted-foreground text-xs">
