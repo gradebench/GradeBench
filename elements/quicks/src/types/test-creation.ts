@@ -80,6 +80,149 @@ export interface TestBasicInfo {
 	updatedAt?: string;
 }
 
+// Comprehensive model answer types matching JSON schema
+export interface NumericalAnswer {
+	value: number;
+	unit?: string;
+	acceptable_range?: {
+		min: number;
+		max: number;
+	};
+	significant_figures?: number;
+	alternative_units?: {
+		unit: string;
+		conversion_factor: number;
+	}[];
+}
+
+export interface KeywordItem {
+	keyword: string;
+	is_mandatory?: boolean;
+	weight?: number;
+	synonyms?: string[];
+}
+
+export interface ConceptItem {
+	concept_name: string;
+	concept_description: string;
+	weight?: number;
+}
+
+export interface CodeAnswer {
+	language: string;
+	expected_code: string;
+	test_cases?: {
+		input: string;
+		expected_output: string;
+		marks_weight?: number;
+	}[];
+	required_constructs?: string[];
+}
+
+export interface DiagramAnswer {
+	reference_diagram_url?: string;
+	required_elements?: {
+		element_name: string;
+		element_type: string;
+		is_mandatory?: boolean;
+		coordinates?: { x: number; y: number };
+	}[];
+}
+
+export interface MethodStep {
+	step_number: number;
+	step_description: string;
+	step_marks: number;
+	required_keywords?: string[];
+}
+
+export interface EssayCriteria {
+	structure_requirements?: {
+		requires_introduction?: boolean;
+		requires_body_paragraphs?: boolean;
+		min_body_paragraphs?: number;
+		requires_conclusion?: boolean;
+	};
+	argument_points?: {
+		point_description: string;
+		supporting_evidence_required?: boolean;
+		marks_weight?: number;
+	}[];
+	thesis_statement_required?: boolean;
+}
+
+export interface AcceptableVariation {
+	variation_description: string;
+	variation_answer?: string;
+	marks_awarded: number;
+}
+
+export interface AnswerComponent {
+	component_id: string;
+	component_type:
+		| "exact_match"
+		| "keyword_based"
+		| "concept_based"
+		| "numerical"
+		| "formula"
+		| "code_block"
+		| "diagram"
+		| "essay_structure"
+		| "method_steps"
+		| "other";
+	component_label?: string;
+	marks_allocated: number;
+	is_mandatory?: boolean;
+	exact_answer?: string;
+	numerical_answer?: NumericalAnswer;
+	keywords?: KeywordItem[];
+	concepts?: ConceptItem[];
+	code_answer?: CodeAnswer;
+	diagram_answer?: DiagramAnswer;
+	method_steps?: MethodStep[];
+	essay_criteria?: EssayCriteria;
+	acceptable_variations?: AcceptableVariation[];
+}
+
+export interface CommonError {
+	error_description: string;
+	penalty: number;
+	feedback_template?: string;
+}
+
+export interface QuestionAnswer {
+	question_id: string;
+	question_number?: string;
+	question_type?:
+		| "mcq"
+		| "short_answer"
+		| "long_answer"
+		| "numerical"
+		| "code"
+		| "diagram"
+		| "essay"
+		| "true_false"
+		| "fill_blank"
+		| "matching"
+		| "other";
+	answer_components: AnswerComponent[];
+	overall_guidance?: string;
+	common_errors?: CommonError[];
+}
+
+export interface ModelAnswerKeyData {
+	model_answer_id: string;
+	paper_id: string;
+	question_answers: QuestionAnswer[];
+	evaluator_notes?: string;
+	approved_by?: string;
+	approval_timestamp?: string;
+	version?: string;
+	created_at?: string;
+	updated_at?: string;
+}
+
+// Legacy interface for backward compatibility
 export interface ModelAnswer {
 	questionId: string;
 	answerText: string;
@@ -100,6 +243,7 @@ export interface TestCreationData {
 	basicInfo: TestBasicInfo;
 	questions: TestQuestion[];
 	modelAnswers: ModelAnswer[];
+	modelAnswerKeyData?: ModelAnswerKeyData;
 	evaluatorConfig?: EvaluatorConfigurationV3;
 }
 export interface DynamicRubric {

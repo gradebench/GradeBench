@@ -349,36 +349,63 @@ export default function QuicksDashboard() {
 									</div>
 								) : (
 									<div className="space-y-2">
-										{filteredTests.map((test) => (
-											<a
-												key={test.id}
-												href={
-													test.dynamic_rubrics_url
-														? `/quicks/tests/${test.id}/evaluate`
-														: `/quicks/tests/${test.id}/model-answer`
-												}
-												className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent"
-											>
-												<div className="space-y-1">
-													<div className="font-medium">{test.test_name}</div>
-													<div className="text-muted-foreground text-xs">
-														ID: {test.id.slice(0, 8)}...
+										{filteredTests.map((test) => {
+											const isGenerating =
+												!test.key_answers_url && !test.dynamic_rubrics_url;
+											return (
+												<a
+													key={test.id}
+													href={
+														test.key_answers_url
+															? test.dynamic_rubrics_url
+																? `/quicks/tests/${test.id}/evaluate`
+																: `/quicks/tests/${test.id}/model-answer`
+															: "#"
+													}
+													onClick={(e) => {
+														if (isGenerating) {
+															e.preventDefault();
+															toast.info(
+																"Model answer is being generated. Please wait...",
+															);
+														}
+													}}
+													className={`flex items-center justify-between rounded-lg border p-4 transition-colors ${
+														isGenerating
+															? "cursor-wait opacity-60"
+															: "hover:bg-accent"
+													}`}
+												>
+													<div className="space-y-1">
+														<div className="font-medium">{test.test_name}</div>
+														<div className="text-muted-foreground text-xs">
+															ID: {test.id.slice(0, 8)}...
+														</div>
 													</div>
-												</div>
-												<div className="flex gap-2 text-sm">
-													{test.key_answers_url && (
-														<span className="rounded-full bg-green-100 px-2 py-1 text-green-700">
-															Key Answers
-														</span>
-													)}
-													{test.dynamic_rubrics_url && (
-														<span className="rounded-full bg-blue-100 px-2 py-1 text-blue-700">
-															Rubrics
-														</span>
-													)}
-												</div>
-											</a>
-										))}
+													<div className="flex gap-2 text-sm">
+														{isGenerating ? (
+															<span className="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-yellow-700">
+																<ClockIcon className="h-3 w-3 animate-spin" />
+																Generating...
+															</span>
+														) : (
+															<>
+																{test.key_answers_url && (
+																	<span className="rounded-full bg-green-100 px-2 py-1 text-green-700">
+																		Key Answers
+																	</span>
+																)}
+																{test.dynamic_rubrics_url && (
+																	<span className="rounded-full bg-blue-100 px-2 py-1 text-blue-700">
+																		Rubrics
+																	</span>
+																)}
+															</>
+														)}
+													</div>
+												</a>
+											);
+										})}
 									</div>
 								)}
 							</CardContent>
