@@ -1,7 +1,9 @@
 "use client";
 
+import { Badge } from "@gb/ui/src/components/ui/badge";
 import { Button } from "@gb/ui/src/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Card } from "@gb/ui/src/components/ui/card";
+import { ArrowLeft, ArrowRight, CheckCircle, Circle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -11,74 +13,412 @@ import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
 const ExpectedAnswer = ({ component }: { component: AnswerComponent }) => {
 	if (!component) return null;
 
+	const renderKeywords = () => {
+		if (!component.keywords || component.keywords.length === 0) return null;
+		return (
+			<div className="mt-2 space-y-1">
+				<p className="font-medium text-muted-foreground text-xs">Keywords:</p>
+				<div className="flex flex-wrap gap-1">
+					{component.keywords.map((kw, idx) => (
+						<Badge
+							key={idx}
+							variant={kw.is_mandatory ? "default" : "secondary"}
+							className="text-xs"
+						>
+							{kw.keyword}
+							{kw.weight && ` (${Math.round(kw.weight * 100)}%)`}
+						</Badge>
+					))}
+				</div>
+			</div>
+		);
+	};
+
+	const renderConcepts = () => {
+		if (!component.concepts || component.concepts.length === 0) return null;
+		return (
+			<div className="mt-2 space-y-1">
+				<p className="font-medium text-muted-foreground text-xs">
+					Key Concepts:
+				</p>
+				<ul className="ml-4 space-y-1 text-sm">
+					{component.concepts.map((concept, idx) => (
+						<li key={idx} className="list-disc">
+							<span className="font-medium">{concept.concept_name}:</span>{" "}
+							{concept.concept_description}
+							{concept.weight && (
+								<span className="text-muted-foreground">
+									{" "}
+									({Math.round(concept.weight * 100)}%)
+								</span>
+							)}
+						</li>
+					))}
+				</ul>
+			</div>
+		);
+	};
+
 	switch (component.component_type) {
-		case "concept_point":
-			return (
-				<p className="text-sm">{component.component_text || "No answer"}</p>
-			);
 		case "exact_match":
-			return <p className="text-sm">{component.exact_answer || "No answer"}</p>;
+			return (
+				<div>
+					<p className="font-medium text-sm">{component.exact_answer}</p>
+					{renderKeywords()}
+				</div>
+			);
+
 		case "numerical":
 			return (
-				<div className="text-sm">
-					<p>Value: {component.numerical_answer?.value}</p>
-					{component.numerical_answer?.unit && (
-						<p>Unit: {component.numerical_answer.unit}</p>
+				<div className="space-y-2 text-sm">
+					<div className="flex items-center gap-2">
+						<span className="font-medium">Value:</span>
+						<span>{component.numerical_answer?.value}</span>
+						{component.numerical_answer?.unit && (
+							<Badge variant="outline">{component.numerical_answer.unit}</Badge>
+						)}
+					</div>
+					{component.numerical_answer?.acceptable_range && (
+						<div className="text-muted-foreground">
+							Range: {component.numerical_answer.acceptable_range.min} -{" "}
+							{component.numerical_answer.acceptable_range.max}
+						</div>
+					)}
+					{component.numerical_answer?.significant_figures && (
+						<div className="text-muted-foreground">
+							Sig. Figures: {component.numerical_answer.significant_figures}
+						</div>
 					)}
 				</div>
 			);
+
 		case "code_block":
 			return (
-				<pre className="rounded bg-muted p-2 text-sm">
-					<code>{component.code_answer?.expected_code}</code>
-				</pre>
+				<div className="space-y-2">
+					<div>
+						<Badge variant="secondary" className="mb-2">
+							{component.code_answer?.language || "Code"}
+						</Badge>
+						<pre className="overflow-x-auto rounded border bg-muted p-3 text-xs">
+							<code>{component.code_answer?.expected_code}</code>
+						</pre>
+					</div>
+					{component.code_answer?.test_cases &&
+						component.code_answer.test_cases.length > 0 && (
+							<div className="space-y-1">
+								<p className="font-medium text-muted-foreground text-xs">
+									Test Cases:
+								</p>
+								{component.code_answer.test_cases.map((tc, idx) => (
+									<Card key={idx} className="p-2">
+										<div className="space-y-1 text-xs">
+											<div>
+												<span className="font-medium">Input:</span> {tc.input}
+											</div>
+											<div>
+												<span className="font-medium">Expected:</span>{" "}
+												{tc.expected_output}
+											</div>
+										</div>
+									</Card>
+								))}
+							</div>
+						)}
+				</div>
+			);
+
+		case "method_steps":
+			return (
+				<div className="space-y-2">
+					<p className="font-medium text-muted-foreground text-xs">
+						Solution Steps:
+					</p>
+					{component.method_steps?.map((step, idx) => (
+						<Card key={idx} className="p-3">
+							<div className="flex gap-3">
+								<Badge variant="outline" className="h-6 w-6 rounded-full p-0">
+									{step.step_number}
+								</Badge>
+								<div className="flex-1 space-y-1">
+									<p className="text-sm">{step.step_description}</p>
+									<div className="flex items-center gap-2">
+										<Badge variant="secondary" className="text-xs">
+											{step.step_marks} marks
+										</Badge>
+										{step.required_keywords &&
+											step.required_keywords.length > 0 && (
+												<span className="text-muted-foreground text-xs">
+													Keywords: {step.required_keywords.join(", ")}
+												</span>
+											)}
+									</div>
+								</div>
+							</div>
+						</Card>
+					))}
+				</div>
+			);
+
+		case "essay_structure":
+			return (
+				<div className="space-y-2">
+					{component.essay_criteria?.structure_requirements && (
+						<div className="space-y-1 text-sm">
+							<p className="font-medium">Structure Requirements:</p>
+							<ul className="ml-4 space-y-1">
+								{component.essay_criteria.structure_requirements
+									.requires_introduction && (
+									<li className="flex items-center gap-2">
+										<CheckCircle className="h-4 w-4 text-green-600" />
+										Introduction required
+									</li>
+								)}
+								{component.essay_criteria.structure_requirements
+									.requires_body_paragraphs && (
+									<li className="flex items-center gap-2">
+										<CheckCircle className="h-4 w-4 text-green-600" />
+										Body paragraphs (min:{" "}
+										{component.essay_criteria.structure_requirements
+											.min_body_paragraphs || 1}
+										)
+									</li>
+								)}
+								{component.essay_criteria.structure_requirements
+									.requires_conclusion && (
+									<li className="flex items-center gap-2">
+										<CheckCircle className="h-4 w-4 text-green-600" />
+										Conclusion required
+									</li>
+								)}
+							</ul>
+						</div>
+					)}
+					{component.essay_criteria?.argument_points &&
+						component.essay_criteria.argument_points.length > 0 && (
+							<div className="space-y-1">
+								<p className="font-medium text-sm">Key Arguments:</p>
+								<ul className="ml-4 space-y-1 text-sm">
+									{component.essay_criteria.argument_points.map((arg, idx) => (
+										<li key={idx} className="list-disc">
+											{arg.point_description}
+											{arg.marks_weight && (
+												<Badge variant="secondary" className="ml-2 text-xs">
+													{Math.round(arg.marks_weight * 100)}%
+												</Badge>
+											)}
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+				</div>
+			);
+
+		case "keyword_based":
+			return (
+				<div>
+					{component.exact_answer && (
+						<p className="mb-2 text-sm">{component.exact_answer}</p>
+					)}
+					{renderKeywords()}
+					{renderConcepts()}
+				</div>
+			);
+
+		case "concept_based":
+			return (
+				<div>
+					{component.exact_answer && (
+						<p className="mb-2 text-sm">{component.exact_answer}</p>
+					)}
+					{renderConcepts()}
+				</div>
+			);
+
+		case "diagram":
+			return (
+				<div className="space-y-2">
+					{component.diagram_answer?.reference_diagram_url && (
+						<div className="relative h-64 w-full">
+							{/* biome-ignore lint/performance/noImgElement: External diagram URLs from S3, Next.js Image requires known domains */}
+							<img
+								src={component.diagram_answer.reference_diagram_url}
+								alt="Reference diagram"
+								className="max-h-64 rounded border object-contain"
+							/>
+						</div>
+					)}
+					{component.diagram_answer?.required_elements &&
+						component.diagram_answer.required_elements.length > 0 && (
+							<div className="space-y-1 text-sm">
+								<p className="font-medium">Required Elements:</p>
+								<ul className="ml-4 space-y-1">
+									{component.diagram_answer.required_elements.map((el, idx) => (
+										<li key={idx} className="flex items-center gap-2">
+											{el.is_mandatory ? (
+												<CheckCircle className="h-4 w-4 text-green-600" />
+											) : (
+												<Circle className="h-4 w-4 text-gray-400" />
+											)}
+											{el.element_name} ({el.element_type})
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+				</div>
 			);
 		default:
 			return (
-				<p className="text-sm">
-					{component.component_text ||
-						component.exact_answer ||
-						"No answer provided for this component type."}
-				</p>
+				<div>
+					<p className="text-sm">
+						{component.exact_answer || "Answer component defined"}
+					</p>
+					{renderKeywords()}
+					{renderConcepts()}
+				</div>
 			);
 	}
 };
 
+// Comprehensive type definitions matching JSON schema
 interface NumericalAnswer {
 	value: number;
 	unit?: string;
+	acceptable_range?: {
+		min: number;
+		max: number;
+	};
+	significant_figures?: number;
+	alternative_units?: {
+		unit: string;
+		conversion_factor: number;
+	}[];
+}
+
+interface KeywordItem {
+	keyword: string;
+	is_mandatory?: boolean;
+	weight?: number;
+	synonyms?: string[];
+}
+
+interface ConceptItem {
+	concept_name: string;
+	concept_description: string;
+	weight?: number;
 }
 
 interface CodeAnswer {
+	language?: string;
 	expected_code: string;
+	test_cases?: {
+		input: string;
+		expected_output: string;
+		marks_weight?: number;
+	}[];
+	required_constructs?: string[];
+}
+
+interface DiagramAnswer {
+	reference_diagram_url?: string;
+	required_elements?: {
+		element_name: string;
+		element_type: string;
+		is_mandatory?: boolean;
+		coordinates?: { x: number; y: number };
+	}[];
+}
+
+interface MethodStep {
+	step_number: number;
+	step_description: string;
+	step_marks: number;
+	required_keywords?: string[];
+}
+
+interface EssayCriteria {
+	structure_requirements?: {
+		requires_introduction?: boolean;
+		requires_body_paragraphs?: boolean;
+		min_body_paragraphs?: number;
+		requires_conclusion?: boolean;
+	};
+	argument_points?: {
+		point_description: string;
+		supporting_evidence_required?: boolean;
+		marks_weight?: number;
+	}[];
+	thesis_statement_required?: boolean;
 }
 
 interface AnswerComponent {
 	component_id: string;
-	component_type: string;
-	component_text?: string;
-	keywords?: string[];
+	component_type:
+		| "exact_match"
+		| "keyword_based"
+		| "concept_based"
+		| "numerical"
+		| "formula"
+		| "code_block"
+		| "diagram"
+		| "essay_structure"
+		| "method_steps"
+		| "other";
+	component_label?: string;
+	marks_allocated?: number;
 	component_marks?: number;
+	is_mandatory?: boolean;
 	exact_answer?: string;
 	numerical_answer?: NumericalAnswer;
+	keywords?: KeywordItem[];
+	concepts?: ConceptItem[];
 	code_answer?: CodeAnswer;
+	diagram_answer?: DiagramAnswer;
+	method_steps?: MethodStep[];
+	essay_criteria?: EssayCriteria;
+}
+
+interface CommonError {
+	error_description: string;
+	penalty: number;
+	feedback_template?: string;
 }
 
 interface QuestionAnswer {
 	question_id: string;
 	question_number?: string;
-	question_type: string;
-	marks_allocated: number;
+	question_type?:
+		| "mcq"
+		| "short_answer"
+		| "long_answer"
+		| "numerical"
+		| "code"
+		| "diagram"
+		| "essay"
+		| "true_false"
+		| "fill_blank"
+		| "matching"
+		| "other";
+	marks_allocated?: number;
 	model_answer_summary?: string;
 	answer_components: AnswerComponent[];
+	overall_guidance?: string;
+	common_errors?: CommonError[];
 }
 
 interface ModelAnswerData {
 	model_answer_id: string;
-	question_paper_id: string;
+	paper_id?: string;
+	question_paper_id?: string;
 	question_answers: QuestionAnswer[];
+	evaluator_notes?: string;
+	approved_by?: string;
+	approval_timestamp?: string;
+	version?: string;
+	created_at?: string;
+	updated_at?: string;
 }
-
 export default function ModelAnswerPage() {
 	const params = useParams();
 	const router = useRouter();
@@ -368,7 +708,9 @@ export default function ModelAnswerPage() {
 																		key={idx}
 																		className="rounded-full bg-muted px-2 py-0.5 text-xs"
 																	>
-																		{keyword}
+																		{typeof keyword === "string"
+																			? keyword
+																			: keyword.keyword}
 																	</span>
 																))}
 															</div>
