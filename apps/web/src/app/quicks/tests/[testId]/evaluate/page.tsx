@@ -188,7 +188,9 @@ export default function EvaluatePage() {
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="text-center">
 					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
-					<p className="text-muted-foreground">Generating dynamic rubrics...</p>
+					<p className="text-muted-foreground">
+						Generating the dynamic rubrics...
+					</p>
 				</div>
 			</div>
 		);

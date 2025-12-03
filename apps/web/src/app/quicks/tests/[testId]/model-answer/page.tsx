@@ -466,13 +466,15 @@ export default function ModelAnswerPage() {
 				"Model answer generation started successfully. Fetching results...",
 			);
 			setGenerationFinished(true);
+			// Refresh the router to invalidate cache and update dashboard
+			router.refresh();
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
 			toast.error(`Failed to start model answer generation: ${message}`);
 		} finally {
 			setGenerating(false);
 		}
-	}, [testId]);
+	}, [testId, router]);
 
 	const fetchModelAnswers = useCallback(async () => {
 		if (!testId) return;
@@ -562,9 +564,12 @@ export default function ModelAnswerPage() {
 				const testData = await testResponse.json();
 
 				if (testData.data.academic_tests.dynamic_rubrics_url !== null) {
-					return router.push(`/quicks/tests/${testId}/evaluate`);
+					toast.success("Redirecting to evaluation...");
+					setTimeout(() => {
+						window.location.href = `/quicks/tests/${testId}/evaluate`;
+					}, 500);
+					return;
 				}
-				// 1. Trigger Dynamic Rubric Generation
 				toast.info("Initializing evaluation rubrics...");
 				const response = await fetch(
 					`${API_BASE_URL}/dynamic-rubrics/${testId}`,
@@ -575,28 +580,27 @@ export default function ModelAnswerPage() {
 				);
 
 				if (!response.ok) {
-					// If it fails, it might be because it already exists or other error.
-					// We'll log it but try to proceed after polling.
 					console.warn(
 						"Rubric generation trigger failed or already exists:",
 						response.status,
 					);
 				}
 
-				// 2. Poll until rubrics are ready
 				toast.loading("Generating rubrics, please wait...");
 				await pollForDynamicRubric(testId);
 				toast.dismiss();
-				toast.success("Rubrics ready! Proceeding to evaluation.");
+				toast.success("Rubrics ready! Redirecting...");
 
-				// 3. Navigate
-				router.push(`/quicks/tests/${testId}/evaluate`);
+				setTimeout(() => {
+					window.location.href = `/quicks/tests/${testId}/evaluate`;
+				}, 500);
 			} catch (error) {
 				console.error("Error preparing evaluation:", error);
 				toast.dismiss();
-				toast.error("Failed to generate rubrics. Proceeding anyway...");
-				// Fallback: navigate anyway
-				router.push(`/quicks/tests/${testId}/evaluate`);
+				toast.error("Failed to generate rubrics. Redirecting anyway...");
+				setTimeout(() => {
+					window.location.href = `/quicks/tests/${testId}/evaluate`;
+				}, 500);
 			} finally {
 				setIsProceeding(false);
 			}
