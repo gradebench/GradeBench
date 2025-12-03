@@ -437,7 +437,6 @@ export default function ModelAnswerPage() {
 	const [needsGeneration, setNeedsGeneration] = useState(false);
 	const [generationFinished, setGenerationFinished] = useState(false);
 	const [isProceeding, setIsProceeding] = useState(false);
-
 	const generateModelAnswers = useCallback(async () => {
 		if (!testId) {
 			toast.error("Invalid test ID");
@@ -491,27 +490,43 @@ export default function ModelAnswerPage() {
 			}
 
 			const testData = await testResponse.json();
-			console.log(testData);
-
 			const test = testData.data || testData;
 
 			if (test?.academic_tests?.key_answers_url) {
 				const s3Response = await fetch(test.academic_tests.key_answers_url);
 
 				if (s3Response.ok) {
-					const data = await s3Response.json();
-					setModelAnswerData(data);
-					toast.success("Model answers loaded");
-					return;
+					try {
+						const data = await s3Response.json();
+						if (data?.question_answers) {
+							setModelAnswerData(data);
+							toast.success("Model answers loaded successfully");
+						} else {
+							throw new Error("Invalid model answer data format");
+						}
+						return;
+					} catch (parseError) {
+						console.error("Failed to parse model answer JSON:", parseError);
+						toast.error("Failed to parse model answer data");
+						return;
+					}
 				}
 
-				const _errorText = await s3Response.text();
-				toast.error(`Failed to fetch from S3: ${s3Response.status}`);
+				const errorText = await s3Response.text().catch(() => "Unknown error");
+				console.error("Failed to fetch model answers from S3:", {
+					status: s3Response.status,
+					error: errorText,
+				});
+				toast.error(
+					`Failed to fetch model answers: ${s3Response.status} ${s3Response.statusText}`,
+				);
 			} else {
 				setNeedsGeneration(true);
 			}
-		} catch (_error) {
-			toast.error("Failed to load model answers");
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "Unknown error";
+			console.error("Error loading model answers:", error);
+			toast.error(`Failed to load model answers: ${message}`);
 		} finally {
 			setLoading(false);
 		}
@@ -587,19 +602,37 @@ export default function ModelAnswerPage() {
 			}
 	};
 
-	if (loading || generating) {
+	if (!testId) {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="text-center">
-					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
-					<p className="text-muted-foreground">
-						{generating ? "Generating model answers..." : "Loading..."}
-					</p>
+					<p className="text-destructive">Invalid test ID</p>
+					<Button
+						variant="outline"
+						className="mt-4"
+						onClick={() => router.push("/quicks")}
+					>
+						Return to Dashboard
+					</Button>
 				</div>
 			</div>
 		);
 	}
 
+	if (loading || generating) {
+		return (
+			<div className="flex min-h-screen items-center justify-center">
+				<div className="text-center">
+					<div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+					<p className="text-muted-foreground" aria-live="polite">
+						{generating
+							? "Generating model answers... Please wait."
+							: "Loading model answers..."}
+					</p>
+				</div>
+			</div>
+		);
+	}
 	return (
 		<div className="space-y-6">
 			<div className="border-b bg-background p-6">
@@ -608,8 +641,9 @@ export default function ModelAnswerPage() {
 						variant="ghost"
 						size="sm"
 						onClick={() => router.push("/quicks")}
+						aria-label="Navigate back to dashboard"
 					>
-						<ArrowLeft className="mr-2 h-4 w-4" />
+						<ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
 						Back to Dashboard
 					</Button>
 					{modelAnswerData && (
@@ -617,6 +651,7 @@ export default function ModelAnswerPage() {
 							size="sm"
 							onClick={handleProceedToEvaluation}
 							disabled={isProceeding}
+							aria-label="Proceed to evaluation phase"
 						>
 							{isProceeding ? (
 								<>
