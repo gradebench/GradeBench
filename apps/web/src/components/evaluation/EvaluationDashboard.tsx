@@ -608,17 +608,7 @@ export function EvaluationDashboard({
 								</Button>
 								<Button
 									variant="default"
-									onClick={() => {
-										setIsCalibrationVerified(true);
-										localStorage.setItem(
-											`calibration_verified_${testId}`,
-											"true",
-										);
-										toast.success(
-											"✅ Calibration verified! Automate Rest is now enabled.",
-											{ duration: 3000 },
-										);
-									}}
+									onClick={handleVerifyClick}
 									className="bg-amber-600 font-semibold text-white shadow-md hover:bg-amber-500"
 								>
 									<CheckCircle2 className="mr-2 h-4 w-4" />
