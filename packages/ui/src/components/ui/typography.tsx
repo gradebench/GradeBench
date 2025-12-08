@@ -14,7 +14,7 @@ export const H1 = ({
 	return (
 		<h1
 			className={cn(
-				"scroll-m-20 font-extrabold text-4xl tracking-tight lg:text-5xl",
+				"scroll-m-20 text-balance text-center font-extrabold text-4xl tracking-tight",
 				className,
 			)}
 			{...props}
@@ -32,7 +32,7 @@ export const H2 = ({
 	return (
 		<h2
 			className={cn(
-				"scroll-m-20 font-semibold text-3xl tracking-tight first:mt-0",
+				"scroll-m-20 border-b pb-2 font-semibold text-3xl tracking-tight first:mt-0",
 				className,
 			)}
 			{...props}

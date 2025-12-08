@@ -67,13 +67,17 @@ function InputOTPSlot({
 
 function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
 	return (
-		// biome-ignore lint/a11y/useFocusableInteractive: shadcn
-		// biome-ignore lint/a11y/useSemanticElements: shadcn
-		// biome-ignore lint/a11y/useAriaPropsForRole: shadcn
-		<div data-slot="input-otp-separator" role="separator" {...props}>
+		// biome-ignore lint/a11y/useSemanticElements: shadcn-ui pattern
+		<div
+			data-slot="input-otp-separator"
+			// biome-ignore lint/a11y/useAriaPropsForRole: shadcn-ui pattern
+			role="separator"
+			tabIndex={-1}
+			{...props}
+		>
 			<MinusIcon />
 		</div>
 	);
 }
 
-export { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot };
+export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator };
