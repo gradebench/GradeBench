@@ -1,8 +1,8 @@
 import QueryClientProvider from "@/libs/tanstack/ReactQueryProvider";
 import "@gb/ui/src/styles/globals.css";
-import NextThemeProvider from "@gb/ui/src/components/providers/NextThemeProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
+import { ThemeProvider } from "@gb/ui/src/providers/theme";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -35,7 +35,7 @@ export const DefaultRootLayout = ({ children }: { children: ReactNode }) => {
 const Providers = ({ children }: { children: ReactNode }) => {
 	return (
 		<QueryClientProvider>
-			<NextThemeProvider
+			<ThemeProvider
 				attribute="class"
 				defaultTheme="system"
 				enableSystem
@@ -44,7 +44,7 @@ const Providers = ({ children }: { children: ReactNode }) => {
 				storageKey="gradebench-theme"
 			>
 				{children}
-			</NextThemeProvider>
+			</ThemeProvider>
 		</QueryClientProvider>
 	);
 };

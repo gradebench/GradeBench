@@ -189,18 +189,27 @@ export const Muted = ({
 	);
 };
 
-export const Table = ({
+export const TableContainer = ({
 	className,
-	tableStyle,
 	children,
 	...props
-}: TypoProps & ComponentProps<"table"> & { tableStyle?: string }) => {
+}: TypoProps & ComponentProps<"div">) => {
 	return (
-		<div className={cn("my-6 w-full overflow-y-auto", className)}>
-			<table className={cn("w-full", tableStyle)} {...props}>
-				{children}
-			</table>
+		<div className={cn("my-6 w-full overflow-y-auto", className)} {...props}>
+			{children}
 		</div>
+	);
+};
+
+export const Table = ({
+	className,
+	children,
+	...props
+}: TypoProps & ComponentProps<"table">) => {
+	return (
+		<table className={cn("w-full", className)} {...props}>
+			{children}
+		</table>
 	);
 };
 
@@ -237,7 +246,7 @@ export const TH = ({
 export const TD = ({
 	className,
 	children,
-	...prpos
+	...props
 }: TypoProps & ComponentProps<"td">) => {
 	return (
 		<td
@@ -245,7 +254,7 @@ export const TD = ({
 				"border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
 				className,
 			)}
-			{...prpos}
+			{...props}
 		>
 			{children}
 		</td>
