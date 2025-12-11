@@ -81,6 +81,7 @@ export function EvaluationDashboard({
 	const [calibrationPaperId, setCalibrationPaperId] = useState<string | null>(
 		null,
 	);
+	const [isStateRestored, setIsStateRestored] = useState(false);
 	const [isCalibrationVerified, setIsCalibrationVerified] = useState(false);
 	const [filterStatus, setFilterStatus] = useState<
 		"all" | "needs-review" | "approved" | "manual"
@@ -88,6 +89,20 @@ export function EvaluationDashboard({
 	const [confidenceScores, setConfidenceScores] = useState<
 		Record<string, number>
 	>({});
+
+	// Restore state from local storage on mount
+	useEffect(() => {
+		const storedId = localStorage.getItem(`calibration_paper_${testId}`);
+		const wasVerified = localStorage.getItem(`calibration_verified_${testId}`);
+
+		if (storedId) {
+			setCalibrationPaperId(storedId);
+		}
+		if (wasVerified === "true") {
+			setIsCalibrationVerified(true);
+		}
+		setIsStateRestored(true);
+	}, [testId]);
 
 	const isAnyProcessing = answerPapers.some(
 		(p) => p.digitized_document_url === null,
@@ -226,7 +241,13 @@ export function EvaluationDashboard({
 	);
 
 	useEffect(() => {
-		if (!isAllDigitized || hasAutoEvaluatedFirst || calibrationPaperId) return;
+		if (
+			!isStateRestored ||
+			!isAllDigitized ||
+			hasAutoEvaluatedFirst ||
+			calibrationPaperId
+		)
+			return;
 
 		// If some papers are already evaluated, skip calibration
 		if (answerPapers.some((p) => p.processed_document_url !== null)) {
@@ -244,6 +265,10 @@ export function EvaluationDashboard({
 		const uncertainPaper = pickUncertainPaper(answerPapers);
 		if (uncertainPaper) {
 			setCalibrationPaperId(uncertainPaper.id);
+			localStorage.setItem(
+				`calibration_paper_${testId}`,
+				uncertainPaper.id,
+			);
 			setHasAutoEvaluatedFirst(true);
 
 			console.log(
@@ -280,6 +305,7 @@ export function EvaluationDashboard({
 			calibrate();
 		}
 	}, [
+		isStateRestored,
 		isAllDigitized,
 		hasAutoEvaluatedFirst,
 		calibrationPaperId,
@@ -298,7 +324,9 @@ export function EvaluationDashboard({
 		}
 
 		setCalibrationPaperId(newPaper.id);
+		localStorage.setItem(`calibration_paper_${testId}`, newPaper.id);
 		setIsCalibrationVerified(false); // Reset verification
+		localStorage.setItem(`calibration_verified_${testId}`, "false");
 
 		toast.info(`Reshuffling... New candidate: ${newPaper.student_name}`);
 		setEvaluatingPapers((prev) => new Set(prev).add(newPaper.id));
@@ -406,14 +434,8 @@ export function EvaluationDashboard({
 	}, []);
 
 	const handleVerifyClick = () => {
-		// If we are in calibration mode, mark as verified
-		if (calibrationPaperId && !isCalibrationVerified) {
-			setIsCalibrationVerified(true);
-			localStorage.setItem(`calibration_verified_${testId}`, "true");
-			toast.success(
-				"Calibration paper verified! You can now automate the rest.",
-			);
-		}
+		// Just navigate to the verify page. 
+		// The actual verification state is set there upon save.
 		const query = calibrationPaperId ? `?paperId=${calibrationPaperId}` : "";
 		router.push(`/quicks/tests/${testId}/verify${query}`);
 	};

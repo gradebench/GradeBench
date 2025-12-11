@@ -587,20 +587,21 @@ export default function ModelAnswerPage() {
 				}
 
 				toast.loading("Generating rubrics, please wait...");
-				await pollForDynamicRubric(testId);
-				toast.dismiss();
-				toast.success("Rubrics ready! Redirecting...");
-
-				setTimeout(() => {
-					window.location.href = `/quicks/tests/${testId}/evaluate`;
-				}, 500);
+				const polledTest = await pollForDynamicRubric(testId);
+				
+				if (polledTest.dynamic_rubrics_url) {
+					toast.dismiss();
+					toast.success("Rubrics ready! Redirecting...");
+					setTimeout(() => {
+						window.location.href = `/quicks/tests/${testId}/evaluate`;
+					}, 500);
+				} else {
+					throw new Error("Rubrics generation timed out. Please try again.");
+				}
 			} catch (error) {
 				console.error("Error preparing evaluation:", error);
 				toast.dismiss();
-				toast.error("Failed to generate rubrics. Redirecting anyway...");
-				setTimeout(() => {
-					window.location.href = `/quicks/tests/${testId}/evaluate`;
-				}, 500);
+				toast.error(error instanceof Error ? error.message : "Failed to generate rubrics");
 			} finally {
 				setIsProceeding(false);
 			}

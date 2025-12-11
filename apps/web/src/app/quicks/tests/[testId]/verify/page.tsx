@@ -210,8 +210,14 @@ export default function VerifyPage() {
 			}
 
 			toast.success("Calibration verified! Starting batch automation...");
+
+			// Mark calibration as verified in local storage so dashboard knows
+			if (testId) {
+				localStorage.setItem(`calibration_verified_${testId}`, "true");
+			}
+
 			setTimeout(() => {
-				router.push(`/quicks/tests/${testId}/result/${paper.id}`);
+				router.push(`/quicks/tests/${testId}/evaluate`);
 			}, 1500);
 		} catch (error) {
 			console.error(error);
