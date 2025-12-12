@@ -644,3 +644,22 @@ export async function getConfidenceScoreFromDocument(
 		return null;
 	}
 }
+
+/**
+ * Fetch the full evaluated JSON from the processed document URL
+ */
+export async function getEvaluatedJSON(
+	processedDocumentUrl: string,
+): Promise<unknown> {
+	try {
+		const response = await fetch(processedDocumentUrl);
+		if (!response.ok) {
+			console.error("Failed to fetch processed document:", response.statusText);
+			return null;
+		}
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching evaluated JSON:", error);
+		return null;
+	}
+}

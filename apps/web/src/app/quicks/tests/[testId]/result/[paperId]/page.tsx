@@ -8,6 +8,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@gb/ui/src/components/ui/card";
+import { Progress } from "@gb/ui/src/components/ui/progress";
+import { Separator } from "@gb/ui/src/components/ui/separator";
 import {
 	ArrowLeft,
 	Edit2,
@@ -80,48 +82,65 @@ const StatsOverview = ({
 
 	return (
 		<div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Score
-				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-2xl sm:text-3xl">
-						{total_marks_awarded}
-					</span>
-					<span className="text-muted-foreground text-sm">
-						/ {total_marks_possible}
-					</span>
-				</div>
-			</div>
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Percentage
-				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span
-						className={`font-bold text-2xl sm:text-3xl ${
-							percentage >= 80
-								? "text-green-500"
-								: percentage >= 50
-									? "text-amber-500"
-									: "text-red-500"
-						}`}
-					>
-						{percentage.toFixed(1)}%
-					</span>
-				</div>
-			</div>
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Questions
-				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-2xl sm:text-3xl">
-						{questions.length}
-					</span>
-					<span className="text-muted-foreground text-sm">Total</span>
-				</div>
-			</div>
+			<Card className="shadow-sm transition-all hover:shadow-md">
+				<CardContent className="p-3 sm:p-4">
+					<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						Score
+					</div>
+					<div className="mt-2 flex items-baseline gap-1">
+						<span className="font-bold text-2xl sm:text-3xl">
+							{total_marks_awarded}
+						</span>
+						<span className="text-muted-foreground text-sm">
+							/ {total_marks_possible}
+						</span>
+					</div>
+					<Progress
+						value={(total_marks_awarded / total_marks_possible) * 100}
+						className="mt-2 h-2"
+					/>
+				</CardContent>
+			</Card>
+			<Card className="shadow-sm transition-all hover:shadow-md">
+				<CardContent className="p-3 sm:p-4">
+					<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						Percentage
+					</div>
+					<div className="mt-2 flex items-baseline gap-1">
+						<span
+							className={`font-bold text-2xl sm:text-3xl ${
+								percentage >= 80
+									? "text-emerald-500"
+									: percentage >= 50
+										? "text-amber-500"
+										: "text-rose-500"
+							}`}
+						>
+							{percentage.toFixed(1)}%
+						</span>
+					</div>
+					<Progress value={percentage} className="mt-2 h-2" />
+				</CardContent>
+			</Card>
+			<Card className="shadow-sm transition-all hover:shadow-md">
+				<CardContent className="p-3 sm:p-4">
+					<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						Questions
+					</div>
+					<div className="mt-2 flex items-baseline gap-1">
+						<span className="font-bold text-2xl sm:text-3xl">
+							{questions.length}
+						</span>
+						<span className="text-muted-foreground text-sm">Total</span>
+					</div>
+					<div className="mt-2 flex items-center justify-between text-muted-foreground text-xs">
+						<span>Completed</span>
+						<Badge variant="secondary" className="text-xs">
+							{questions.length}
+						</Badge>
+					</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 };
@@ -374,7 +393,8 @@ export default function ResultPage() {
 								<CardContent className="space-y-4 text-sm">
 									<p className="text-muted-foreground leading-relaxed">
 										{evaluation.overall_feedback.summary}
-									</p>
+									</p>{" "}
+									<Separator />{" "}
 									<div className="grid grid-cols-2 gap-6 rounded-lg bg-muted/30 p-4">
 										<div>
 											<p className="mb-2 flex items-center gap-2 font-semibold text-green-700 text-xs">
