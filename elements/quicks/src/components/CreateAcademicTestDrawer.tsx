@@ -130,34 +130,82 @@ export function CreateAcademicTestDrawer({
 		setUploadProgress(0);
 
 		try {
-			// Create FormData with the file
-			const formData = new FormData();
-			formData.append("file", file);
-			formData.append("name", file.name.replace(/\.pdf$/i, ""));
+			// Step 1: Get pre-signed upload URL
+			const uploadUrlResponse = await fetch(
+				`${API_BASE_URL}/question-papers/upload/raw`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ file_name: file.name }),
+				},
+			);
 
-			// Upload question paper directly
-			const response = await fetch(`${API_BASE_URL}/question-papers/upload`, {
-				method: "POST",
-				body: formData,
+			if (!uploadUrlResponse.ok) {
+				throw new Error("Failed to get upload URL");
+			}
+
+			const uploadData = await uploadUrlResponse.json();
+			const questionPapersData =
+				uploadData.data?.question_papers || uploadData.question_papers;
+			const { upload_url, file_url } = questionPapersData || {};
+
+			if (!upload_url || !file_url) {
+				throw new Error("Invalid upload URL response");
+			}
+
+			setUploadProgress(30);
+
+			// Step 2: Upload file to S3
+			const s3Response = await fetch(upload_url, {
+				method: "PUT",
+				headers: { "Content-Type": "application/pdf" },
+				body: file,
 			});
 
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({}));
+			if (!s3Response.ok) {
+				throw new Error("Failed to upload file to S3");
+			}
+
+			setUploadProgress(60);
+
+			// Step 3: Create question paper record
+			const createResponse = await fetch(`${API_BASE_URL}/question-papers`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: file.name.replace(/\.pdf$/i, ""),
+					raw_document_url: file_url,
+				}),
+			});
+
+			if (!createResponse.ok) {
+				throw new Error("Failed to create question paper");
+			}
+
+			const createResult = await createResponse.json();
+
+			if (!createResult.success) {
 				throw new Error(
-					errorData.error ||
-						errorData.message ||
-						"Failed to upload question paper",
+					createResult.error || "Failed to create question paper",
 				);
 			}
 
-			const result = await response.json();
-
 			// Extract question paper ID from response
-			const questionPaperId =
-				result.data?.question_paper_id ||
-				result.data?.id ||
-				result.question_paper_id ||
-				result.id;
+			let questionPaperId: string | null = null;
+
+			if (createResult.data?.question_papers?.id) {
+				questionPaperId = createResult.data.question_papers.id;
+			} else if (createResult.data?.question_paper?.id) {
+				questionPaperId = createResult.data.question_paper.id;
+			} else if (createResult.data?.id) {
+				questionPaperId = createResult.data.id;
+			} else if (createResult.question_papers?.id) {
+				questionPaperId = createResult.question_papers.id;
+			} else if (createResult.question_paper?.id) {
+				questionPaperId = createResult.question_paper.id;
+			} else if (createResult.id) {
+				questionPaperId = createResult.id;
+			}
 
 			if (!questionPaperId) {
 				throw new Error("No question paper ID returned from upload");
@@ -441,8 +489,8 @@ export function CreateAcademicTestDrawer({
 										disabled={loading || uploading || generatingModelAnswer}
 									/>
 									{selectedFile ? (
-										<div className="flex w-full items-center gap-3 rounded-lg border-2 border-green-600/30 bg-green-950/20 p-4">
-											<FileUp className="h-8 w-8 text-green-600" />
+										<div className="flex w-full items-center gap-3 rounded-lg border-2 border-primary/30 bg-primary/10 p-4">
+											<FileUp className="h-8 w-8 text-primary" />
 											<div className="flex-1 text-left">
 												<p className="font-medium text-sm">
 													{selectedFile.name}
@@ -540,7 +588,8 @@ export function CreateAcademicTestDrawer({
 							className="flex-1 text-base"
 							disabled={
 								!testName.trim() ||
-								!questionPaperId ||
+								(uploadMode === "select" && !questionPaperId) ||
+								(uploadMode === "upload" && !selectedFile) ||
 								!evaluatorConfigId ||
 								loading ||
 								fetching ||
