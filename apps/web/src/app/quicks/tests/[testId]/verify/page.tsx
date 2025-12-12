@@ -10,6 +10,7 @@ import {
 } from "@gb/ui/src/components/ui/card";
 import { Input } from "@gb/ui/src/components/ui/input";
 import { Textarea } from "@gb/ui/src/components/ui/textarea";
+import { cn } from "@gb/ui/src/lib/utils";
 import {
 	ArrowLeft,
 	CheckCircle2,
@@ -249,30 +250,42 @@ export default function VerifyPage() {
 	return (
 		<div className="flex h-screen flex-col bg-background">
 			{/* Header */}
-			<header className="flex h-14 items-center justify-between border-b px-3 sm:h-16 sm:px-6">
-				<div className="flex items-center gap-2 sm:gap-4">
+			<header className="flex h-16 items-center justify-between border-border border-b bg-background px-6 shadow-sm">
+				<div className="flex items-center gap-4">
 					<Button
 						variant="ghost"
 						size="sm"
 						onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
+						className="gap-2 text-muted-foreground hover:bg-muted hover:text-foreground"
 					>
-						<ArrowLeft className="mr-1 h-4 w-4 sm:mr-2" />
+						<ArrowLeft className="h-4 w-4" />
 						<span className="hidden sm:inline">Back</span>
 					</Button>
 					<div className="hidden h-6 w-px bg-border sm:block" />
 					<div>
-						<h1 className="font-semibold text-base sm:text-lg">Verification</h1>
-						<p className="text-muted-foreground text-xs">
-							<span className="hidden sm:inline">Verifying • </span>
-							Student: {paper.student_name}
-						</p>
+						<h1 className="font-bold text-foreground text-lg leading-tight">
+							Verification
+						</h1>
+						<div className="flex items-center gap-2 text-muted-foreground text-xs">
+							<Badge
+								variant="outline"
+								className="border-primary/20 bg-primary/5 text-primary"
+							>
+								Verifying
+							</Badge>
+							<span className="text-muted-foreground/50">•</span>
+							<span className="font-medium text-foreground">
+								{paper.student_name}
+							</span>
+						</div>
 					</div>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-3">
 					<Badge
 						variant="outline"
-						className="border-blue-500 bg-blue-500/10 text-blue-600"
+						className="border-primary/30 bg-primary/10 px-3 py-1 font-medium text-primary shadow-sm"
 					>
+						<Zap className="mr-1.5 h-3.5 w-3.5 fill-primary/20" />
 						<span className="hidden sm:inline">Calibration Active</span>
 						<span className="sm:hidden">Active</span>
 					</Badge>
@@ -282,16 +295,19 @@ export default function VerifyPage() {
 			{/* Main Content - 3 Columns */}
 			<main className="flex flex-1 flex-col overflow-hidden lg:flex-row">
 				{/* Left Column: Annotated PDF (45%) - Hidden on mobile */}
-				<div className="hidden w-full flex-col border-r bg-muted/30 p-2 lg:flex lg:w-[45%] lg:p-4">
-					<div className="mb-2 flex items-center justify-between">
-						<h2 className="font-medium text-muted-foreground text-sm">
+				<div className="hidden w-full flex-col border-border border-r bg-muted/40 p-4 lg:flex lg:w-[45%]">
+					<div className="mb-3 flex items-center justify-between">
+						<h2 className="font-bold text-muted-foreground text-xs uppercase tracking-wider">
 							Annotated Submission
 						</h2>
-						<Badge variant="secondary" className="text-xs">
-							PDF
+						<Badge
+							variant="secondary"
+							className="bg-background text-muted-foreground text-xs shadow-sm"
+						>
+							PDF View
 						</Badge>
 					</div>
-					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
+					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border border-border bg-background shadow-sm">
 						{paper.annotated_document_url ? (
 							<>
 								<iframe
@@ -317,7 +333,7 @@ export default function VerifyPage() {
 								</Button>
 							</>
 						) : (
-							<div className="flex flex-col items-center gap-2 text-slate-500">
+							<div className="flex flex-col items-center gap-2 text-muted-foreground">
 								<Loader2 className="h-8 w-8 animate-spin" />
 								<p>Loading PDF...</p>
 							</div>
@@ -326,28 +342,31 @@ export default function VerifyPage() {
 				</div>
 
 				{/* Middle Column: Evaluation Breakdown (30%) */}
-				<div className="flex w-full flex-col border-r bg-background lg:w-[30%]">
-					<div className="border-b bg-muted/10 p-3 sm:p-4">
-						<h2 className="font-semibold text-base sm:text-lg">
+				<div className="flex w-full flex-col border-border border-r bg-background lg:w-[30%]">
+					<div className="border-border border-b bg-muted/10 p-4">
+						<h2 className="font-bold text-base text-foreground">
 							Evaluation Breakdown
 						</h2>
 						<p className="text-muted-foreground text-xs">
 							Review and edit the AI's grading logic.
 						</p>
 					</div>
-					<div className="flex-1 space-y-3 overflow-y-auto p-3 sm:space-y-4 sm:p-4">
+					<div className="custom-scrollbar flex-1 space-y-4 overflow-y-auto p-4">
 						{questions.map((q, index) => (
 							<Card
 								key={index}
-								className="overflow-hidden border-l-4 border-l-blue-500"
+								className="overflow-hidden border-border border-l-4 border-l-primary shadow-sm transition-all hover:shadow-md"
 							>
-								<CardHeader className="bg-muted/5 px-4 py-3 pb-2">
+								<CardHeader className="border-border border-b bg-muted/30 px-4 py-3 pb-2">
 									<div className="flex items-start justify-between">
-										<Badge variant="outline" className="bg-background">
+										<Badge
+											variant="outline"
+											className="border-border bg-background font-bold text-muted-foreground shadow-sm"
+										>
 											Q{q.question_number}
 										</Badge>
 										<div className="flex items-center gap-2">
-											<span className="text-muted-foreground text-xs">
+											<span className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
 												Marks:
 											</span>
 											<div className="flex items-center gap-1">
@@ -357,7 +376,7 @@ export default function VerifyPage() {
 													onChange={(e) =>
 														handleScoreChange(index, e.target.value)
 													}
-													className="h-7 w-16 text-right font-medium"
+													className="h-7 w-16 border-border bg-background text-right font-bold focus-visible:ring-primary"
 													max={q.marks_total}
 													min={0}
 												/>
@@ -368,12 +387,12 @@ export default function VerifyPage() {
 										</div>
 									</div>
 								</CardHeader>
-								<CardContent className="space-y-3 px-4 py-3">
+								<CardContent className="space-y-4 px-4 py-3">
 									<div>
-										<p className="mb-1 flex items-center gap-1 font-medium text-blue-600 text-xs">
-											<Zap className="h-3 w-3" /> AI Summary
+										<p className="mb-1.5 flex items-center gap-1.5 font-bold text-primary text-xs uppercase tracking-wide">
+											<Zap className="h-3.5 w-3.5 fill-primary/20" /> AI Summary
 										</p>
-										<p className="text-muted-foreground text-sm leading-relaxed">
+										<p className="text-foreground text-sm leading-relaxed">
 											{q.feedback.summary}
 										</p>
 									</div>
@@ -381,39 +400,57 @@ export default function VerifyPage() {
 									<div className="space-y-3 pt-2">
 										{q.feedback.strengths &&
 											q.feedback.strengths.length > 0 && (
-												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-green-400 text-xs">
-														<ThumbsUp className="h-3 w-3" /> Strengths
+												<div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2.5">
+													<p className="mb-1.5 flex items-center gap-1.5 font-bold text-emerald-600 text-xs uppercase dark:text-emerald-500">
+														<ThumbsUp className="h-3.5 w-3.5" /> Strengths
 													</p>
-													<ul className="list-inside list-disc text-blue-100 text-xs">
+													<ul className="space-y-1">
 														{q.feedback.strengths.map((s, i) => (
-															<li key={i}>{s}</li>
+															<li
+																key={i}
+																className="flex gap-2 text-muted-foreground text-xs"
+															>
+																<span className="text-emerald-500">•</span>
+																{s}
+															</li>
 														))}
 													</ul>
 												</div>
 											)}
 										{q.feedback.weaknesses &&
 											q.feedback.weaknesses.length > 0 && (
-												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-red-400 text-xs">
-														<ThumbsDown className="h-3 w-3" /> Weaknesses
+												<div className="rounded-md border border-rose-500/20 bg-rose-500/5 p-2.5">
+													<p className="mb-1.5 flex items-center gap-1.5 font-bold text-rose-600 text-xs uppercase dark:text-rose-500">
+														<ThumbsDown className="h-3.5 w-3.5" /> Weaknesses
 													</p>
-													<ul className="list-inside list-disc text-blue-100 text-xs">
+													<ul className="space-y-1">
 														{q.feedback.weaknesses.map((w, i) => (
-															<li key={i}>{w}</li>
+															<li
+																key={i}
+																className="flex gap-2 text-muted-foreground text-xs"
+															>
+																<span className="text-rose-500">•</span>
+																{w}
+															</li>
 														))}
 													</ul>
 												</div>
 											)}
 										{q.feedback.suggestions &&
 											q.feedback.suggestions.length > 0 && (
-												<div>
-													<p className="mb-1 flex items-center gap-1 font-medium text-amber-400 text-xs">
-														<Edit2 className="h-3 w-3" /> Suggestions
+												<div className="rounded-md border border-amber-500/20 bg-amber-500/5 p-2.5">
+													<p className="mb-1.5 flex items-center gap-1.5 font-bold text-amber-600 text-xs uppercase dark:text-amber-500">
+														<Edit2 className="h-3.5 w-3.5" /> Suggestions
 													</p>
-													<ul className="list-inside list-disc text-blue-100 text-xs">
+													<ul className="space-y-1">
 														{q.feedback.suggestions.map((s, i) => (
-															<li key={i}>{s}</li>
+															<li
+																key={i}
+																className="flex gap-2 text-muted-foreground text-xs"
+															>
+																<span className="text-amber-500">•</span>
+																{s}
+															</li>
 														))}
 													</ul>
 												</div>
@@ -462,50 +499,55 @@ export default function VerifyPage() {
 				</div>
 
 				{/* Right Column: Summary & Controls (25%) */}
-				<div className="flex w-full flex-col space-y-3 bg-muted/10 p-3 sm:space-y-4 sm:p-4 lg:w-[25%]">
+				<div className="flex w-full flex-col space-y-4 border-border border-l bg-muted/10 p-4 lg:w-[25%]">
 					{/* Summary Card */}
-					<Card>
-						<CardHeader className="pb-2">
-							<CardTitle className="text-sm sm:text-base">
+					<Card className="border-border shadow-sm">
+						<CardHeader className="border-border border-b bg-muted/20 px-4 py-3 pb-2">
+							<CardTitle className="font-bold text-base text-foreground">
 								Grading Summary
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="space-y-3 sm:space-y-4">
+						<CardContent className="space-y-4 p-4">
 							<div className="flex items-end justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">Total Score</p>
+									<p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+										Total Score
+									</p>
 									<div className="flex items-baseline gap-2">
 										<Input
 											type="number"
 											value={manualTotalScore}
 											onChange={(e) => setManualTotalScore(e.target.value)}
-											className="h-10 w-24 font-bold text-2xl"
+											className="h-10 w-24 border-border bg-background font-black text-2xl focus-visible:ring-primary"
 										/>
-										<span className="font-normal text-muted-foreground text-sm">
+										<span className="font-medium text-muted-foreground text-sm">
 											/ {totalMarksPossible}
 										</span>
 									</div>
 								</div>
 								<div
-									className={`font-bold text-xl ${
+									className={cn(
+										"font-black text-xl",
 										percentage >= 80
-											? "text-green-400"
+											? "text-emerald-500"
 											: percentage >= 50
-												? "text-amber-400"
-												: "text-red-400"
-									}`}
+												? "text-amber-500"
+												: "text-rose-500",
+									)}
 								>
 									{Math.round(percentage)}%
 								</div>
 							</div>
 
-							<div className="border-t pt-2">
-								<div className="mb-2 flex items-center justify-between">
-									<span className="font-medium text-sm">Grade</span>
+							<div className="border-border border-t pt-3">
+								<div className="flex items-center justify-between">
+									<span className="font-bold text-muted-foreground text-xs uppercase">
+										Grade
+									</span>
 									<Input
 										value={manualGrade}
 										onChange={(e) => setManualGrade(e.target.value)}
-										className="h-8 w-20 text-center font-bold"
+										className="h-8 w-20 border-border bg-background text-center font-bold focus-visible:ring-primary"
 									/>
 								</div>
 							</div>
@@ -516,14 +558,14 @@ export default function VerifyPage() {
 					<div className="flex flex-1 flex-col">
 						<label
 							htmlFor="general-feedback"
-							className="mb-2 font-medium text-sm"
+							className="mb-2 font-bold text-muted-foreground text-xs uppercase tracking-wide"
 						>
 							Evaluator Feedback
 						</label>
 						<Textarea
 							id="general-feedback"
 							placeholder="Enter your feedback manually..."
-							className="flex-1 resize-none bg-white"
+							className="flex-1 resize-none border-border bg-background focus-visible:ring-primary"
 							value={generalFeedback}
 							onChange={(e) => setGeneralFeedback(e.target.value)}
 						/>
@@ -532,7 +574,7 @@ export default function VerifyPage() {
 					{/* Actions */}
 					<div className="space-y-3 pt-2">
 						<Button
-							className="h-12 w-full bg-green-600 text-base hover:bg-green-700"
+							className="h-12 w-full bg-primary font-bold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg"
 							onClick={handleVerify}
 							disabled={isVerifying}
 						>
@@ -544,14 +586,16 @@ export default function VerifyPage() {
 							) : (
 								<>
 									<CheckCircle2 className="mr-2 h-5 w-5" />
-									Verify & Save
+									Verify & Save Calibration
 								</>
 							)}
 						</Button>
-						<p className="px-2 text-center text-muted-foreground text-xs">
-							Verifying this paper will lock the grading standard for the
-							remaining batch.
-						</p>
+						<div className="rounded-md border border-amber-500/20 bg-amber-500/5 p-3 text-center">
+							<p className="font-medium text-amber-600 text-xs dark:text-amber-500">
+								Verifying this paper will lock the grading standard for the
+								remaining batch.
+							</p>
+						</div>
 					</div>
 				</div>
 			</main>
