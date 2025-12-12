@@ -10,23 +10,224 @@ import {
 } from "@gb/ui/src/components/ui/card";
 import {
 	ArrowLeft,
+	Bot,
+	ChevronDown,
+	ChevronRight,
+	Download,
 	Edit2,
-	ExternalLink,
 	Loader2,
+	Maximize2,
 	MessageSquare,
-	Target,
+	Minimize2,
+	PieChart,
+	RefreshCw,
+	Send,
+	Share2,
+	Sparkles,
 	ThumbsDown,
 	ThumbsUp,
+	TrendingUp,
 	Zap,
+	ZoomIn,
+	ZoomOut,
 } from "lucide-react";
-import { motion } from "motion/react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type AnswerPaper,
 	getAnswerPapersByAcademicTest,
 } from "@/lib/answer-papers-api";
+import "@gb/ui/src/styles/globals.css";
 
+// --- UTILITY FUNCTIONS ---
+const cn = (...classes: (string | boolean | undefined)[]) =>
+	classes.filter(Boolean).join(" ");
+
+// --- VISUALIZATION COMPONENTS ---
+const RadarChart = ({ data }: { data: { topic: string; score: number }[] }) => {
+	const size = 200;
+	const center = size / 2;
+	const radius = (size - 40) / 2;
+	const angleSlice = (Math.PI * 2) / data.length;
+
+	const getPoint = (score: number, index: number) => {
+		const angle = index * angleSlice - Math.PI / 2;
+		const r = (score / 100) * radius;
+		return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
+	};
+
+	const points = data.map((d, i) => getPoint(d.score, i)).join(" ");
+
+	return (
+		<div className="flex flex-col items-center">
+			<svg width={size} height={size} className="overflow-visible">
+				<title>Topic Performance Radar Chart</title>
+				{/* Grid Background */}
+				{[0.2, 0.4, 0.6, 0.8, 1].map((scale, i) => (
+					<polygon
+						key={i}
+						points={data.map((_, idx) => getPoint(100 * scale, idx)).join(" ")}
+						fill="none"
+						stroke="hsl(var(--border))"
+						strokeWidth="1"
+					/>
+				))}
+				{/* Axis Lines */}
+				{data.map((_, i) => {
+					const [x, y] = getPoint(100, i).split(",");
+					return (
+						<line
+							key={i}
+							x1={center}
+							y1={center}
+							x2={x}
+							y2={y}
+							stroke="hsl(var(--border))"
+							strokeWidth="1"
+						/>
+					);
+				})}
+				{/* Data Shape */}
+				<polygon
+					points={points}
+					fill="hsl(var(--primary) / 0.2)"
+					stroke="hsl(var(--primary))"
+					strokeWidth="2"
+				/>
+				{/* Data Points */}
+				{data.map((d, i) => {
+					const [x, y] = getPoint(d.score, i).split(",");
+					return (
+						<circle key={i} cx={x} cy={y} r="3" fill="hsl(var(--primary))" />
+					);
+				})}
+				{/* Labels */}
+				{data.map((d, i) => {
+					const [x, y] = getPoint(115, i).split(",");
+					return (
+						<text
+							key={i}
+							x={x}
+							y={y}
+							textAnchor="middle"
+							fontSize="10"
+							fill="hsl(var(--muted-foreground))"
+							fontWeight="bold"
+							dy="4"
+						>
+							{d.topic}
+						</text>
+					);
+				})}
+			</svg>
+		</div>
+	);
+};
+
+const BellCurveChart = ({
+	studentScore,
+	avgScore,
+	topperScore,
+	maxScore,
+}: {
+	studentScore: number;
+	avgScore: number;
+	topperScore: number;
+	maxScore: number;
+}) => {
+	const width = 300;
+	const height = 80;
+
+	const path = `M 0,${height} C 50,${height} 100,0 150,0 S 250,${height} 300,${height}`;
+
+	const getX = (score: number) => {
+		return (score / maxScore) * width;
+	};
+
+	return (
+		<div className="relative flex h-28 w-full items-end justify-center">
+			<svg
+				width="100%"
+				height="100%"
+				viewBox={`0 0 ${width} ${height + 20}`}
+				preserveAspectRatio="none"
+			>
+				<title>Score Distribution Bell Curve</title>
+				<path
+					d={path}
+					fill="none"
+					stroke="hsl(var(--border))"
+					strokeWidth="2"
+					strokeDasharray="4 4"
+				/>
+
+				{/* Student Marker */}
+				<line
+					x1={getX(studentScore)}
+					y1="0"
+					x2={getX(studentScore)}
+					y2={height}
+					stroke="hsl(var(--destructive))"
+					strokeWidth="2"
+				/>
+				<circle
+					cx={getX(studentScore)}
+					cy={height}
+					r="4"
+					fill="hsl(var(--destructive))"
+				/>
+
+				{/* Avg Marker */}
+				<line
+					x1={getX(avgScore)}
+					y1="20"
+					x2={getX(avgScore)}
+					y2={height}
+					stroke="hsl(var(--muted-foreground))"
+					strokeWidth="2"
+					strokeDasharray="2 2"
+				/>
+
+				{/* Topper Marker */}
+				<line
+					x1={getX(topperScore)}
+					y1="10"
+					x2={getX(topperScore)}
+					y2={height}
+					stroke="#10b981"
+					strokeWidth="2"
+				/>
+			</svg>
+
+			<div className="absolute bottom-0 flex w-full justify-between px-2 font-medium text-[10px] text-muted-foreground">
+				<span>0</span>
+				<span>Marks Distribution</span>
+				<span>{maxScore}</span>
+			</div>
+
+			<div
+				className="-translate-x-1/2 absolute top-2 transform rounded border border-destructive/20 bg-destructive/10 px-2 py-1 font-bold text-[10px] text-destructive shadow-sm"
+				style={{ left: `${(studentScore / maxScore) * 100}%` }}
+			>
+				You ({studentScore})
+			</div>
+			<div
+				className="-translate-x-1/2 absolute top-10 transform rounded border border-border bg-muted px-2 py-1 font-bold text-[10px] text-muted-foreground shadow-sm"
+				style={{ left: `${(avgScore / maxScore) * 100}%` }}
+			>
+				Avg ({avgScore})
+			</div>
+			<div
+				className="-translate-x-1/2 absolute top-0 transform rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 font-bold text-[10px] text-emerald-400 shadow-sm"
+				style={{ left: `${(topperScore / maxScore) * 100}%` }}
+			>
+				Topper ({topperScore})
+			</div>
+		</div>
+	);
+};
+
+// --- TYPE DEFINITIONS ---
 interface Annotation {
 	text_content: string;
 	page_number: number;
@@ -68,119 +269,336 @@ interface EvaluationData {
 	};
 }
 
-const StatsOverview = ({
-	evaluation,
-	questions,
-}: {
-	evaluation: EvaluationData;
-	questions: QuestionEvaluation[];
-}) => {
-	const { total_marks_awarded, total_marks_possible, percentage } =
-		evaluation.overall_score;
+// --- AI COMPONENTS ---
+const AiRewriteWidget = () => {
+	const [rewritten, setRewritten] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
+
+	const handleRewrite = async () => {
+		setLoading(true);
+		// Simulated AI response
+		setTimeout(() => {
+			setRewritten(
+				"Consider structuring your answer with a clear introduction, body paragraphs with relevant examples, and a concise conclusion. Start by defining key terms and then elaborate on the specific constitutional provisions.",
+			);
+			setLoading(false);
+		}, 2000);
+	};
 
 	return (
-		<div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Score
+		<Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 to-card shadow-sm">
+			<div className="flex flex-row items-center justify-between border-primary/10 border-b p-4">
+				<div className="flex items-center gap-2 font-bold text-primary text-xs uppercase tracking-wide">
+					<Sparkles size={14} className="text-primary" /> AI Mentor Fix
 				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-2xl sm:text-3xl">
-						{total_marks_awarded}
-					</span>
-					<span className="text-muted-foreground text-sm">
-						/ {total_marks_possible}
-					</span>
-				</div>
-			</div>
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Percentage
-				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span
-						className={`font-bold text-2xl sm:text-3xl ${
-							percentage >= 80
-								? "text-green-500"
-								: percentage >= 50
-									? "text-amber-500"
-									: "text-red-500"
-						}`}
+				{!rewritten && (
+					<Button
+						variant="outline"
+						size="sm"
+						className="h-6 text-[10px]"
+						onClick={handleRewrite}
+						disabled={loading}
 					>
-						{percentage.toFixed(1)}%
-					</span>
-				</div>
+						{loading ? (
+							<Loader2 size={10} className="mr-1.5 animate-spin" />
+						) : (
+							<RefreshCw size={10} className="mr-1.5" />
+						)}
+						{loading ? "Thinking..." : "Improve Answer"}
+					</Button>
+				)}
 			</div>
-			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
-				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
-					Questions
-				</div>
-				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-2xl sm:text-3xl">
-						{questions.length}
+			{rewritten && (
+				<div className="fade-in slide-in-from-top-2 animate-in bg-card p-4 duration-300">
+					<span className="mb-2 block font-bold text-[10px] text-primary uppercase tracking-wider">
+						Suggested Improvement
 					</span>
-					<span className="text-muted-foreground text-sm">Total</span>
+					<p className="border-primary border-l-2 pl-3 text-muted-foreground text-sm italic leading-relaxed">
+						"{rewritten}"
+					</p>
+					<div className="mt-3 flex justify-end gap-2">
+						<Button variant="ghost" size="sm" className="h-6 px-0 text-[10px]">
+							<Share2 size={10} className="mr-1" /> Copy
+						</Button>
+					</div>
 				</div>
-			</div>
+			)}
+		</Card>
+	);
+};
+
+const AiChatFloating = () => {
+	const [isOpen, setIsOpen] = useState(false);
+	const [messages, setMessages] = useState<
+		{ role: "ai" | "user"; text: string }[]
+	>([
+		{
+			role: "ai",
+			text: "Hello! I can help you analyze your result. Ask me anything.",
+		},
+	]);
+	const [input, setInput] = useState("");
+	const [loading, setLoading] = useState(false);
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	const scrollToBottom = useCallback(() => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, []);
+
+	useEffect(() => {
+		scrollToBottom();
+	}, [scrollToBottom]);
+
+	const handleSend = async () => {
+		if (!input.trim()) return;
+		const userText = input;
+		setMessages((p) => [...p, { role: "user", text: userText }]);
+		setInput("");
+		setLoading(true);
+		// Simulated AI response
+		setTimeout(() => {
+			setMessages((p) => [
+				...p,
+				{
+					role: "ai",
+					text: "I understand your concern. Let me help you with that topic. Consider reviewing the relevant constitutional articles and Supreme Court judgments.",
+				},
+			]);
+			setLoading(false);
+		}, 1500);
+	};
+
+	return (
+		<div className="fixed right-6 bottom-6 z-50 flex flex-col items-end">
+			{isOpen && (
+				<div className="fade-in slide-in-from-bottom-10 mb-4 w-80 origin-bottom-right animate-in overflow-hidden rounded-xl border border-border bg-card shadow-2xl duration-300">
+					<div className="flex items-center justify-between bg-primary p-3 text-primary-foreground">
+						<div className="flex items-center gap-2 font-semibold text-sm">
+							<Bot size={16} /> AI Mentor
+						</div>
+						<button
+							type="button"
+							onClick={() => setIsOpen(false)}
+							className="hover:opacity-80"
+						>
+							<Minimize2 size={16} />
+						</button>
+					</div>
+					<div className="h-72 space-y-3 overflow-y-auto bg-muted/30 p-3">
+						{messages.map((m, i) => (
+							<div
+								key={i}
+								className={`flex ${
+									m.role === "user" ? "justify-end" : "justify-start"
+								}`}
+							>
+								<div
+									className={`max-w-[85%] rounded-2xl px-3 py-2 text-xs leading-relaxed shadow-sm ${
+										m.role === "user"
+											? "rounded-br-none bg-primary text-primary-foreground"
+											: "rounded-bl-none border border-border bg-card text-foreground"
+									}`}
+								>
+									{m.text}
+								</div>
+							</div>
+						))}
+						{loading && (
+							<div className="flex justify-start">
+								<div className="rounded-2xl rounded-bl-none border border-border bg-card px-3 py-2 text-muted-foreground text-xs">
+									<span className="animate-pulse">...</span>
+								</div>
+							</div>
+						)}
+						<div ref={messagesEndRef} />
+					</div>
+					<div className="flex gap-2 border-border border-t bg-card p-2">
+						<input
+							className="flex-1 rounded-full border-0 bg-muted px-3 py-2 text-foreground text-xs outline-none transition-all focus:ring-1 focus:ring-primary"
+							placeholder="Ask a doubt..."
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							onKeyDown={(e) => e.key === "Enter" && handleSend()}
+						/>
+						<button
+							type="button"
+							onClick={handleSend}
+							className="rounded-full bg-primary p-2 text-primary-foreground transition-colors hover:opacity-90"
+						>
+							<Send size={14} />
+						</button>
+					</div>
+				</div>
+			)}
+			<Button
+				className="h-12 w-12 rounded-full bg-primary shadow-xl transition-all duration-300 hover:scale-105"
+				onClick={() => setIsOpen(!isOpen)}
+			>
+				{isOpen ? (
+					<ChevronDown className="h-6 w-6" />
+				) : (
+					<MessageSquare className="h-6 w-6" />
+				)}
+			</Button>
 		</div>
 	);
 };
 
-const QuestionGrid = ({ questions }: { questions: QuestionEvaluation[] }) => {
+// --- SUB-COMPONENTS ---
+const QuestionGrid = ({
+	questions,
+	onSelectQuestion,
+	selectedQuestionId,
+}: {
+	questions: QuestionEvaluation[];
+	onSelectQuestion: (id: string) => void;
+	selectedQuestionId: string;
+}) => {
 	return (
-		<div className="space-y-2 sm:space-y-3">
-			<div className="flex items-center justify-between">
-				<h3 className="font-semibold text-xs sm:text-sm">
-					Question Performance
-				</h3>
-				<div className="flex gap-1 text-[9px] text-muted-foreground sm:gap-2 sm:text-[10px]">
-					<div className="flex items-center gap-1">
-						<div className="h-2 w-2 rounded-full border border-green-500/50 bg-green-500/20" />{" "}
-						High
-					</div>
-					<div className="flex items-center gap-1">
-						<div className="h-2 w-2 rounded-full border border-amber-500/50 bg-amber-500/20" />{" "}
-						Avg
-					</div>
-					<div className="flex items-center gap-1">
-						<div className="h-2 w-2 rounded-full border border-red-500/50 bg-red-500/20" />{" "}
-						Low
-					</div>
-				</div>
-			</div>
-			<div className="grid grid-cols-5 gap-2 sm:grid-cols-8 md:grid-cols-10">
+		<div className="mb-6">
+			<h3 className="mb-3 font-bold text-muted-foreground text-xs uppercase tracking-wide">
+				Question Map
+			</h3>
+			<div className="grid grid-cols-5 gap-2">
 				{questions.map((q, i) => {
 					const colorClass =
-						q.percentage >= 80
-							? "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/20"
-							: q.percentage >= 50
-								? "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20"
-								: "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20";
+						q.percentage >= 60
+							? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+							: q.percentage >= 40
+								? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+								: "bg-rose-500/10 text-rose-400 border-rose-500/30";
+
+					const isSelected = selectedQuestionId === `q${q.question_number}`;
 
 					return (
-						<div
+						<button
 							key={i}
-							className={`group relative flex cursor-default flex-col items-center justify-center rounded-md border p-2 transition-all ${colorClass}`}
+							type="button"
+							onClick={() => onSelectQuestion(`q${q.question_number}`)}
+							className={cn(
+								"relative flex flex-col items-center justify-center rounded-lg border p-2 transition-all duration-200",
+								colorClass,
+								isSelected
+									? "z-10 shadow-md ring-2 ring-primary ring-offset-1 ring-offset-background"
+									: "opacity-80 hover:scale-105 hover:opacity-100",
+							)}
 						>
-							<span className="font-medium text-[10px] opacity-70">
+							<span className="font-bold text-[10px]">
 								Q{q.question_number}
 							</span>
-							<span className="font-bold text-sm">{q.marks_awarded}</span>
-
-							{/* Tooltip */}
-							<div className="-translate-x-1/2 absolute bottom-full left-1/2 z-50 mb-2 hidden w-max flex-col items-center rounded-md border bg-popover px-2 py-1 shadow-md group-hover:flex">
-								<span className="whitespace-nowrap font-semibold text-[10px]">
-									{q.marks_awarded} / {q.marks_total} Marks
-								</span>
-								<div className="-bottom-1 -translate-x-1/2 absolute left-1/2 h-2 w-2 rotate-45 border-r border-b bg-popover" />
-							</div>
-						</div>
+							<span className="font-black text-xs">{q.marks_awarded}</span>
+						</button>
 					);
 				})}
 			</div>
 		</div>
 	);
 };
+
+const AnswerScript = ({
+	pdfUrl,
+	isFocused,
+	toggleFocus,
+}: {
+	pdfUrl: string;
+	isFocused: boolean;
+	toggleFocus: () => void;
+}) => {
+	const [zoom, setZoom] = useState(100);
+
+	return (
+		<div
+			className={cn(
+				"relative flex flex-col bg-muted/30 transition-all duration-300",
+				isFocused ? "h-full w-full" : "h-full w-full",
+			)}
+		>
+			{/* Toolbar */}
+			<div className="z-20 flex h-12 shrink-0 items-center justify-between border-border border-b bg-card px-4 shadow-sm">
+				<div className="flex items-center gap-2">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setZoom((z) => Math.max(50, z - 10))}
+						title="Zoom Out"
+					>
+						<ZoomOut size={16} />
+					</Button>
+					<span className="w-10 text-center font-mono text-muted-foreground text-xs">
+						{zoom}%
+					</span>
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={() => setZoom((z) => Math.min(150, z + 10))}
+						title="Zoom In"
+					>
+						<ZoomIn size={16} />
+					</Button>
+				</div>
+				<div className="flex items-center gap-2">
+					<div className="mx-1 h-4 w-px bg-border" />
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={toggleFocus}
+						title={isFocused ? "Exit Focus" : "Focus Mode"}
+					>
+						{isFocused ? (
+							<Minimize2 size={16} className="text-primary" />
+						) : (
+							<Maximize2 size={16} />
+						)}
+					</Button>
+				</div>
+			</div>
+
+			{/* PDF Viewer */}
+			<div className="custom-scrollbar flex flex-1 justify-center overflow-y-auto bg-muted/30 p-4">
+				{pdfUrl ? (
+					<iframe
+						src={pdfUrl}
+						title="Annotated Answer Script"
+						className="h-full w-full rounded-sm border border-border bg-card shadow-xl"
+						style={{
+							transform: `scale(${zoom / 100})`,
+							transformOrigin: "top center",
+						}}
+					/>
+				) : (
+					<div className="flex flex-col items-center gap-2 text-muted-foreground">
+						<Loader2 className="h-8 w-8 animate-spin" />
+						<p className="text-sm">Loading PDF...</p>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+};
+
+// Tab components
+const TabTrigger = ({
+	children,
+	active,
+	onClick,
+}: {
+	children: React.ReactNode;
+	active: boolean;
+	onClick: () => void;
+}) => (
+	<button
+		type="button"
+		onClick={onClick}
+		className={cn(
+			"inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 font-medium text-sm ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+			active
+				? "bg-card text-foreground shadow-sm"
+				: "hover:bg-muted/50 hover:text-foreground",
+		)}
+	>
+		{children}
+	</button>
+);
 
 export default function ResultPage() {
 	const params = useParams();
@@ -193,6 +611,23 @@ export default function ResultPage() {
 	const [questions, setQuestions] = useState<QuestionEvaluation[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	// New state for enhanced UI
+	const [selectedQuestionId, setSelectedQuestionId] = useState("q1");
+	const [activeTab, setActiveTab] = useState<"overview" | "analysis">(
+		"overview",
+	);
+	const [focusMode, setFocusMode] = useState(false);
+
+	// Topic breakdown for radar chart (derived from questions)
+	const topicBreakdown = questions.reduce(
+		(acc, q) => {
+			const topic = `Q${q.question_number}`; // Use question number as topic for demo
+			acc.push({ topic, score: q.percentage });
+			return acc;
+		},
+		[] as { topic: string; score: number }[],
+	);
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -235,6 +670,18 @@ export default function ResultPage() {
 		loadData();
 	}, [testId, paperId]);
 
+	const handleQuestionSelect = (id: string) => {
+		setSelectedQuestionId(id);
+		if (activeTab === "overview") setActiveTab("analysis");
+
+		// Scroll to question
+		setTimeout(() => {
+			const element = document.getElementById(id);
+			if (element)
+				element.scrollIntoView({ behavior: "smooth", block: "start" });
+		}, 100);
+	};
+
 	if (isLoading) {
 		return (
 			<div className="flex h-screen items-center justify-center">
@@ -255,321 +702,395 @@ export default function ResultPage() {
 	}
 
 	return (
-		<div className="flex h-screen flex-col bg-background">
-			<header className="flex h-14 flex-col items-start justify-between gap-2 border-b px-3 py-2 sm:h-16 sm:flex-row sm:items-center sm:px-6 sm:py-0">
-				<div className="flex items-center gap-2 sm:gap-4">
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
-					>
-						<ArrowLeft className="mr-1 h-4 w-4 sm:mr-2" />
-						<span className="hidden sm:inline">Back</span>
-					</Button>
-					<div className="hidden h-6 w-px bg-border sm:block" />
-					<div>
-						<h1 className="font-semibold text-base sm:text-lg">
-							Evaluation Result
-						</h1>
-						<p className="text-muted-foreground text-xs">
-							Student: {paper.student_name}
-						</p>
-					</div>
-				</div>
-				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => {
-							if (paper.annotated_document_url) {
-								if (paper.annotated_document_url)
-									window.open(paper.annotated_document_url, "_blank");
-							}
-						}}
-						className="hidden sm:flex"
-					>
-						<ExternalLink className="mr-2 h-4 w-4" />
-						View Annotation
-					</Button>
-					<Badge
-						variant="outline"
-						className="border-green-500 bg-green-500/10 text-green-700"
-					>
-						Completed
-					</Badge>
-				</div>
-			</header>
+		<div className="dark custom-scrollbar flex h-screen flex-col overflow-hidden bg-background font-sans text-foreground selection:bg-primary/20">
+			<style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--muted-foreground)); }
+                
+                @media print {
+                  body * { visibility: hidden; }
+                  #print-area, #print-area * { visibility: visible; }
+                  #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+                  .no-print { display: none !important; }
+                }
+            `}</style>
 
-			<main className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-				<div className="hidden w-full flex-col border-r bg-muted/30 p-2 lg:flex lg:w-1/2 lg:p-4">
-					<div className="mb-2 flex items-center justify-between">
-						<h2 className="font-medium text-muted-foreground text-sm">
-							Annotated Submission
-						</h2>
-						<Badge variant="secondary" className="text-xs">
-							PDF
-						</Badge>
-					</div>
-					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
-						{paper.annotated_document_url ? (
-							<>
-								<iframe
-									src={paper.annotated_document_url}
-									title="Annotated Submission PDF"
-									width="100%"
-									height="800px"
-									style={{ border: "none" }}
-								/>
-								<Button
-									size="sm"
-									variant="secondary"
-									className="absolute top-2 right-2 gap-2 shadow-lg"
-									onClick={() => {
-										if (paper.annotated_document_url) {
-											window.open(paper.annotated_document_url, "_blank");
-										}
-									}}
-								>
-									<ExternalLink className="h-4 w-4" />
-									Open in New Tab
-								</Button>
-							</>
-						) : (
-							<div className="flex flex-col items-center gap-2 text-muted-foreground">
-								<Loader2 className="h-8 w-8 animate-spin" />
-								<p>Loading PDF...</p>
+			{/* Header */}
+			{!focusMode && (
+				<header className="no-print z-30 flex h-16 flex-shrink-0 items-center justify-between border-border border-b bg-card px-6 shadow-sm">
+					<div className="flex items-center gap-6">
+						<Button
+							variant="ghost"
+							size="sm"
+							className="-ml-2 gap-2"
+							onClick={() => router.push(`/quicks/tests/${testId}/evaluate`)}
+						>
+							<ArrowLeft className="h-4 w-4" /> Back
+						</Button>
+						<div>
+							<h1 className="font-bold text-foreground text-lg leading-tight">
+								Evaluation Result
+							</h1>
+							<div className="mt-0.5 flex items-center gap-3">
+								<span className="font-medium text-muted-foreground text-xs">
+									{paper.student_name}
+								</span>
+								<span className="text-muted">•</span>
+								<span className="font-medium text-muted-foreground text-xs">
+									{new Date().toLocaleDateString()}
+								</span>
 							</div>
-						)}
+						</div>
 					</div>
+					<div className="flex items-center gap-3">
+						<Button
+							size="sm"
+							variant="outline"
+							className="gap-2"
+							onClick={() => window.print()}
+						>
+							<Download className="h-4 w-4" /> Download PDF
+						</Button>
+					</div>
+				</header>
+			)}
+
+			<main className="relative flex flex-1 overflow-hidden" id="print-area">
+				{/* LEFT: Answer Script Viewer */}
+				<div
+					className={cn(
+						"relative hidden border-border border-r bg-muted/30 lg:flex lg:flex-col",
+						focusMode ? "w-full" : "w-1/2",
+					)}
+				>
+					{focusMode && (
+						<div className="absolute top-4 left-4 z-50">
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => setFocusMode(false)}
+								className="border border-slate-700 shadow-lg"
+							>
+								<Minimize2 className="mr-2 h-3 w-3" /> Exit Focus
+							</Button>
+						</div>
+					)}
+					<AnswerScript
+						pdfUrl={paper.annotated_document_url || ""}
+						isFocused={focusMode}
+						toggleFocus={() => setFocusMode(!focusMode)}
+					/>
 				</div>
 
-				<div className="flex w-full flex-col bg-background lg:w-1/2">
-					<div className="border-b bg-muted/10 p-3 shadow-sm sm:p-4 md:p-6">
-						<div className="mb-4 sm:mb-6">
-							<h2 className="font-bold text-xl tracking-tight sm:text-2xl">
-								Performance Report
-							</h2>
-							<p className="text-muted-foreground text-xs sm:text-sm">
-								Comprehensive analysis of student performance
-							</p>
+				{/* RIGHT: Dashboard (Hidden in Focus Mode) */}
+				{!focusMode && (
+					<div className="flex w-full flex-col overflow-hidden border-border border-l bg-card lg:w-1/2">
+						{/* Tabs Header */}
+						<div className="z-10 border-border border-b bg-card/80 px-6 py-3 backdrop-blur-sm">
+							<div className="grid w-full grid-cols-2 gap-1 rounded-lg bg-muted p-1">
+								<TabTrigger
+									active={activeTab === "overview"}
+									onClick={() => setActiveTab("overview")}
+								>
+									Overview & Analytics
+								</TabTrigger>
+								<TabTrigger
+									active={activeTab === "analysis"}
+									onClick={() => setActiveTab("analysis")}
+								>
+									Detailed Analysis
+								</TabTrigger>
+							</div>
 						</div>
 
-						<StatsOverview evaluation={evaluation} questions={questions} />
-						<QuestionGrid questions={questions} />
-					</div>
-
-					<div className="flex-1 space-y-3 overflow-y-auto p-3 sm:space-y-4 sm:p-4 md:p-6">
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4 }}
-						>
-							<Card className="border-l-4 border-l-primary shadow-sm transition-all hover:scale-[1.01] hover:shadow-lg">
-								<CardHeader className="pb-2">
-									<CardTitle className="flex items-center gap-2 text-base">
-										<Zap className="h-4 w-4 text-primary" />
-										Overall Feedback
-									</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4 text-sm">
-									<p className="text-muted-foreground leading-relaxed">
-										{evaluation.overall_feedback.summary}
-									</p>
-									<div className="grid grid-cols-2 gap-6 rounded-lg bg-muted/30 p-4">
-										<div>
-											<p className="mb-2 flex items-center gap-2 font-semibold text-green-700 text-xs">
-												<ThumbsUp className="h-3 w-3" /> Key Strengths
-											</p>
-											<ul className="space-y-1">
-												{evaluation.overall_feedback.key_strengths.map(
-													(s, i) => (
-														<li
-															key={i}
-															className="flex items-start gap-2 text-muted-foreground text-xs"
-														>
-															<span className="mt-1.5 h-1 w-1 rounded-full bg-green-500" />
-															{s}
-														</li>
-													),
-												)}
-											</ul>
-										</div>
-										<div>
-											<p className="mb-2 flex items-center gap-2 font-semibold text-amber-700 text-xs">
-												<Target className="h-3 w-3" /> Areas for Improvement
-											</p>
-											<ul className="space-y-1">
-												{evaluation.overall_feedback.areas_for_improvement.map(
-													(s, i) => (
-														<li
-															key={i}
-															className="flex items-start gap-2 text-muted-foreground text-xs"
-														>
-															<span className="mt-1.5 h-1 w-1 rounded-full bg-amber-500" />
-															{s}
-														</li>
-													),
-												)}
-											</ul>
-										</div>
+						<div className="custom-scrollbar flex-1 overflow-y-auto scroll-smooth p-6 pb-24">
+							{/* TAB: OVERVIEW */}
+							{activeTab === "overview" && (
+								<div className="fade-in slide-in-from-right-4 animate-in space-y-6 duration-300">
+									{/* Score Cards */}
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+										<Card className="border-border bg-slate-900">
+											<CardContent className="flex flex-col items-center justify-center p-4 text-center">
+												<span className="mb-1 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
+													Total Score
+												</span>
+												<div className="flex items-baseline gap-1 font-black text-3xl text-slate-100">
+													{evaluation.overall_score.total_marks_awarded}{" "}
+													<span className="font-medium text-slate-400 text-sm">
+														/ {evaluation.overall_score.total_marks_possible}
+													</span>
+												</div>
+											</CardContent>
+										</Card>
+										<Card className="border-border bg-slate-900">
+											<CardContent className="flex flex-col items-center justify-center p-4 text-center">
+												<span className="mb-1 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
+													Grade
+												</span>
+												<div className="flex items-baseline gap-2 font-black text-3xl text-destructive">
+													{evaluation.overall_score.grade}
+												</div>
+											</CardContent>
+										</Card>
+										<Card className="border-border bg-slate-900">
+											<CardContent className="flex flex-col items-center justify-center p-4 text-center">
+												<span className="mb-1 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
+													Percentage
+												</span>
+												<div className="flex items-baseline gap-2 font-black text-3xl text-slate-100">
+													{evaluation.overall_score.percentage.toFixed(1)}%
+												</div>
+											</CardContent>
+										</Card>
 									</div>
-								</CardContent>
-							</Card>
-						</motion.div>
 
-						<div className="space-y-4">
-							<h3 className="font-semibold text-sm">Question Breakdown</h3>
-							{questions.map((q, index) => (
-								<motion.div
-									key={index}
-									initial={{ opacity: 0, x: 20 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ duration: 0.3, delay: index * 0.1 }}
-								>
-									<Card className="group overflow-hidden border-l-2 border-l-transparent transition-all hover:scale-[1.01] hover:border-l-primary hover:shadow-lg">
-										<CardHeader className="bg-gradient-to-r from-muted/10 to-transparent px-4 py-3 pb-2">
-											<div className="flex items-start justify-between">
-												<div className="flex items-center gap-3">
-													<Badge
-														variant="outline"
-														className="bg-background font-bold"
-													>
-														Q{q.question_number}
-													</Badge>
-													<div className="flex items-center gap-2">
-														<div className="h-2 w-24 overflow-hidden rounded-full bg-muted shadow-inner">
-															<motion.div
-																initial={{ width: 0 }}
-																animate={{ width: `${q.percentage}%` }}
-																transition={{
-																	duration: 0.6,
-																	delay: index * 0.1,
-																}}
-																className={`h-full rounded-full ${
-																	q.percentage >= 80
-																		? "bg-gradient-to-r from-green-500 to-green-400"
-																		: q.percentage >= 50
-																			? "bg-gradient-to-r from-amber-500 to-amber-400"
-																			: "bg-gradient-to-r from-red-500 to-red-400"
-																}`}
-															/>
-														</div>
-														<span className="font-medium text-xs">
-															{q.marks_awarded} / {q.marks_total}
-														</span>
-													</div>
-												</div>
-											</div>
-										</CardHeader>
-										<CardContent className="space-y-4 px-4 py-4">
-											<div>
-												<p className="text-muted-foreground text-sm leading-relaxed">
-													{q.feedback.summary}
-												</p>
-											</div>
+									{/* Visualization Row */}
+									<div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+										{/* Radar Chart */}
+										{topicBreakdown.length > 0 && (
+											<Card>
+												<CardHeader className="bg-muted/50 px-5 py-3">
+													<CardTitle className="flex items-center gap-2 font-bold text-muted-foreground text-xs uppercase">
+														<PieChart size={14} /> Question Performance
+													</CardTitle>
+												</CardHeader>
+												<CardContent className="flex justify-center py-4">
+													<RadarChart data={topicBreakdown.slice(0, 6)} />
+												</CardContent>
+											</Card>
+										)}
 
-											<div className="grid gap-3 sm:grid-cols-2">
-												{q.feedback.strengths &&
-													q.feedback.strengths.length > 0 && (
-														<div className="rounded-md border border-green-500/20 bg-green-500/10 p-3 shadow-sm transition-all hover:shadow-md">
-															<p className="mb-2 flex items-center gap-1.5 font-medium text-green-700 text-xs">
-																<ThumbsUp className="h-3 w-3" /> Strengths
-															</p>
-															<ul className="space-y-1">
-																{q.feedback.strengths.map((s, i) => (
-																	<li
-																		key={i}
-																		className="text-[11px] text-muted-foreground"
-																	>
-																		• {s}
-																	</li>
-																))}
-															</ul>
-														</div>
+										{/* Bell Curve */}
+										<Card>
+											<CardHeader className="bg-muted/50 px-5 py-3">
+												<CardTitle className="flex items-center gap-2 font-bold text-muted-foreground text-xs uppercase">
+													<TrendingUp size={14} /> Cohort Analysis
+												</CardTitle>
+											</CardHeader>
+											<CardContent className="flex items-center justify-center px-4 py-8">
+												<BellCurveChart
+													studentScore={
+														evaluation.overall_score.total_marks_awarded
+													}
+													avgScore={Math.round(
+														evaluation.overall_score.total_marks_possible * 0.6,
 													)}
-
-												{q.feedback.weaknesses &&
-													q.feedback.weaknesses.length > 0 && (
-														<div className="rounded-md border border-red-500/20 bg-red-500/10 p-3 shadow-sm transition-all hover:shadow-md">
-															<p className="mb-2 flex items-center gap-1.5 font-medium text-red-700 text-xs">
-																<ThumbsDown className="h-3 w-3" /> Weaknesses
-															</p>
-															<ul className="space-y-1">
-																{q.feedback.weaknesses.map((w, i) => (
-																	<li
-																		key={i}
-																		className="text-[11px] text-muted-foreground"
-																	>
-																		• {w}
-																	</li>
-																))}
-															</ul>
-														</div>
+													topperScore={Math.round(
+														evaluation.overall_score.total_marks_possible *
+															0.85,
 													)}
+													maxScore={
+														evaluation.overall_score.total_marks_possible
+													}
+												/>
+											</CardContent>
+										</Card>
+									</div>
+
+									{/* Overall Feedback */}
+									<Card className="border-l-4 border-l-primary bg-gradient-to-br from-muted/50 to-card shadow-sm">
+										<CardContent className="p-5">
+											<h4 className="mb-3 flex items-center gap-2 font-bold text-foreground text-sm">
+												<Zap size={16} className="text-amber-500" /> Mentor's
+												Summary
+											</h4>
+											<p className="mb-4 font-medium text-muted-foreground text-sm leading-relaxed">
+												{evaluation.overall_feedback.summary}
+											</p>
+											<div className="flex flex-wrap gap-2">
+												{evaluation.overall_feedback.areas_for_improvement
+													.slice(0, 3)
+													.map((area, i) => (
+														<Badge key={i} variant="secondary" className="py-1">
+															{area.substring(0, 40)}
+														</Badge>
+													))}
 											</div>
-
-											{q.feedback.suggestions &&
-												q.feedback.suggestions.length > 0 && (
-													<div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 shadow-sm transition-all hover:shadow-md">
-														<p className="mb-2 flex items-center gap-1.5 font-medium text-amber-700 text-xs">
-															<Edit2 className="h-3 w-3" /> Suggestions
-														</p>
-														<ul className="space-y-1">
-															{q.feedback.suggestions.map((s, i) => (
-																<li
-																	key={i}
-																	className="text-[11px] text-muted-foreground"
-																>
-																	• {s}
-																</li>
-															))}
-														</ul>
-													</div>
-												)}
-
-											{q.annotations && q.annotations.length > 0 && (
-												<div className="mt-2 border-t pt-3">
-													<p className="mb-2 flex items-center gap-1.5 font-medium text-muted-foreground text-xs">
-														<MessageSquare className="h-3 w-3" /> Specific
-														Comments
-													</p>
-													<div className="space-y-2">
-														{q.annotations.map((annot, i) => (
-															<div
-																key={i}
-																className="group/annot rounded-md border bg-muted/30 p-2 shadow-sm transition-all hover:bg-muted/50 hover:shadow-md"
-															>
-																<div className="mb-1 flex items-center justify-between">
-																	<Badge
-																		variant="outline"
-																		className="h-5 px-1 text-[10px] uppercase"
-																		style={{
-																			borderColor: annot.color,
-																			color: annot.color,
-																		}}
-																	>
-																		{annot.correctness_indicator}
-																	</Badge>
-																	<span className="text-[10px] text-muted-foreground">
-																		Page {annot.page_number}
-																	</span>
-																</div>
-																<p className="text-muted-foreground text-xs">
-																	{annot.text_content}
-																</p>
-															</div>
-														))}
-													</div>
-												</div>
-											)}
 										</CardContent>
 									</Card>
-								</motion.div>
-							))}
+								</div>
+							)}
+
+							{/* TAB: ANALYSIS */}
+							{activeTab === "analysis" && (
+								<div className="fade-in slide-in-from-right-4 animate-in space-y-6 duration-300">
+									<QuestionGrid
+										questions={questions}
+										onSelectQuestion={handleQuestionSelect}
+										selectedQuestionId={selectedQuestionId}
+									/>
+
+									<div className="space-y-4">
+										{questions.map((q, index) => {
+											const isSelected =
+												`q${q.question_number}` === selectedQuestionId;
+											return (
+												<div
+													key={index}
+													id={`q${q.question_number}`}
+													className="scroll-mt-4"
+												>
+													<Card
+														onClick={() =>
+															handleQuestionSelect(`q${q.question_number}`)
+														}
+														className={cn(
+															"group cursor-pointer overflow-hidden border-l-4 transition-all duration-300 hover:shadow-lg",
+															isSelected
+																? "scale-[1.01] transform border-l-indigo-500 shadow-md ring-1 ring-indigo-900"
+																: "border-l-transparent hover:border-l-slate-700",
+														)}
+													>
+														<div
+															className={cn(
+																"flex flex-row items-center justify-between px-5 py-4 transition-colors",
+																isSelected
+																	? "bg-indigo-950/30"
+																	: "bg-slate-900",
+															)}
+														>
+															<div className="flex items-center gap-4">
+																<div className="flex flex-col items-center">
+																	<Badge
+																		variant="outline"
+																		className="h-6 min-w-[2.5rem] justify-center border-slate-700 bg-slate-800 font-bold text-slate-200 shadow-sm"
+																	>
+																		Q{q.question_number}
+																	</Badge>
+																	{isSelected && (
+																		<div className="mt-1 h-8 w-px bg-indigo-200" />
+																	)}
+																</div>
+																<div className="flex flex-col gap-1">
+																	<span className="font-bold text-[10px] text-slate-500 uppercase tracking-wider">
+																		Question {q.question_number}
+																	</span>
+																</div>
+															</div>
+															<div className="flex items-center gap-4">
+																<div className="text-right">
+																	<span
+																		className={cn(
+																			"block font-bold text-sm",
+																			q.percentage >= 50
+																				? "text-emerald-600"
+																				: "text-rose-600",
+																		)}
+																	>
+																		{q.marks_awarded}{" "}
+																		<span className="font-normal text-slate-500 text-xs">
+																			/ {q.marks_total}
+																		</span>
+																	</span>
+																</div>
+																{isSelected ? (
+																	<ChevronDown className="h-4 w-4 text-indigo-500" />
+																) : (
+																	<ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-slate-400" />
+																)}
+															</div>
+														</div>
+
+														<div
+															className={cn(
+																"overflow-hidden bg-slate-900 transition-all duration-500 ease-in-out",
+																isSelected
+																	? "max-h-[800px] opacity-100"
+																	: "max-h-0 opacity-0",
+															)}
+														>
+															<div className="space-y-5 px-5 pt-0 pb-5">
+																<div className="relative rounded-lg border border-slate-800 bg-slate-950 p-4 text-slate-300 text-sm leading-relaxed">
+																	<span className="relative z-10">
+																		{q.feedback.summary}
+																	</span>
+																</div>
+
+																<div className="grid gap-3 sm:grid-cols-2">
+																	{q.feedback.strengths &&
+																		q.feedback.strengths.length > 0 && (
+																			<div className="rounded-lg border border-emerald-900/50 bg-emerald-950/50 p-3">
+																				<p className="mb-2 flex items-center gap-1.5 font-bold text-[10px] text-emerald-400 uppercase">
+																					<ThumbsUp size={12} /> Strengths
+																				</p>
+																				<ul className="space-y-1">
+																					{q.feedback.strengths.map((s, i) => (
+																						<li
+																							key={i}
+																							className="flex gap-2 text-slate-300 text-xs"
+																						>
+																							<span className="text-emerald-500">
+																								•
+																							</span>
+																							{s}
+																						</li>
+																					))}
+																				</ul>
+																			</div>
+																		)}
+																	{q.feedback.weaknesses &&
+																		q.feedback.weaknesses.length > 0 && (
+																			<div className="rounded-lg border border-rose-900/50 bg-rose-950/50 p-3">
+																				<p className="mb-2 flex items-center gap-1.5 font-bold text-[10px] text-rose-400 uppercase">
+																					<ThumbsDown size={12} /> Weaknesses
+																				</p>
+																				<ul className="space-y-1">
+																					{q.feedback.weaknesses.map((w, i) => (
+																						<li
+																							key={i}
+																							className="flex gap-2 text-slate-300 text-xs"
+																						>
+																							<span className="text-rose-500">
+																								•
+																							</span>
+																							{w}
+																						</li>
+																					))}
+																				</ul>
+																			</div>
+																		)}
+																</div>
+
+																{q.percentage < 40 && <AiRewriteWidget />}
+
+																{q.feedback.suggestions &&
+																	q.feedback.suggestions.length > 0 && (
+																		<div className="rounded-md border border-amber-900/20 bg-amber-950/20 p-3 shadow-sm transition-all hover:shadow-md">
+																			<p className="mb-2 flex items-center gap-1.5 font-medium text-amber-400 text-xs">
+																				<Edit2 className="h-3 w-3" />{" "}
+																				Suggestions
+																			</p>
+																			<ul className="space-y-1">
+																				{q.feedback.suggestions.map((s, i) => (
+																					<li
+																						key={i}
+																						className="text-[11px] text-slate-400"
+																					>
+																						• {s}
+																					</li>
+																				))}
+																			</ul>
+																		</div>
+																	)}
+															</div>
+														</div>
+													</Card>
+												</div>
+											);
+										})}
+									</div>
+								</div>
+							)}
 						</div>
 					</div>
-				</div>
+				)}
 			</main>
+
+			<div className="no-print">
+				<AiChatFloating />
+			</div>
 		</div>
 	);
 }
