@@ -63,6 +63,7 @@ export function CreateAcademicTestDrawer({
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [uploading, setUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
+	const [generatingModelAnswer, setGeneratingModelAnswer] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL as string}/grade/v1`;
@@ -129,128 +130,41 @@ export function CreateAcademicTestDrawer({
 		setUploadProgress(0);
 
 		try {
-			// Step 1: Get pre-signed URL
-			const urlResponse = await fetch(
-				`${API_BASE_URL}/question-papers/upload/raw`,
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ file_name: file.name }),
-				},
-			);
+			// Create FormData with the file
+			const formData = new FormData();
+			formData.append("file", file);
+			formData.append("name", file.name.replace(/\.pdf$/i, ""));
 
-			if (!urlResponse.ok) {
-				throw new Error("Failed to get upload URL");
-			}
-
-			const urlData = await urlResponse.json();
-			const questionPapersData =
-				urlData.data?.question_papers || urlData.question_papers;
-			const { upload_url, file_url } = questionPapersData || {};
-
-			if (!upload_url || !file_url) {
-				throw new Error("Invalid upload URL response");
-			}
-
-			// Step 2: Upload file to S3 with progress
-			await new Promise<void>((resolve, reject) => {
-				const xhr = new XMLHttpRequest();
-
-				xhr.upload.addEventListener("progress", (e) => {
-					if (e.lengthComputable) {
-						const progress = Math.round((e.loaded / e.total) * 100);
-						setUploadProgress(progress);
-					}
-				});
-
-				xhr.addEventListener("load", () => {
-					if (xhr.status === 200) {
-						resolve();
-					} else {
-						reject(new Error(`Upload failed with status ${xhr.status}`));
-					}
-				});
-
-				xhr.addEventListener("error", () => {
-					reject(new Error("Upload failed"));
-				});
-
-				xhr.open("PUT", upload_url);
-				xhr.setRequestHeader("Content-Type", "application/pdf");
-				xhr.send(file);
-			});
-
-			// Step 3: Create question paper record
-			toast.info("Creating question paper record...");
-			const paperName = file.name.replace(/\.pdf$/i, "");
-			const createResponse = await fetch(`${API_BASE_URL}/question-papers`, {
+			// Upload question paper directly
+			const response = await fetch(`${API_BASE_URL}/question-papers/upload`, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					name: paperName,
-					raw_document_url: file_url,
-				}),
+				body: formData,
 			});
 
-			if (!createResponse.ok) {
-				throw new Error("Failed to create question paper");
-			}
-
-			const createResult = await createResponse.json();
-
-			if (!createResult.success) {
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
 				throw new Error(
-					createResult.error || "Failed to create question paper",
+					errorData.error ||
+						errorData.message ||
+						"Failed to upload question paper",
 				);
 			}
 
-			// Extract question paper ID
-			let questionPaperId: string | null = null;
-			if (createResult.data?.question_papers?.id) {
-				questionPaperId = createResult.data.question_papers.id;
-			} else if (createResult.data?.question_paper?.id) {
-				questionPaperId = createResult.data.question_paper.id;
-			} else if (createResult.data?.id) {
-				questionPaperId = createResult.data.id;
-			} else if (createResult.question_papers?.id) {
-				questionPaperId = createResult.question_papers.id;
-			} else if (createResult.id) {
-				questionPaperId = createResult.id;
-			}
+			const result = await response.json();
+
+			// Extract question paper ID from response
+			const questionPaperId =
+				result.data?.question_paper_id ||
+				result.data?.id ||
+				result.question_paper_id ||
+				result.id;
 
 			if (!questionPaperId) {
-				throw new Error("Question paper ID not found in response");
+				throw new Error("No question paper ID returned from upload");
 			}
 
-			// Step 4: Digitize the question paper
-			toast.info("Digitizing question paper...");
-			const digitizeResponse = await fetch(
-				`${API_BASE_URL}/question-papers/${questionPaperId}/digitize`,
-				{
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-				},
-			);
-
-			if (digitizeResponse.ok) {
-				const digitizeResult = await digitizeResponse.json();
-				if (digitizeResult.success) {
-					// Step 5: Process the question paper
-					toast.info("Processing question paper...");
-					try {
-						const processResponse = await fetch(
-							`${API_BASE_URL}/question-papers/${questionPaperId}/process`,
-							{ method: "POST" },
-						);
-						if (processResponse.ok) {
-							toast.success("Question paper uploaded and processed!");
-						}
-					} catch (_error) {
-						// Processing is optional
-					}
-				}
-			}
-
+			setUploadProgress(100);
+			toast.success("Question paper uploaded successfully");
 			return questionPaperId;
 		} catch (error) {
 			console.error("Error uploading question paper:", error);
@@ -314,31 +228,87 @@ export function CreateAcademicTestDrawer({
 			const result = await response.json();
 
 			if (result.success && response.ok) {
-				const testId = result.data?.academic_tests?.id || result.data?.id;
-				toast.success("Test created successfully");
+				const testId =
+					result.data?.academic_test?.id ||
+					result.data?.id ||
+					result.academic_test?.id ||
+					result.id;
 
-				// Generate model answer
-				if (testId) {
-					toast.info("Generating model answer...");
-					try {
-						const modelAnswerResponse = await fetch(
-							`${API_BASE_URL}/model-answers/${testId}`,
-							{
-								method: "POST",
-								headers: { "Content-Type": "application/json" },
-							},
-						);
-						if (modelAnswerResponse.ok) {
-							toast.success("Model answer generated successfully!");
-						} else {
-							toast.warning("Test created but model answer generation failed");
-						}
-					} catch (error) {
-						console.error("Model answer generation error:", error);
-						toast.warning("Test created but model answer generation failed");
-					}
+				if (!testId) {
+					throw new Error("No test ID returned from creation");
 				}
 
+				toast.success("Test created successfully");
+
+				// Generate model answers automatically
+				setLoading(false);
+				setGeneratingModelAnswer(true);
+				toast.info("Generating model answers... This may take a few moments.", {
+					duration: 10000,
+				});
+
+				try {
+					const modelAnswerResponse = await fetch(
+						`${API_BASE_URL}/model-answers/${testId}`,
+						{
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+
+					if (!modelAnswerResponse.ok) {
+						const errorData = await modelAnswerResponse
+							.json()
+							.catch(() => ({}));
+						throw new Error(
+							errorData.message || `HTTP ${modelAnswerResponse.status}`,
+						);
+					}
+
+					// Poll for model answers to be ready
+					let attempts = 0;
+					const maxAttempts = 30; // 30 attempts with 2 second intervals = 60 seconds max
+					let modelAnswersReady = false;
+
+					while (attempts < maxAttempts && !modelAnswersReady) {
+						await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds between checks
+						attempts++;
+
+						try {
+							const checkResponse = await fetch(
+								`${API_BASE_URL}/academic-tests/${testId}`,
+							);
+							if (checkResponse.ok) {
+								const checkData = await checkResponse.json();
+								const test =
+									checkData.data?.academic_tests || checkData.data || checkData;
+								if (test.key_answers_url) {
+									modelAnswersReady = true;
+									toast.success("Model answers generated successfully!");
+								}
+							}
+						} catch (error) {
+							console.error("Error checking model answer status:", error);
+						}
+					}
+
+					if (!modelAnswersReady) {
+						toast.warning(
+							"Model answer generation is taking longer than expected. You can check the status later.",
+						);
+					}
+				} catch (error) {
+					console.error("Error generating model answers:", error);
+					toast.error(
+						error instanceof Error
+							? `Model answer generation failed: ${error.message}`
+							: "Failed to generate model answers",
+					);
+				} finally {
+					setGeneratingModelAnswer(false);
+				}
+
+				// Reset form and close
 				setTestName("");
 				setQuestionPaperId("");
 				setEvaluatorConfigId("");
@@ -355,6 +325,7 @@ export function CreateAcademicTestDrawer({
 			);
 		} finally {
 			setLoading(false);
+			setGeneratingModelAnswer(false);
 		}
 	};
 
@@ -370,6 +341,23 @@ export function CreateAcademicTestDrawer({
 				</DrawerHeader>
 
 				<div className="flex-1 overflow-y-auto px-8 py-6">
+					{generatingModelAnswer && (
+						<div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+							<div className="flex flex-col items-center gap-4 rounded-lg border bg-card p-8 shadow-lg">
+								<div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+								<div className="text-center">
+									<h3 className="font-semibold text-lg">
+										Generating Model Answers...
+									</h3>
+									<p className="mt-2 text-muted-foreground">
+										Please wait while we generate the model answers for your
+										test. This may take a few moments.
+									</p>
+								</div>
+							</div>
+						</div>
+					)}
+
 					<div className="mx-auto max-w-2xl space-y-6">
 						<div>
 							<Label htmlFor="testName" className="font-semibold text-lg">
@@ -382,7 +370,7 @@ export function CreateAcademicTestDrawer({
 								value={testName}
 								onChange={(e) => setTestName(e.target.value)}
 								className="mt-2"
-								disabled={loading}
+								disabled={loading || generatingModelAnswer}
 							/>
 						</div>
 						<div>
@@ -391,20 +379,35 @@ export function CreateAcademicTestDrawer({
 							</Label>
 							<Tabs
 								value={uploadMode}
-								onValueChange={(v) => setUploadMode(v as "select" | "upload")}
+								onValueChange={(value) =>
+									setUploadMode(value as "select" | "upload")
+								}
 								className="mt-2"
 							>
 								<TabsList className="grid w-full grid-cols-2">
-									<TabsTrigger value="select">Select Existing</TabsTrigger>
-									<TabsTrigger value="upload">Upload New</TabsTrigger>
+									<TabsTrigger
+										value="select"
+										disabled={loading || uploading || generatingModelAnswer}
+									>
+										Select Existing
+									</TabsTrigger>
+									<TabsTrigger
+										value="upload"
+										disabled={loading || uploading || generatingModelAnswer}
+									>
+										Upload New
+									</TabsTrigger>
 								</TabsList>
-								<TabsContent value="select" className="mt-4">
+
+								<TabsContent value="select" className="mt-4 space-y-3">
 									<Select
 										value={questionPaperId}
 										onValueChange={setQuestionPaperId}
-										disabled={loading || fetching}
+										disabled={
+											loading || fetching || uploading || generatingModelAnswer
+										}
 									>
-										<SelectTrigger>
+										<SelectTrigger className="w-full">
 											<SelectValue placeholder="Select a question paper" />
 										</SelectTrigger>
 										<SelectContent>
@@ -415,62 +418,83 @@ export function CreateAcademicTestDrawer({
 											))}
 										</SelectContent>
 									</Select>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() => setUploadMode("upload")}
+										disabled={loading || uploading || generatingModelAnswer}
+										className="w-full gap-2"
+									>
+										<Upload className="h-4 w-4" />
+										Or Upload New Question Paper
+									</Button>
 								</TabsContent>
-								<TabsContent value="upload" className="mt-4">
-									{!selectedFile ? (
-										<div>
-											<label
-												htmlFor="fileUpload"
-												className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors hover:bg-accent"
-											>
-												<FileUp className="mb-4 h-12 w-12 text-muted-foreground" />
-												<p className="mb-2 font-medium text-sm">
-													Click to upload or drag and drop
+
+								<TabsContent value="upload" className="mt-4 space-y-3">
+									<input
+										ref={fileInputRef}
+										type="file"
+										accept="application/pdf"
+										onChange={handleFileSelect}
+										className="hidden"
+										disabled={loading || uploading || generatingModelAnswer}
+									/>
+									{selectedFile ? (
+										<div className="flex w-full items-center gap-3 rounded-lg border-2 border-green-600/30 bg-green-950/20 p-4">
+											<FileUp className="h-8 w-8 text-green-600" />
+											<div className="flex-1 text-left">
+												<p className="font-medium text-sm">
+													{selectedFile.name}
 												</p>
 												<p className="text-muted-foreground text-xs">
-													PDF (MAX. 50MB)
+													{(selectedFile.size / 1024 / 1024).toFixed(2)} MB
 												</p>
-											</label>
-											<input
-												id="fileUpload"
-												ref={fileInputRef}
-												type="file"
-												onChange={handleFileSelect}
-												className="hidden"
-												disabled={loading || uploading}
-												accept=".pdf"
-											/>
-										</div>
-									) : (
-										<div className="flex items-center justify-between rounded-lg border p-4">
-											<div className="flex items-center gap-3">
-												<Upload className="h-8 w-8 text-primary" />
-												<div>
-													<p className="font-medium">{selectedFile.name}</p>
-													<p className="text-muted-foreground text-xs">
-														{(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-													</p>
-													{uploading && (
-														<p className="text-primary text-xs">
-															Uploading: {uploadProgress}%
-														</p>
-													)}
-												</div>
 											</div>
-											<Button
-												variant="ghost"
-												size="icon"
+											<button
+												type="button"
 												onClick={handleRemoveFile}
-												disabled={loading || uploading}
+												disabled={loading || uploading || generatingModelAnswer}
+												className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
 											>
 												<X className="h-4 w-4" />
-											</Button>
+											</button>
+										</div>
+									) : (
+										<button
+											type="button"
+											className="group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed p-8 transition-all hover:border-primary hover:bg-primary/5 disabled:opacity-50"
+											onClick={() => fileInputRef.current?.click()}
+											disabled={loading || uploading || generatingModelAnswer}
+										>
+											<Upload className="mx-auto mb-3 h-10 w-10 text-muted-foreground transition-colors group-hover:text-primary" />
+											<p className="mb-1 font-medium text-sm">
+												Click to upload question paper
+											</p>
+											<p className="text-muted-foreground text-xs">
+												PDF file up to 50MB
+											</p>
+										</button>
+									)}
+									{uploading && (
+										<div className="space-y-2">
+											<div className="flex items-center justify-between text-sm">
+												<span className="text-muted-foreground">
+													Uploading...
+												</span>
+												<span className="font-medium">{uploadProgress}%</span>
+											</div>
+											<div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+												<div
+													className="h-full bg-primary transition-all duration-300"
+													style={{ width: `${uploadProgress}%` }}
+												/>
+											</div>
 										</div>
 									)}
 								</TabsContent>
 							</Tabs>
-						</div>
-
+						</div>{" "}
 						<div>
 							<Label
 								htmlFor="evaluatorConfig"
@@ -481,9 +505,9 @@ export function CreateAcademicTestDrawer({
 							<Select
 								value={evaluatorConfigId}
 								onValueChange={setEvaluatorConfigId}
-								disabled={loading || fetching}
+								disabled={loading || fetching || generatingModelAnswer}
 							>
-								<SelectTrigger className="mt-2">
+								<SelectTrigger className="mt-2 w-full">
 									<SelectValue placeholder="Select an evaluator configuration" />
 								</SelectTrigger>
 								<SelectContent>
@@ -505,7 +529,7 @@ export function CreateAcademicTestDrawer({
 								variant="outline"
 								size="lg"
 								className="flex-1 text-base"
-								disabled={loading || uploading}
+								disabled={loading || generatingModelAnswer}
 							>
 								Cancel
 							</Button>
@@ -514,9 +538,20 @@ export function CreateAcademicTestDrawer({
 							onClick={handleSubmit}
 							size="lg"
 							className="flex-1 text-base"
-							disabled={loading || uploading || !testName.trim()}
+							disabled={
+								!testName.trim() ||
+								!questionPaperId ||
+								!evaluatorConfigId ||
+								loading ||
+								fetching ||
+								generatingModelAnswer
+							}
 						>
-							{loading || uploading ? "Creating..." : "Create Test"}
+							{generatingModelAnswer
+								? "Generating Model Answers..."
+								: loading
+									? "Creating Test..."
+									: "Create Test"}
 						</Button>
 					</div>
 				</DrawerFooter>
