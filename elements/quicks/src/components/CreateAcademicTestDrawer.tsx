@@ -370,7 +370,9 @@ export function CreateAcademicTestDrawer({
 
 					if (!rubricsResponse.ok) {
 						const errorData = await rubricsResponse.json().catch(() => ({}));
-						throw new Error(errorData.message || `HTTP ${rubricsResponse.status}`);
+						throw new Error(
+							errorData.message || `HTTP ${rubricsResponse.status}`,
+						);
 					}
 
 					let attempts = 0;
@@ -453,10 +455,14 @@ export function CreateAcademicTestDrawer({
 								<div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
 								<div className="text-center">
 									<h3 className="font-semibold text-lg">
-										{generatingModelAnswer ? "Generating Model Answers..." : "Generating Rubrics..."}
+										{generatingModelAnswer
+											? "Generating Model Answers..."
+											: "Generating Rubrics..."}
 									</h3>
 									<p className="mt-2 text-muted-foreground">
-										{generatingModelAnswer ? "Please wait while we generate the model answers for your test. This may take a few moments." : "Please wait while we generate the rubrics for your test. This may take a few moments."}
+										{generatingModelAnswer
+											? "Please wait while we generate the model answers for your test. This may take a few moments."
+											: "Please wait while we generate the rubrics for your test. This may take a few moments."}
 									</p>
 								</div>
 							</div>
@@ -492,13 +498,23 @@ export function CreateAcademicTestDrawer({
 								<TabsList className="grid w-full grid-cols-2">
 									<TabsTrigger
 										value="select"
-										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+										disabled={
+											loading ||
+											uploading ||
+											generatingModelAnswer ||
+											generatingRubrics
+										}
 									>
 										Select Existing
 									</TabsTrigger>
 									<TabsTrigger
 										value="upload"
-										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+										disabled={
+											loading ||
+											uploading ||
+											generatingModelAnswer ||
+											generatingRubrics
+										}
 									>
 										Upload New
 									</TabsTrigger>
@@ -509,7 +525,11 @@ export function CreateAcademicTestDrawer({
 										value={questionPaperId}
 										onValueChange={setQuestionPaperId}
 										disabled={
-											loading || fetching || uploading || generatingModelAnswer || generatingRubrics
+											loading ||
+											fetching ||
+											uploading ||
+											generatingModelAnswer ||
+											generatingRubrics
 										}
 									>
 										<SelectTrigger className="w-full">
@@ -528,7 +548,12 @@ export function CreateAcademicTestDrawer({
 										variant="outline"
 										size="sm"
 										onClick={() => setUploadMode("upload")}
-										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+										disabled={
+											loading ||
+											uploading ||
+											generatingModelAnswer ||
+											generatingRubrics
+										}
 										className="w-full gap-2"
 									>
 										<Upload className="h-4 w-4" />
@@ -543,7 +568,12 @@ export function CreateAcademicTestDrawer({
 										accept="application/pdf"
 										onChange={handleFileSelect}
 										className="hidden"
-										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+										disabled={
+											loading ||
+											uploading ||
+											generatingModelAnswer ||
+											generatingRubrics
+										}
 									/>
 									{selectedFile ? (
 										<div className="flex w-full items-center gap-3 rounded-lg border-2 border-primary/30 bg-primary/10 p-4">
@@ -559,7 +589,12 @@ export function CreateAcademicTestDrawer({
 											<button
 												type="button"
 												onClick={handleRemoveFile}
-												disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+												disabled={
+													loading ||
+													uploading ||
+													generatingModelAnswer ||
+													generatingRubrics
+												}
 												className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
 											>
 												<X className="h-4 w-4" />
@@ -570,7 +605,12 @@ export function CreateAcademicTestDrawer({
 											type="button"
 											className="group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed p-8 transition-all hover:border-primary hover:bg-primary/5 disabled:opacity-50"
 											onClick={() => fileInputRef.current?.click()}
-											disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
+											disabled={
+												loading ||
+												uploading ||
+												generatingModelAnswer ||
+												generatingRubrics
+											}
 										>
 											<Upload className="mx-auto mb-3 h-10 w-10 text-muted-foreground transition-colors group-hover:text-primary" />
 											<p className="mb-1 font-medium text-sm">
@@ -610,7 +650,12 @@ export function CreateAcademicTestDrawer({
 							<Select
 								value={evaluatorConfigId}
 								onValueChange={setEvaluatorConfigId}
-								disabled={loading || fetching || generatingModelAnswer || generatingRubrics}
+								disabled={
+									loading ||
+									fetching ||
+									generatingModelAnswer ||
+									generatingRubrics
+								}
 							>
 								<SelectTrigger className="mt-2 w-full">
 									<SelectValue placeholder="Select an evaluator configuration" />

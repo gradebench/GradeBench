@@ -289,7 +289,7 @@ export function EvaluationDashboard({
 							);
 							annotationSuccess = true;
 							break;
-						} catch (err) {
+						} catch {
 							if (attempt < 4) {
 								await new Promise((resolve) => setTimeout(resolve, 2000));
 							}
@@ -349,7 +349,7 @@ export function EvaluationDashboard({
 					await annotateAnswerPaper(newPaper.id, newPaper.student_id);
 					annotationSuccess = true;
 					break;
-				} catch (err) {
+				} catch {
 					if (attempt < 4) {
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 					}
@@ -406,7 +406,7 @@ export function EvaluationDashboard({
 							await annotateAnswerPaper(paper.id, paper.student_id);
 							annotationSuccess = true;
 							break;
-						} catch (err) {
+						} catch {
 							if (attempt < 4) {
 								await new Promise((resolve) => setTimeout(resolve, 2000));
 							}
