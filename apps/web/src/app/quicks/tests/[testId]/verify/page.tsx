@@ -14,6 +14,7 @@ import {
 	ArrowLeft,
 	CheckCircle2,
 	Edit2,
+	ExternalLink,
 	Loader2,
 	MessageSquare,
 	ThumbsDown,
@@ -210,8 +211,14 @@ export default function VerifyPage() {
 			}
 
 			toast.success("Calibration verified! Starting batch automation...");
+
+			// Mark calibration as verified in local storage so dashboard knows
+			if (testId) {
+				localStorage.setItem(`calibration_verified_${testId}`, "true");
+			}
+
 			setTimeout(() => {
-				router.push(`/quicks/tests/${testId}/result/${paper.id}`);
+				router.push(`/quicks/tests/${testId}/evaluate`);
 			}, 1500);
 		} catch (error) {
 			console.error(error);
@@ -286,14 +293,29 @@ export default function VerifyPage() {
 					</div>
 					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
 						{paper.annotated_document_url ? (
-							<iframe
-								src={paper.annotated_document_url}
-								title="Annotated Submission PDF"
-								width="100%"
-								height="100%"
-								className="h-full w-full"
-								style={{ border: "none" }}
-							/>
+							<>
+								<iframe
+									src={paper.annotated_document_url}
+									title="Annotated Submission PDF"
+									width="100%"
+									height="100%"
+									className="h-full w-full"
+									style={{ border: "none" }}
+								/>
+								<Button
+									size="sm"
+									variant="secondary"
+									className="absolute top-2 right-2 gap-2 shadow-lg"
+									onClick={() => {
+										if (paper.annotated_document_url) {
+											window.open(paper.annotated_document_url, "_blank");
+										}
+									}}
+								>
+									<ExternalLink className="h-4 w-4" />
+									Open in New Tab
+								</Button>
+							</>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-slate-500">
 								<Loader2 className="h-8 w-8 animate-spin" />

@@ -79,25 +79,27 @@ const StatsOverview = ({
 		evaluation.overall_score;
 
 	return (
-		<div className="mb-6 grid grid-cols-3 gap-4">
-			<div className="rounded-xl border bg-card p-4 shadow-sm">
+		<div className="mb-4 grid grid-cols-1 gap-3 sm:mb-6 sm:grid-cols-3 sm:gap-4">
+			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
 				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 					Score
 				</div>
 				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-3xl">{total_marks_awarded}</span>
+					<span className="font-bold text-2xl sm:text-3xl">
+						{total_marks_awarded}
+					</span>
 					<span className="text-muted-foreground text-sm">
 						/ {total_marks_possible}
 					</span>
 				</div>
 			</div>
-			<div className="rounded-xl border bg-card p-4 shadow-sm">
+			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
 				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 					Percentage
 				</div>
 				<div className="mt-2 flex items-baseline gap-1">
 					<span
-						className={`font-bold text-3xl ${
+						className={`font-bold text-2xl sm:text-3xl ${
 							percentage >= 80
 								? "text-green-500"
 								: percentage >= 50
@@ -109,12 +111,14 @@ const StatsOverview = ({
 					</span>
 				</div>
 			</div>
-			<div className="rounded-xl border bg-card p-4 shadow-sm">
+			<div className="rounded-xl border bg-card p-3 shadow-sm sm:p-4">
 				<div className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 					Questions
 				</div>
 				<div className="mt-2 flex items-baseline gap-1">
-					<span className="font-bold text-3xl">{questions.length}</span>
+					<span className="font-bold text-2xl sm:text-3xl">
+						{questions.length}
+					</span>
 					<span className="text-muted-foreground text-sm">Total</span>
 				</div>
 			</div>
@@ -124,10 +128,12 @@ const StatsOverview = ({
 
 const QuestionGrid = ({ questions }: { questions: QuestionEvaluation[] }) => {
 	return (
-		<div className="space-y-3">
+		<div className="space-y-2 sm:space-y-3">
 			<div className="flex items-center justify-between">
-				<h3 className="font-semibold text-sm">Question Performance</h3>
-				<div className="flex gap-2 text-[10px] text-muted-foreground">
+				<h3 className="font-semibold text-xs sm:text-sm">
+					Question Performance
+				</h3>
+				<div className="flex gap-1 text-[9px] text-muted-foreground sm:gap-2 sm:text-[10px]">
 					<div className="flex items-center gap-1">
 						<div className="h-2 w-2 rounded-full border border-green-500/50 bg-green-500/20" />{" "}
 						High
@@ -306,13 +312,28 @@ export default function ResultPage() {
 					</div>
 					<div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-lg border bg-muted/50 shadow-sm">
 						{paper.annotated_document_url ? (
-							<iframe
-								src={paper.annotated_document_url}
-								title="Annotated Submission PDF"
-								width="100%"
-								height="800px"
-								style={{ border: "none" }}
-							/>
+							<>
+								<iframe
+									src={paper.annotated_document_url}
+									title="Annotated Submission PDF"
+									width="100%"
+									height="800px"
+									style={{ border: "none" }}
+								/>
+								<Button
+									size="sm"
+									variant="secondary"
+									className="absolute top-2 right-2 gap-2 shadow-lg"
+									onClick={() => {
+										if (paper.annotated_document_url) {
+											window.open(paper.annotated_document_url, "_blank");
+										}
+									}}
+								>
+									<ExternalLink className="h-4 w-4" />
+									Open in New Tab
+								</Button>
+							</>
 						) : (
 							<div className="flex flex-col items-center gap-2 text-muted-foreground">
 								<Loader2 className="h-8 w-8 animate-spin" />
