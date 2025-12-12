@@ -265,10 +265,7 @@ export function EvaluationDashboard({
 		const uncertainPaper = pickUncertainPaper(answerPapers);
 		if (uncertainPaper) {
 			setCalibrationPaperId(uncertainPaper.id);
-			localStorage.setItem(
-				`calibration_paper_${testId}`,
-				uncertainPaper.id,
-			);
+			localStorage.setItem(`calibration_paper_${testId}`, uncertainPaper.id);
 			setHasAutoEvaluatedFirst(true);
 
 			console.log(
@@ -434,7 +431,7 @@ export function EvaluationDashboard({
 	}, []);
 
 	const handleVerifyClick = () => {
-		// Just navigate to the verify page. 
+		// Just navigate to the verify page.
 		// The actual verification state is set there upon save.
 		const query = calibrationPaperId ? `?paperId=${calibrationPaperId}` : "";
 		router.push(`/quicks/tests/${testId}/verify${query}`);

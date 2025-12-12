@@ -171,7 +171,9 @@ export default function QuicksDashboard() {
 				}
 			} catch (error) {
 				console.error("Error fetching question papers:", error);
-				toast.error("Failed to load question papers. Please check your connection.");
+				toast.error(
+					"Failed to load question papers. Please check your connection.",
+				);
 				setQuestionPapers([]);
 				setQpTotalPages(1);
 				setQpTotalItems(0);
@@ -750,5 +752,4 @@ export default function QuicksDashboard() {
 			/>
 		</DashboardLayout>
 	);
-
 }

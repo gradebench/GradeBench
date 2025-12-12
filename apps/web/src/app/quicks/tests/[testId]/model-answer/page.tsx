@@ -588,7 +588,7 @@ export default function ModelAnswerPage() {
 
 				toast.loading("Generating rubrics, please wait...");
 				const polledTest = await pollForDynamicRubric(testId);
-				
+
 				if (polledTest.dynamic_rubrics_url) {
 					toast.dismiss();
 					toast.success("Rubrics ready! Redirecting...");
@@ -601,7 +601,9 @@ export default function ModelAnswerPage() {
 			} catch (error) {
 				console.error("Error preparing evaluation:", error);
 				toast.dismiss();
-				toast.error(error instanceof Error ? error.message : "Failed to generate rubrics");
+				toast.error(
+					error instanceof Error ? error.message : "Failed to generate rubrics",
+				);
 			} finally {
 				setIsProceeding(false);
 			}
