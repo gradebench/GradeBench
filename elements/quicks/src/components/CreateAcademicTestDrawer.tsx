@@ -64,6 +64,7 @@ export function CreateAcademicTestDrawer({
 	const [uploading, setUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [generatingModelAnswer, setGeneratingModelAnswer] = useState(false);
+	const [generatingRubrics, setGeneratingRubrics] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL as string}/grade/v1`;
@@ -288,10 +289,10 @@ export function CreateAcademicTestDrawer({
 
 				toast.success("Test created successfully");
 
-				// Generate model answers automatically
+				// Generate model answers and rubrics automatically
 				setLoading(false);
 				setGeneratingModelAnswer(true);
-				toast.info("Generating model answers... This may take a few moments.", {
+				toast.info("Generating model answers and rubrics...", {
 					duration: 10000,
 				});
 
@@ -315,11 +316,11 @@ export function CreateAcademicTestDrawer({
 
 					// Poll for model answers to be ready
 					let attempts = 0;
-					const maxAttempts = 30; // 30 attempts with 2 second intervals = 60 seconds max
+					const maxAttempts = 30;
 					let modelAnswersReady = false;
 
 					while (attempts < maxAttempts && !modelAnswersReady) {
-						await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds between checks
+						await new Promise((resolve) => setTimeout(resolve, 2000));
 						attempts++;
 
 						try {
@@ -356,6 +357,62 @@ export function CreateAcademicTestDrawer({
 					setGeneratingModelAnswer(false);
 				}
 
+				// Generate rubrics automatically
+				setGeneratingRubrics(true);
+				try {
+					const rubricsResponse = await fetch(
+						`${API_BASE_URL}/rubrics/${testId}`,
+						{
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+
+					if (!rubricsResponse.ok) {
+						const errorData = await rubricsResponse.json().catch(() => ({}));
+						throw new Error(errorData.message || `HTTP ${rubricsResponse.status}`);
+					}
+
+					let attempts = 0;
+					const maxAttempts = 30;
+					let rubricsReady = false;
+
+					while (attempts < maxAttempts && !rubricsReady) {
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+						attempts++;
+
+						try {
+							const checkResponse = await fetch(
+								`${API_BASE_URL}/academic-tests/${testId}`,
+							);
+							if (checkResponse.ok) {
+								const checkData = await checkResponse.json();
+								const test =
+									checkData.data?.academic_tests || checkData.data || checkData;
+								if (test.rubrics_url) {
+									rubricsReady = true;
+									toast.success("Rubrics generated successfully!");
+								}
+							}
+						} catch (error) {
+							console.error("Error checking rubrics status:", error);
+						}
+					}
+
+					if (!rubricsReady) {
+						toast.warning("Rubrics generation is taking longer than expected.");
+					}
+				} catch (error) {
+					console.error("Error generating rubrics:", error);
+					toast.error(
+						error instanceof Error
+							? `Rubrics generation failed: ${error.message}`
+							: "Failed to generate rubrics",
+					);
+				} finally {
+					setGeneratingRubrics(false);
+				}
+
 				// Reset form and close
 				setTestName("");
 				setQuestionPaperId("");
@@ -374,6 +431,7 @@ export function CreateAcademicTestDrawer({
 		} finally {
 			setLoading(false);
 			setGeneratingModelAnswer(false);
+			setGeneratingRubrics(false);
 		}
 	};
 
@@ -389,17 +447,16 @@ export function CreateAcademicTestDrawer({
 				</DrawerHeader>
 
 				<div className="flex-1 overflow-y-auto px-8 py-6">
-					{generatingModelAnswer && (
+					{(generatingModelAnswer || generatingRubrics) && (
 						<div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
 							<div className="flex flex-col items-center gap-4 rounded-lg border bg-card p-8 shadow-lg">
 								<div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
 								<div className="text-center">
 									<h3 className="font-semibold text-lg">
-										Generating Model Answers...
+										{generatingModelAnswer ? "Generating Model Answers..." : "Generating Rubrics..."}
 									</h3>
 									<p className="mt-2 text-muted-foreground">
-										Please wait while we generate the model answers for your
-										test. This may take a few moments.
+										{generatingModelAnswer ? "Please wait while we generate the model answers for your test. This may take a few moments." : "Please wait while we generate the rubrics for your test. This may take a few moments."}
 									</p>
 								</div>
 							</div>
@@ -418,7 +475,7 @@ export function CreateAcademicTestDrawer({
 								value={testName}
 								onChange={(e) => setTestName(e.target.value)}
 								className="mt-2"
-								disabled={loading || generatingModelAnswer}
+								disabled={loading || generatingModelAnswer || generatingRubrics}
 							/>
 						</div>
 						<div>
@@ -435,13 +492,13 @@ export function CreateAcademicTestDrawer({
 								<TabsList className="grid w-full grid-cols-2">
 									<TabsTrigger
 										value="select"
-										disabled={loading || uploading || generatingModelAnswer}
+										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 									>
 										Select Existing
 									</TabsTrigger>
 									<TabsTrigger
 										value="upload"
-										disabled={loading || uploading || generatingModelAnswer}
+										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 									>
 										Upload New
 									</TabsTrigger>
@@ -452,7 +509,7 @@ export function CreateAcademicTestDrawer({
 										value={questionPaperId}
 										onValueChange={setQuestionPaperId}
 										disabled={
-											loading || fetching || uploading || generatingModelAnswer
+											loading || fetching || uploading || generatingModelAnswer || generatingRubrics
 										}
 									>
 										<SelectTrigger className="w-full">
@@ -471,7 +528,7 @@ export function CreateAcademicTestDrawer({
 										variant="outline"
 										size="sm"
 										onClick={() => setUploadMode("upload")}
-										disabled={loading || uploading || generatingModelAnswer}
+										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 										className="w-full gap-2"
 									>
 										<Upload className="h-4 w-4" />
@@ -486,7 +543,7 @@ export function CreateAcademicTestDrawer({
 										accept="application/pdf"
 										onChange={handleFileSelect}
 										className="hidden"
-										disabled={loading || uploading || generatingModelAnswer}
+										disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 									/>
 									{selectedFile ? (
 										<div className="flex w-full items-center gap-3 rounded-lg border-2 border-primary/30 bg-primary/10 p-4">
@@ -502,7 +559,7 @@ export function CreateAcademicTestDrawer({
 											<button
 												type="button"
 												onClick={handleRemoveFile}
-												disabled={loading || uploading || generatingModelAnswer}
+												disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 												className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
 											>
 												<X className="h-4 w-4" />
@@ -513,7 +570,7 @@ export function CreateAcademicTestDrawer({
 											type="button"
 											className="group relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-muted-foreground/25 border-dashed p-8 transition-all hover:border-primary hover:bg-primary/5 disabled:opacity-50"
 											onClick={() => fileInputRef.current?.click()}
-											disabled={loading || uploading || generatingModelAnswer}
+											disabled={loading || uploading || generatingModelAnswer || generatingRubrics}
 										>
 											<Upload className="mx-auto mb-3 h-10 w-10 text-muted-foreground transition-colors group-hover:text-primary" />
 											<p className="mb-1 font-medium text-sm">
@@ -553,7 +610,7 @@ export function CreateAcademicTestDrawer({
 							<Select
 								value={evaluatorConfigId}
 								onValueChange={setEvaluatorConfigId}
-								disabled={loading || fetching || generatingModelAnswer}
+								disabled={loading || fetching || generatingModelAnswer || generatingRubrics}
 							>
 								<SelectTrigger className="mt-2 w-full">
 									<SelectValue placeholder="Select an evaluator configuration" />
@@ -577,7 +634,7 @@ export function CreateAcademicTestDrawer({
 								variant="outline"
 								size="lg"
 								className="flex-1 text-base"
-								disabled={loading || generatingModelAnswer}
+								disabled={loading || generatingModelAnswer || generatingRubrics}
 							>
 								Cancel
 							</Button>
@@ -593,14 +650,17 @@ export function CreateAcademicTestDrawer({
 								!evaluatorConfigId ||
 								loading ||
 								fetching ||
-								generatingModelAnswer
+								generatingModelAnswer ||
+								generatingRubrics
 							}
 						>
-							{generatingModelAnswer
-								? "Generating Model Answers..."
-								: loading
-									? "Creating Test..."
-									: "Create Test"}
+							{generatingRubrics
+								? "Generating Rubrics..."
+								: generatingModelAnswer
+									? "Generating Model Answers..."
+									: loading
+										? "Creating Test..."
+										: "Create Test"}
 						</Button>
 					</div>
 				</DrawerFooter>

@@ -280,13 +280,26 @@ export function EvaluationDashboard({
 						uncertainPaper.id,
 						uncertainPaper.student_id,
 					);
-					await annotateAnswerPaper(
-						uncertainPaper.id,
-						uncertainPaper.student_id,
-					);
-					toast.success(
-						`Calibration paper ready: ${uncertainPaper.student_name}`,
-					);
+					let annotationSuccess = false;
+					for (let attempt = 0; attempt < 5; attempt++) {
+						try {
+							await annotateAnswerPaper(
+								uncertainPaper.id,
+								uncertainPaper.student_id,
+							);
+							annotationSuccess = true;
+							break;
+						} catch (err) {
+							if (attempt < 4) {
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
+						}
+					}
+					if (annotationSuccess) {
+						toast.success(
+							`Calibration paper ready: ${uncertainPaper.student_name}`,
+						);
+					}
 				} catch (error) {
 					console.error(error);
 					toast.error(`Failed to calibrate ${uncertainPaper.student_name}`);
@@ -330,8 +343,21 @@ export function EvaluationDashboard({
 
 		try {
 			await evaluateAnswerPaper(newPaper.id, newPaper.student_id);
-			await annotateAnswerPaper(newPaper.id, newPaper.student_id);
-			toast.success(`Now calibrating: ${newPaper.student_name}`);
+			let annotationSuccess = false;
+			for (let attempt = 0; attempt < 5; attempt++) {
+				try {
+					await annotateAnswerPaper(newPaper.id, newPaper.student_id);
+					annotationSuccess = true;
+					break;
+				} catch (err) {
+					if (attempt < 4) {
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+					}
+				}
+			}
+			if (annotationSuccess) {
+				toast.success(`Now calibrating: ${newPaper.student_name}`);
+			}
 		} catch (error) {
 			console.error(error);
 			toast.error("Failed to evaluate new calibration paper");
@@ -374,7 +400,19 @@ export function EvaluationDashboard({
 					await evaluateAnswerPaper(paper.id, paper.student_id);
 				}
 				if (paper.annotated_document_url === null) {
-					await annotateAnswerPaper(paper.id, paper.student_id);
+					let annotationSuccess = false;
+					for (let attempt = 0; attempt < 5; attempt++) {
+						try {
+							await annotateAnswerPaper(paper.id, paper.student_id);
+							annotationSuccess = true;
+							break;
+						} catch (err) {
+							if (attempt < 4) {
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
+						}
+					}
+					if (!annotationSuccess) throw new Error("Annotation failed");
 				}
 				successCount++;
 			} catch (error) {
