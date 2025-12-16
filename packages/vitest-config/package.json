@@ -1,0 +1,15 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"name": "@gb/vitest-config",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@vitest/coverage-v8": "^4.0.15",
+		"vite": "^7.2.6",
+		"vitest": "^4.0.15"
+	}
+}

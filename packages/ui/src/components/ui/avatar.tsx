@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@gb/ui/src/lib/utils";
+import { cn } from "@gb/ui/lib/utils";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import type * as React from "react";
 
@@ -49,4 +49,4 @@ function AvatarFallback({
 	);
 }
 
-export { Avatar, AvatarFallback, AvatarImage };
+export { Avatar, AvatarImage, AvatarFallback };
