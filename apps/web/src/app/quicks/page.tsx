@@ -18,10 +18,10 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@gb/ui/src/components/ui/pagination";
-import { CreateAcademicTestDrawer } from "@gb-element/quicks/components/CreateAcademicTestDrawer";
-import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
-import { EvaluatorConfigPanelV3 } from "@gb-element/quicks/components/EvaluatorConfigPanelV3";
-import { UploadQuestionPaperDrawer } from "@gb-element/quicks/components/UploadQuestionPaperDrawer";
+import { CreateAcademicTestDrawer } from "@gb-element/quicks/components/CreateAcademicTestDrawer.jsx";
+import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout.jsx";
+import { EvaluatorConfigPanelV3 } from "@gb-element/quicks/components/EvaluatorConfigPanelV3.jsx";
+import { UploadQuestionPaperDrawer } from "@gb-element/quicks/components/UploadQuestionPaperDrawer.jsx";
 import {
 	CheckCircleIcon,
 	ClockIcon,

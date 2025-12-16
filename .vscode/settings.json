@@ -69,5 +69,7 @@
 	},
 	"cSpell.words": ["biomejs", "gradebench", "turbopack", "Turborepo"],
 	"css.validate": false,
-	"css.lint.unknownAtRules": "ignore"
+	"css.lint.unknownAtRules": "ignore",
+	"typescript.preferGoToSourceDefinition": true,
+	"javascript.preferGoToSourceDefinition": true
 }

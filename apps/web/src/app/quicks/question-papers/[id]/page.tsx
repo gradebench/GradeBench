@@ -19,7 +19,7 @@ import {
 	SelectValue,
 } from "@gb/ui/src/components/ui/select";
 import { Textarea } from "@gb/ui/src/components/ui/textarea";
-import { DashboardLayout } from "@gb-element/quicks/components/DashboardLayout";
+import { DashboardLayout } from "@gb-element/quicks/src/components/DashboardLayout";
 import {
 	ArrowLeftIcon,
 	CheckCircleIcon,

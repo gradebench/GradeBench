@@ -1,41 +1,21 @@
 {
+	"extends": ["@gb/typescript-config/nextjs.json"],
 	"compilerOptions": {
-		"target": "ES2022",
-		"lib": ["dom", "dom.iterable", "es2022"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
-		"jsxImportSource": "react",
-		"incremental": true,
-		"forceConsistentCasingInFileNames": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb/*": ["../../packages/*"],
-			"@gb-element/quicks/*": ["../../elements/quicks/src/*"],
-			"@gb-elements/*": ["../../elements/*"],
-			"@gb-kits/*": ["../../kits/*"]
+			"@gb-kits/*": ["../../kits/*"],
+			"@gb-element/*": ["../../elements/*"],
+			"@gb/*": ["../../packages/*"]
 		}
 	},
 	"include": [
 		"next-env.d.ts",
-		"src/types/global.d.ts",
+		"next.config.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		".next/types/**/*.ts"
-	],
-	"exclude": ["node_modules"]
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		"**/*.mts"
+	]
 }
