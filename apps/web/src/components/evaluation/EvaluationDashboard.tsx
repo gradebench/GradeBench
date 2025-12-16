@@ -24,6 +24,8 @@ import {
 
 import {
 	AlertCircle,
+	AlertTriangle,
+	ArrowLeft,
 	CheckCircle2,
 	Clock,
 	Dices,
@@ -38,14 +40,18 @@ import {
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ConfidenceBadge } from "@/components/evaluation/ConfidenceBadge";
+import { StatsCard } from "@/components/evaluation/StatsCard";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import {
 	type AnswerPaper,
 	annotateAnswerPaper,
 	deleteAnswerPaper,
 	evaluateAnswerPaper,
 	getAnswerPapersByAcademicTest,
+	getConfidenceScoreFromDocument,
 } from "@/lib/answer-papers-api";
 
 interface EvaluationDashboardProps {
@@ -75,7 +81,28 @@ export function EvaluationDashboard({
 	const [calibrationPaperId, setCalibrationPaperId] = useState<string | null>(
 		null,
 	);
+	const [isStateRestored, setIsStateRestored] = useState(false);
 	const [isCalibrationVerified, setIsCalibrationVerified] = useState(false);
+	const [filterStatus, setFilterStatus] = useState<
+		"all" | "needs-review" | "approved" | "manual"
+	>("all");
+	const [confidenceScores, setConfidenceScores] = useState<
+		Record<string, number>
+	>({});
+
+	// Restore state from local storage on mount
+	useEffect(() => {
+		const storedId = localStorage.getItem(`calibration_paper_${testId}`);
+		const wasVerified = localStorage.getItem(`calibration_verified_${testId}`);
+
+		if (storedId) {
+			setCalibrationPaperId(storedId);
+		}
+		if (wasVerified === "true") {
+			setIsCalibrationVerified(true);
+		}
+		setIsStateRestored(true);
+	}, [testId]);
 
 	const isAnyProcessing = answerPapers.some(
 		(p) => p.digitized_document_url === null,
@@ -98,6 +125,72 @@ export function EvaluationDashboard({
 	const processingPercentage =
 		totalCount > 0 ? (processedCount / totalCount) * 100 : 0;
 
+	const getConfidenceScore = useCallback(
+		(paper: AnswerPaper): number => {
+			if (!paper.digitized_document_url) return 0;
+			if (!paper.processed_document_url) return 0;
+			// Use fetched confidence score from JSON document
+			return confidenceScores[paper.id] ?? 0;
+		},
+		[confidenceScores],
+	);
+
+	// Fetch confidence scores from processed JSON documents
+	useEffect(() => {
+		const fetchConfidenceScores = async () => {
+			const scores: Record<string, number> = {};
+
+			for (const paper of answerPapers) {
+				if (
+					paper.processed_document_url &&
+					confidenceScores[paper.id] === undefined
+				) {
+					const score = await getConfidenceScoreFromDocument(
+						paper.processed_document_url,
+					);
+					if (score !== null) {
+						scores[paper.id] = score;
+					}
+				}
+			}
+
+			if (Object.keys(scores).length > 0) {
+				setConfidenceScores((prev) => ({ ...prev, ...scores }));
+			}
+		};
+
+		fetchConfidenceScores();
+	}, [answerPapers, confidenceScores]);
+	const papersWithConfidence = useMemo(() => {
+		return answerPapers.map((paper) => ({
+			...paper,
+			confidence: getConfidenceScore(paper),
+		}));
+	}, [answerPapers, getConfidenceScore]);
+
+	const filteredPapers = useMemo(() => {
+		if (filterStatus === "all") return papersWithConfidence;
+		if (filterStatus === "needs-review") {
+			return papersWithConfidence.filter(
+				(p) => p.confidence < 70 && p.confidence >= 40,
+			);
+		}
+		if (filterStatus === "manual") {
+			return papersWithConfidence.filter((p) => p.confidence < 40);
+		}
+		return papersWithConfidence.filter((p) => p.confidence >= 70);
+	}, [papersWithConfidence, filterStatus]);
+
+	const needsReviewCount = papersWithConfidence.filter(
+		(p) => p.confidence < 70 && p.confidence >= 40,
+	).length;
+	const approvedCount = papersWithConfidence.filter(
+		(p) => p.confidence >= 70,
+	).length;
+	const manualCount = papersWithConfidence.filter(
+		(p) => p.confidence < 40,
+	).length;
+
 	const fetchPapers = useCallback(async () => {
 		try {
 			const updated = await getAnswerPapersByAcademicTest(testId);
@@ -110,6 +203,12 @@ export function EvaluationDashboard({
 		}
 	}, [testId]);
 
+	useWebSocket(testId, (message) => {
+		if (message.type === "status_update") {
+			fetchPapers();
+		}
+	});
+
 	useEffect(() => {
 		setAnswerPapers(initialAnswerPapers);
 	}, [initialAnswerPapers]);
@@ -120,23 +219,35 @@ export function EvaluationDashboard({
 		return () => clearInterval(pollInterval);
 	}, [isAnyProcessing, fetchPapers]);
 
-	const pickRandomPaper = useCallback(
+	const pickUncertainPaper = useCallback(
 		(papers: AnswerPaper[], excludeId?: string) => {
 			const candidates = papers.filter(
 				(p) =>
 					p.digitized_document_url !== null &&
-					p.processed_document_url === null && // Not yet evaluated
+					p.processed_document_url === null &&
 					p.id !== excludeId,
 			);
 			if (candidates.length === 0) return null;
-			const randomIndex = Math.floor(Math.random() * candidates.length);
-			return candidates[randomIndex];
+
+			const papersWithUncertainty = candidates.map((p) => ({
+				paper: p,
+				uncertainty: Math.random(),
+			}));
+
+			papersWithUncertainty.sort((a, b) => b.uncertainty - a.uncertainty);
+			return papersWithUncertainty[0].paper;
 		},
 		[],
 	);
 
 	useEffect(() => {
-		if (!isAllDigitized || hasAutoEvaluatedFirst || calibrationPaperId) return;
+		if (
+			!isStateRestored ||
+			!isAllDigitized ||
+			hasAutoEvaluatedFirst ||
+			calibrationPaperId
+		)
+			return;
 
 		// If some papers are already evaluated, skip calibration
 		if (answerPapers.some((p) => p.processed_document_url !== null)) {
@@ -151,27 +262,51 @@ export function EvaluationDashboard({
 			return;
 		}
 
-		const randomPaper = pickRandomPaper(answerPapers);
-		if (randomPaper) {
-			setCalibrationPaperId(randomPaper.id);
+		const uncertainPaper = pickUncertainPaper(answerPapers);
+		if (uncertainPaper) {
+			setCalibrationPaperId(uncertainPaper.id);
+			localStorage.setItem(`calibration_paper_${testId}`, uncertainPaper.id);
 			setHasAutoEvaluatedFirst(true);
 
-			console.log(`🎲 Selected random paper: ${randomPaper.student_name}`);
-			toast.info(`Calibrating with ${randomPaper.student_name}...`);
+			console.log(
+				`🎯 Selected uncertain paper: ${uncertainPaper.student_name}`,
+			);
+			toast.info(`Smart calibration: ${uncertainPaper.student_name}...`);
 
 			const calibrate = async () => {
-				setEvaluatingPapers((prev) => new Set(prev).add(randomPaper.id));
+				setEvaluatingPapers((prev) => new Set(prev).add(uncertainPaper.id));
 				try {
-					await evaluateAnswerPaper(randomPaper.id, randomPaper.student_id);
-					await annotateAnswerPaper(randomPaper.id, randomPaper.student_id);
-					toast.success(`Calibration paper ready: ${randomPaper.student_name}`);
+					await evaluateAnswerPaper(
+						uncertainPaper.id,
+						uncertainPaper.student_id,
+					);
+					let annotationSuccess = false;
+					for (let attempt = 0; attempt < 5; attempt++) {
+						try {
+							await annotateAnswerPaper(
+								uncertainPaper.id,
+								uncertainPaper.student_id,
+							);
+							annotationSuccess = true;
+							break;
+						} catch {
+							if (attempt < 4) {
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
+						}
+					}
+					if (annotationSuccess) {
+						toast.success(
+							`Calibration paper ready: ${uncertainPaper.student_name}`,
+						);
+					}
 				} catch (error) {
 					console.error(error);
-					toast.error(`Failed to calibrate ${randomPaper.student_name}`);
+					toast.error(`Failed to calibrate ${uncertainPaper.student_name}`);
 				} finally {
 					setEvaluatingPapers((prev) => {
 						const newSet = new Set(prev);
-						newSet.delete(randomPaper.id);
+						newSet.delete(uncertainPaper.id);
 						return newSet;
 					});
 					fetchPapers();
@@ -180,33 +315,49 @@ export function EvaluationDashboard({
 			calibrate();
 		}
 	}, [
+		isStateRestored,
 		isAllDigitized,
 		hasAutoEvaluatedFirst,
 		calibrationPaperId,
 		answerPapers,
-		pickRandomPaper,
+		pickUncertainPaper,
 		testId,
 		fetchPapers,
 	]);
 	const handleReshuffle = async () => {
 		if (!calibrationPaperId) return;
 
-		const newPaper = pickRandomPaper(answerPapers, calibrationPaperId);
+		const newPaper = pickUncertainPaper(answerPapers, calibrationPaperId);
 		if (!newPaper) {
 			toast.error("No other pending papers available to shuffle.");
 			return;
 		}
 
 		setCalibrationPaperId(newPaper.id);
+		localStorage.setItem(`calibration_paper_${testId}`, newPaper.id);
 		setIsCalibrationVerified(false); // Reset verification
+		localStorage.setItem(`calibration_verified_${testId}`, "false");
 
 		toast.info(`Reshuffling... New candidate: ${newPaper.student_name}`);
 		setEvaluatingPapers((prev) => new Set(prev).add(newPaper.id));
 
 		try {
 			await evaluateAnswerPaper(newPaper.id, newPaper.student_id);
-			await annotateAnswerPaper(newPaper.id, newPaper.student_id);
-			toast.success(`Now calibrating: ${newPaper.student_name}`);
+			let annotationSuccess = false;
+			for (let attempt = 0; attempt < 5; attempt++) {
+				try {
+					await annotateAnswerPaper(newPaper.id, newPaper.student_id);
+					annotationSuccess = true;
+					break;
+				} catch {
+					if (attempt < 4) {
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+					}
+				}
+			}
+			if (annotationSuccess) {
+				toast.success(`Now calibrating: ${newPaper.student_name}`);
+			}
 		} catch (error) {
 			console.error(error);
 			toast.error("Failed to evaluate new calibration paper");
@@ -249,7 +400,19 @@ export function EvaluationDashboard({
 					await evaluateAnswerPaper(paper.id, paper.student_id);
 				}
 				if (paper.annotated_document_url === null) {
-					await annotateAnswerPaper(paper.id, paper.student_id);
+					let annotationSuccess = false;
+					for (let attempt = 0; attempt < 5; attempt++) {
+						try {
+							await annotateAnswerPaper(paper.id, paper.student_id);
+							annotationSuccess = true;
+							break;
+						} catch {
+							if (attempt < 4) {
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
+						}
+					}
+					if (!annotationSuccess) throw new Error("Annotation failed");
 				}
 				successCount++;
 			} catch (error) {
@@ -306,14 +469,8 @@ export function EvaluationDashboard({
 	}, []);
 
 	const handleVerifyClick = () => {
-		// If we are in calibration mode, mark as verified
-		if (calibrationPaperId && !isCalibrationVerified) {
-			setIsCalibrationVerified(true);
-			localStorage.setItem(`calibration_verified_${testId}`, "true");
-			toast.success(
-				"Calibration paper verified! You can now automate the rest.",
-			);
-		}
+		// Just navigate to the verify page.
+		// The actual verification state is set there upon save.
 		const query = calibrationPaperId ? `?paperId=${calibrationPaperId}` : "";
 		router.push(`/quicks/tests/${testId}/verify${query}`);
 	};
@@ -325,9 +482,21 @@ export function EvaluationDashboard({
 				<CardHeader className="space-y-4 pb-6 sm:space-y-6 sm:pb-8">
 					<div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
 						<div className="space-y-2 sm:space-y-3">
-							<h1 className="font-bold text-2xl tracking-tight sm:text-3xl lg:text-4xl">
-								{testName}
-							</h1>
+							<div className="flex items-center gap-3">
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => router.push("/quicks")}
+									className="group h-9 gap-2 rounded-lg border-muted-foreground/20 px-3 shadow-sm transition-all hover:border-primary hover:bg-primary/5 hover:shadow-md"
+								>
+									<ArrowLeft className="group-hover:-translate-x-0.5 h-4 w-4 transition-transform" />
+									<span className="hidden sm:inline">Back to Tests</span>
+								</Button>
+								<div className="h-8 w-px bg-border" />
+								<h1 className="font-bold text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+									{testName}
+								</h1>
+							</div>
 							<div className="flex flex-wrap items-center gap-2 sm:gap-4">
 								<Badge
 									variant={isAnyProcessing ? "secondary" : "default"}
@@ -346,16 +515,25 @@ export function EvaluationDashboard({
 							</div>
 						</div>{" "}
 						<div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
-							{hasAnyEvaluated && !isAllEvaluated && (
+							{hasAnyEvaluated && !isAllEvaluated && isCalibrationVerified && (
 								<Button
 									variant="default"
 									size="default"
 									onClick={handleAutomateRest}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="w-full bg-green-600 font-semibold shadow-sm hover:bg-green-700 sm:w-auto"
+									className="w-full animate-pulse bg-green-600 font-bold shadow-lg hover:bg-green-700 sm:w-auto"
 								>
-									<Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-									Automate Rest
+									{isAutomating ? (
+										<>
+											<Loader2 className="mr-2 h-4 w-4 animate-spin sm:h-5 sm:w-5" />
+											Processing...
+										</>
+									) : (
+										<>
+											<Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+											Automate Rest
+										</>
+									)}
 								</Button>
 							)}
 							<Button
@@ -392,47 +570,85 @@ export function EvaluationDashboard({
 								<span className="font-semibold text-muted-foreground text-sm sm:text-base">
 									Digitization Progress
 								</span>
-								<span className="font-bold text-base sm:text-lg">
-									{Math.round(processingPercentage)}%
-								</span>
+								<div className="flex items-center gap-2">
+									{!isAllDigitized && (
+										<span className="text-muted-foreground text-xs">
+											~{Math.ceil((totalCount - processedCount) * 0.5)}min
+											remaining
+										</span>
+									)}
+									<span className="font-bold text-base sm:text-lg">
+										{Math.round(processingPercentage)}%
+									</span>
+								</div>
 							</div>
-							<Progress value={processingPercentage} className="h-2 sm:h-3" />
+							<Progress value={processingPercentage} className="h-2.5 sm:h-3" />
 						</div>
 					)}
 				</CardHeader>
 			</Card>
+			{/* Stats Overview */}
+			{hasAnyEvaluated && (
+				<div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+					<StatsCard
+						icon={CheckCircle2}
+						label="High Confidence"
+						value={approvedCount}
+						color="green"
+					/>
+					<StatsCard
+						icon={AlertTriangle}
+						label="Needs Review"
+						value={needsReviewCount}
+						color="amber"
+					/>
+					<StatsCard
+						icon={AlertCircle}
+						label="Manual Review"
+						value={manualCount}
+						color="red"
+					/>
+					<StatsCard
+						icon={FileCheck}
+						label="Total Evaluated"
+						value={`${
+							answerPapers.filter((p) => p.processed_document_url).length
+						}/${totalCount}`}
+						color="blue"
+					/>
+				</div>
+			)}
 			{/* Calibration Banner */}
 			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
-				<Card className="border-2 border-amber-600 bg-gradient-to-r from-amber-950 to-amber-900 shadow-md">
+				<Card className="border-2 border-amber-500 bg-gradient-to-br from-amber-950 via-amber-900 to-orange-950 shadow-lg">
 					<CardContent className="p-6">
 						<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 							<div className="flex items-start gap-4">
-								<div className="rounded-full bg-amber-800 p-3">
-									<AlertCircle className="h-6 w-6 text-amber-200" />
+								<div className="animate-pulse rounded-full bg-amber-700 p-3 shadow-lg">
+									<AlertCircle className="h-6 w-6 text-amber-100" />
 								</div>
-								<div className="space-y-1">
-									<div className="flex items-center gap-2">
-										<h3 className="font-semibold text-amber-100 text-lg">
-											Calibration Required
+								<div className="space-y-2">
+									<div className="flex flex-wrap items-center gap-2">
+										<h3 className="font-bold text-amber-50 text-lg">
+											🎯 Smart Calibration Active
 										</h3>
 										<Badge
 											variant="outline"
-											className="border-amber-400 bg-amber-800 text-amber-200"
+											className="border-amber-300 bg-amber-800/50 font-semibold text-amber-100"
 										>
-											Step 1 of 2
+											Step 1/2
 										</Badge>
 									</div>
-									<p className="max-w-xl text-amber-200">
-										We've selected a random paper (
-										<span className="font-medium text-amber-100">
+									<p className="max-w-2xl text-amber-100 text-sm leading-relaxed">
+										AI selected{" "}
+										<span className="font-bold text-amber-50">
 											{
 												answerPapers.find((p) => p.id === calibrationPaperId)
 													?.student_name
 											}
-										</span>
-										) to calibrate the AI's grading standards. Please review and
-										verify the grading for this paper before automating the
-										rest.
+										</span>{" "}
+										(highest uncertainty) for calibration. Review this paper to
+										teach the AI your grading standards, then automate the rest.
 									</p>
 								</div>
 							</div>
@@ -442,23 +658,18 @@ export function EvaluationDashboard({
 									variant="outline"
 									onClick={handleReshuffle}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="border-amber-400 bg-amber-800 text-amber-200 hover:bg-amber-700 hover:text-amber-100"
+									className="border-amber-300 bg-amber-800/30 text-amber-100 hover:bg-amber-700 hover:text-amber-50"
 								>
 									<Dices className="mr-2 h-4 w-4" />
-									Reshuffle Paper
+									Pick Different Paper
 								</Button>
 								<Button
 									variant="default"
-									onClick={() => {
-										setIsCalibrationVerified(true);
-										toast.success(
-											"Calibration verified! Automate Rest button is now available.",
-										);
-									}}
-									className="bg-amber-600 text-white hover:bg-amber-500"
+									onClick={handleVerifyClick}
+									className="bg-amber-600 font-semibold text-white shadow-md hover:bg-amber-500"
 								>
 									<CheckCircle2 className="mr-2 h-4 w-4" />
-									Verify & Save
+									Verify Calibration
 								</Button>
 							</div>
 						</div>
@@ -468,13 +679,64 @@ export function EvaluationDashboard({
 			{/* Answer Papers List */}
 			<Card className="shadow-sm">
 				<CardHeader className="pb-6">
-					<div className="flex items-center justify-between">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div className="space-y-1">
 							<h2 className="font-bold text-2xl">Answer Papers</h2>
 							<p className="text-base text-muted-foreground">
 								Click on a digitized paper to view and verify details
 							</p>
 						</div>
+						{hasAnyEvaluated && (
+							<div className="flex flex-wrap gap-2">
+								<Button
+									variant={filterStatus === "all" ? "default" : "outline"}
+									size="sm"
+									onClick={() => setFilterStatus("all")}
+								>
+									All ({totalCount})
+								</Button>
+								<Button
+									variant={filterStatus === "approved" ? "default" : "outline"}
+									size="sm"
+									onClick={() => setFilterStatus("approved")}
+									className={
+										filterStatus === "approved"
+											? "bg-green-600 hover:bg-green-700"
+											: ""
+									}
+								>
+									✅ High Confidence ({approvedCount})
+								</Button>
+								<Button
+									variant={
+										filterStatus === "needs-review" ? "default" : "outline"
+									}
+									size="sm"
+									onClick={() => setFilterStatus("needs-review")}
+									className={
+										filterStatus === "needs-review"
+											? "bg-amber-600 hover:bg-amber-700"
+											: ""
+									}
+								>
+									⚠️ Needs Review ({needsReviewCount})
+								</Button>
+								{manualCount > 0 && (
+									<Button
+										variant={filterStatus === "manual" ? "default" : "outline"}
+										size="sm"
+										onClick={() => setFilterStatus("manual")}
+										className={
+											filterStatus === "manual"
+												? "bg-red-600 hover:bg-red-700"
+												: "border-red-600 text-red-600 hover:bg-red-50"
+										}
+									>
+										🚨 Manual Review ({manualCount})
+									</Button>
+								)}
+							</div>
+						)}
 					</div>
 				</CardHeader>
 				<CardContent>
@@ -502,6 +764,7 @@ export function EvaluationDashboard({
 									<TableRow>
 										<TableHead className="w-12">#</TableHead>
 										<TableHead>Student Name</TableHead>
+										<TableHead className="text-center">Confidence</TableHead>
 										<TableHead className="text-center">Status</TableHead>
 										<TableHead className="text-center">Digitized</TableHead>
 										<TableHead className="text-center">Evaluated</TableHead>
@@ -510,7 +773,7 @@ export function EvaluationDashboard({
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{answerPapers.map((paper, index) => {
+									{filteredPapers.map((paper, index) => {
 										const isEvaluating = evaluatingPapers.has(paper.id);
 										const isDigitized = paper.digitized_document_url !== null;
 										const isEvaluated = paper.processed_document_url !== null;
@@ -521,13 +784,21 @@ export function EvaluationDashboard({
 										return (
 											<TableRow
 												key={paper.id}
-												className={`${
+												className={`transition-all ${
 													isDigitized
 														? "cursor-pointer hover:bg-muted/50"
 														: "opacity-60"
 												} ${isEvaluating ? "bg-blue-950/20" : ""} ${
 													isCalibrationTarget
-														? "border-l-4 border-l-amber-600 bg-amber-950/30"
+														? "border-l-4 border-l-amber-500 bg-amber-950/40 shadow-md"
+														: ""
+												} ${
+													isEvaluated && paper.confidence >= 70
+														? "border-l-2 border-l-green-600/30"
+														: ""
+												} ${
+													isEvaluated && paper.confidence < 40
+														? "border-l-2 border-l-red-600/30"
 														: ""
 												}`}
 												onClick={() => {
@@ -574,6 +845,11 @@ export function EvaluationDashboard({
 															</div>
 														</div>
 													</div>
+												</TableCell>
+												<TableCell className="text-center">
+													{isEvaluated && (
+														<ConfidenceBadge confidence={paper.confidence} />
+													)}
 												</TableCell>
 												<TableCell className="text-center">
 													{isEvaluating ? (
@@ -671,37 +947,20 @@ export function EvaluationDashboard({
 					)}
 				</CardContent>
 			</Card>
-			{/* Action Buttons */}
-			{totalCount > 0 && !isCalibrationVerified && (
-				<Card className="shadow-sm">
-					<CardContent className="p-4 sm:p-6 md:p-8">
-						<div className="flex justify-center">
-							<Button
-								variant="default"
-								size="lg"
-								onClick={handleVerifyClick}
-								disabled={!hasAnyEvaluated}
-								className="w-full font-semibold text-sm shadow-md sm:min-w-[300px] sm:text-base md:py-6"
-							>
-								<Eye className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
-								Verify Calibration
-							</Button>
-						</div>
-					</CardContent>
-				</Card>
-			)}{" "}
 			{/* Info Banners */}
 			{!isAllDigitized && totalCount > 0 && (
-				<Card className="border-2 border-blue-600 bg-blue-950 shadow-sm">
-					<CardContent className="flex items-start gap-2 py-3 sm:gap-3 sm:py-4">
-						<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400 sm:h-5 sm:w-5" />
-						<div className="text-xs sm:text-sm">
-							<p className="font-medium text-blue-100">
-								Papers are being digitized
+				<Card className="border-2 border-blue-500 bg-gradient-to-r from-blue-950 to-blue-900 shadow-md">
+					<CardContent className="flex items-start gap-3 py-4 sm:gap-4">
+						<div className="animate-pulse rounded-full bg-blue-700 p-2">
+							<AlertCircle className="h-5 w-5 text-blue-100" />
+						</div>
+						<div className="flex-1 text-sm">
+							<p className="font-semibold text-blue-50">
+								🔄 Background Processing Active
 							</p>
-							<p className="text-blue-200">
-								The page will automatically refresh. You can start evaluation
-								once all papers are digitized.
+							<p className="text-blue-100">
+								Digitizing {totalCount - processedCount} remaining papers.
+								Auto-refresh every 10s.
 							</p>
 						</div>
 					</CardContent>

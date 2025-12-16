@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { GRADE_API_BASE as API_BASE_URL } from "@/lib/api";
+import { fetchWithRetry } from "@/lib/fetch-utils";
 
 interface AcademicTest {
 	id: string;
@@ -110,7 +111,7 @@ export default function QuicksDashboard() {
 		async (page: number) => {
 			try {
 				setLoading(true);
-				const response = await fetch(
+				const response = await fetchWithRetry(
 					`${API_BASE_URL}/academic-tests?page=${page}&pageSize=${pageSize}`,
 				);
 
@@ -132,7 +133,8 @@ export default function QuicksDashboard() {
 				}
 			} catch (error) {
 				console.error("Error fetching academic tests:", error);
-				toast.error("Failed to load tests. Please try again.");
+				// Only show refined error if it persists after retries
+				toast.error("Failed to load tests. Please check your connection.");
 				setTests([]);
 				setTotalPages(1);
 				setTotalItems(0);
@@ -147,7 +149,7 @@ export default function QuicksDashboard() {
 		async (page: number) => {
 			try {
 				setQpLoading(true);
-				const response = await fetch(
+				const response = await fetchWithRetry(
 					`${API_BASE_URL}/question-papers?page=${page}&pageSize=${pageSize}`,
 				);
 
@@ -169,7 +171,9 @@ export default function QuicksDashboard() {
 				}
 			} catch (error) {
 				console.error("Error fetching question papers:", error);
-				toast.error("Failed to load question papers. Please try again.");
+				toast.error(
+					"Failed to load question papers. Please check your connection.",
+				);
 				setQuestionPapers([]);
 				setQpTotalPages(1);
 				setQpTotalItems(0);
@@ -225,6 +229,23 @@ export default function QuicksDashboard() {
 		withKeyAnswers: tests.filter((t) => t.key_answers_url).length,
 		withRubrics: tests.filter((t) => t.dynamic_rubrics_url).length,
 	};
+
+	// Optimized refresh handlers to avoid double-fetching
+	const handleTestListRefresh = useCallback(() => {
+		if (currentPage === 1) {
+			fetchAcademicTests(1);
+		} else {
+			setCurrentPage(1);
+		}
+	}, [currentPage, fetchAcademicTests]);
+
+	const handleQuestionPaperListRefresh = useCallback(() => {
+		if (qpCurrentPage === 1) {
+			fetchQuestionPapers(1);
+		} else {
+			setQpCurrentPage(1);
+		}
+	}, [qpCurrentPage, fetchQuestionPapers]);
 
 	return (
 		<DashboardLayout title="">
@@ -349,36 +370,63 @@ export default function QuicksDashboard() {
 									</div>
 								) : (
 									<div className="space-y-2">
-										{filteredTests.map((test) => (
-											<a
-												key={test.id}
-												href={
-													test.dynamic_rubrics_url
-														? `/quicks/tests/${test.id}/evaluate`
-														: `/quicks/tests/${test.id}/model-answer`
-												}
-												className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent"
-											>
-												<div className="space-y-1">
-													<div className="font-medium">{test.test_name}</div>
-													<div className="text-muted-foreground text-xs">
-														ID: {test.id.slice(0, 8)}...
+										{filteredTests.map((test) => {
+											const isGenerating =
+												!test.key_answers_url && !test.dynamic_rubrics_url;
+											return (
+												<a
+													key={test.id}
+													href={
+														test.key_answers_url
+															? test.dynamic_rubrics_url
+																? `/quicks/tests/${test.id}/evaluate`
+																: `/quicks/tests/${test.id}/model-answer`
+															: "#"
+													}
+													onClick={(e) => {
+														if (isGenerating) {
+															e.preventDefault();
+															toast.info(
+																"Model answer is being generated. Please wait...",
+															);
+														}
+													}}
+													className={`flex items-center justify-between rounded-lg border p-4 transition-colors ${
+														isGenerating
+															? "cursor-wait opacity-60"
+															: "hover:bg-accent"
+													}`}
+												>
+													<div className="space-y-1">
+														<div className="font-medium">{test.test_name}</div>
+														<div className="text-muted-foreground text-xs">
+															ID: {test.id.slice(0, 8)}...
+														</div>
 													</div>
-												</div>
-												<div className="flex gap-2 text-sm">
-													{test.key_answers_url && (
-														<span className="rounded-full bg-green-100 px-2 py-1 text-green-700">
-															Key Answers
-														</span>
-													)}
-													{test.dynamic_rubrics_url && (
-														<span className="rounded-full bg-blue-100 px-2 py-1 text-blue-700">
-															Rubrics
-														</span>
-													)}
-												</div>
-											</a>
-										))}
+													<div className="flex gap-2 text-sm">
+														{isGenerating ? (
+															<span className="flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-yellow-700">
+																<ClockIcon className="h-3 w-3 animate-spin" />
+																Generating...
+															</span>
+														) : (
+															<>
+																{test.key_answers_url && (
+																	<span className="rounded-full bg-green-100 px-2 py-1 text-green-700">
+																		Key Answers
+																	</span>
+																)}
+																{test.dynamic_rubrics_url && (
+																	<span className="rounded-full bg-blue-100 px-2 py-1 text-blue-700">
+																		Rubrics
+																	</span>
+																)}
+															</>
+														)}
+													</div>
+												</a>
+											);
+										})}
 									</div>
 								)}
 							</CardContent>
@@ -695,12 +743,12 @@ export default function QuicksDashboard() {
 			<CreateAcademicTestDrawer
 				open={drawerOpen}
 				onOpenChange={setDrawerOpen}
-				onTestCreated={() => fetchAcademicTests(currentPage)}
+				onTestCreated={handleTestListRefresh}
 			/>
 			<UploadQuestionPaperDrawer
 				open={qpDrawerOpen}
 				onOpenChange={setQpDrawerOpen}
-				onQuestionPaperUploaded={() => fetchQuestionPapers(qpCurrentPage)}
+				onQuestionPaperUploaded={handleQuestionPaperListRefresh}
 			/>
 		</DashboardLayout>
 	);

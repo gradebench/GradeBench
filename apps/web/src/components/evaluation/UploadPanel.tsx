@@ -133,13 +133,14 @@ export function UploadPanel({ testId, onUploadComplete }: UploadPanelProps) {
 				prev.map((f) => ({ ...f, status: "completed", progress: 100 })),
 			);
 
-			toast.success(`Successfully uploaded ${files.length} answer papers`);
+			toast.success(
+				`✅ ${files.length} papers uploaded! Digitization started in background.`,
+				{ duration: 4000 },
+			);
 
-			// Refresh after a short delay to show completion
-			setTimeout(() => {
-				setSelectedFiles([]);
-				onUploadComplete();
-			}, 1500);
+			// Immediate transition - no artificial delay
+			setSelectedFiles([]);
+			onUploadComplete();
 		} catch (error) {
 			console.error("Upload error:", error);
 
@@ -341,14 +342,14 @@ export function UploadPanel({ testId, onUploadComplete }: UploadPanelProps) {
 					<DialogHeader>
 						<DialogTitle>Confirm Upload</DialogTitle>
 						<DialogDescription>
-							Once uploaded, you cannot add more answer papers. Do you want to
-							proceed?
+							Papers will be uploaded and digitized in the background. You can
+							continue working immediately.
 						</DialogDescription>
 					</DialogHeader>
 					<div className="rounded bg-muted p-3 text-sm">
 						<p className="font-medium">{totalFiles} file(s) will be uploaded</p>
 						<p className="mt-1 text-muted-foreground text-xs">
-							This action will trigger automatic digitization of all papers.
+							Digitization (~30s/paper) will run asynchronously.
 						</p>
 					</div>
 					<DialogFooter>

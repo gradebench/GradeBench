@@ -18,6 +18,7 @@ export interface AnswerPaper {
 	max_score: number | null;
 	percentage: number | null;
 	grade: string | null;
+	confidence_score: number | null;
 	submitted_at: string;
 	evaluated_at: string | null;
 	created_at: string;
@@ -90,6 +91,12 @@ export async function getAnswerPapers(testId: string): Promise<AnswerPaper[]> {
 				max_score: typeof o.max_score === "number" ? o.max_score : null,
 				percentage: typeof o.percentage === "number" ? o.percentage : null,
 				grade: typeof o.grade === "string" ? o.grade : null,
+				confidence_score:
+					typeof o.confidence_score === "number"
+						? o.confidence_score
+						: typeof o.confidenceScore === "number"
+							? o.confidenceScore
+							: null,
 				submitted_at:
 					(o.updated_at as string) ||
 					(o.created_at as string) ||
@@ -178,6 +185,9 @@ export async function getAnswerPapersByAcademicTest(
 				max_score: toNumberOrNull(o.max_score),
 				percentage: toNumberOrNull(o.percentage),
 				grade: toNullableStr(o.grade),
+				confidence_score:
+					toNumberOrNull(o.confidence_score) ??
+					toNumberOrNull(o.confidenceScore),
 				submitted_at:
 					toStr(o.updated_at) ||
 					toStr(o.created_at) ||
@@ -600,5 +610,56 @@ export async function reviewAnswerPaper(
 	} catch (error) {
 		console.error("Error reviewing answer paper:", error);
 		throw error;
+	}
+}
+
+/**
+ * Fetch confidence score from the processed JSON document
+ */
+export async function getConfidenceScoreFromDocument(
+	processedDocumentUrl: string,
+): Promise<number | null> {
+	try {
+		const response = await fetch(processedDocumentUrl);
+		if (!response.ok) {
+			console.error("Failed to fetch processed document:", response.statusText);
+			return null;
+		}
+
+		const jsonData = await response.json();
+
+		// Try different possible paths for confidence_score in the JSON
+		const confidenceScore =
+			jsonData?.confidence_score ??
+			jsonData?.confidenceScore ??
+			jsonData?.metadata?.confidence_score ??
+			jsonData?.metadata?.confidenceScore ??
+			jsonData?.evaluation?.confidence_score ??
+			jsonData?.evaluation?.confidenceScore ??
+			null;
+
+		return typeof confidenceScore === "number" ? confidenceScore : null;
+	} catch (error) {
+		console.error("Error fetching confidence score from document:", error);
+		return null;
+	}
+}
+
+/**
+ * Fetch the full evaluated JSON from the processed document URL
+ */
+export async function getEvaluatedJSON(
+	processedDocumentUrl: string,
+): Promise<unknown> {
+	try {
+		const response = await fetch(processedDocumentUrl);
+		if (!response.ok) {
+			console.error("Failed to fetch processed document:", response.statusText);
+			return null;
+		}
+		return await response.json();
+	} catch (error) {
+		console.error("Error fetching evaluated JSON:", error);
+		return null;
 	}
 }

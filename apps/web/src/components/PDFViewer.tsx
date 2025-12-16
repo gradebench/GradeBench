@@ -4,6 +4,7 @@ import { Button } from "@gb/ui/src/components/ui/button";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
+	ExternalLink,
 	ZoomInIcon,
 	ZoomOutIcon,
 } from "lucide-react";
@@ -106,6 +107,14 @@ export function PDFViewer({
 					</Button>
 				</div>
 				<div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => window.open(url, "_blank")}
+						title="Open in new tab"
+					>
+						<ExternalLink className="h-4 w-4" />
+					</Button>
 					<Button
 						variant="outline"
 						size="sm"
