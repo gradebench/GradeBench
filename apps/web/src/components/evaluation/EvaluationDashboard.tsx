@@ -21,9 +21,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@gb/ui/src/components/ui/table";
+
 import {
 	AlertCircle,
-	BarChart3,
 	CheckCircle2,
 	Clock,
 	Dices,
@@ -36,6 +36,7 @@ import {
 	X,
 	Zap,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -140,6 +141,13 @@ export function EvaluationDashboard({
 		// If some papers are already evaluated, skip calibration
 		if (answerPapers.some((p) => p.processed_document_url !== null)) {
 			setHasAutoEvaluatedFirst(true);
+			// Check if calibration was already verified
+			const wasVerified = localStorage.getItem(
+				`calibration_verified_${testId}`,
+			);
+			if (wasVerified === "true") {
+				setIsCalibrationVerified(true);
+			}
 			return;
 		}
 
@@ -177,9 +185,9 @@ export function EvaluationDashboard({
 		calibrationPaperId,
 		answerPapers,
 		pickRandomPaper,
+		testId,
 		fetchPapers,
 	]);
-
 	const handleReshuffle = async () => {
 		if (!calibrationPaperId) return;
 
@@ -301,6 +309,7 @@ export function EvaluationDashboard({
 		// If we are in calibration mode, mark as verified
 		if (calibrationPaperId && !isCalibrationVerified) {
 			setIsCalibrationVerified(true);
+			localStorage.setItem(`calibration_verified_${testId}`, "true");
 			toast.success(
 				"Calibration paper verified! You can now automate the rest.",
 			);
@@ -310,52 +319,54 @@ export function EvaluationDashboard({
 	};
 
 	return (
-		<div className="container mx-auto space-y-6 p-6">
+		<div className="container mx-auto max-w-7xl space-y-4 p-4 py-4 sm:space-y-6 sm:p-6 sm:py-8 md:space-y-8">
 			{/* Header Section */}
-			<Card>
-				<CardHeader className="space-y-4">
-					<div className="flex items-start justify-between">
-						<div className="space-y-2">
-							<h1 className="font-bold text-3xl tracking-tight">{testName}</h1>
-							<div className="flex items-center gap-3">
+			<Card className="shadow-sm">
+				<CardHeader className="space-y-4 pb-6 sm:space-y-6 sm:pb-8">
+					<div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
+						<div className="space-y-2 sm:space-y-3">
+							<h1 className="font-bold text-2xl tracking-tight sm:text-3xl lg:text-4xl">
+								{testName}
+							</h1>
+							<div className="flex flex-wrap items-center gap-2 sm:gap-4">
 								<Badge
 									variant={isAnyProcessing ? "secondary" : "default"}
-									className="gap-1.5"
+									className="gap-2 px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm"
 								>
 									{isAnyProcessing ? (
-										<Clock className="h-3.5 w-3.5 animate-pulse" />
+										<Clock className="h-3 w-3 animate-pulse sm:h-3.5 sm:w-3.5" />
 									) : (
-										<CheckCircle2 className="h-3.5 w-3.5" />
+										<CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
 									)}
 									{processingStatus}
 								</Badge>
-								<span className="text-muted-foreground text-sm">
-									{processedCount} of {totalCount} papers digitized
+								<span className="font-medium text-muted-foreground text-sm sm:text-base">
+									{processedCount} / {totalCount} papers digitized
 								</span>
 							</div>
-						</div>
-
-						<div className="flex gap-2">
-							{isCalibrationVerified && !isAllEvaluated && (
+						</div>{" "}
+						<div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+							{hasAnyEvaluated && !isAllEvaluated && (
 								<Button
 									variant="default"
-									size="sm"
+									size="default"
 									onClick={handleAutomateRest}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="bg-green-600 hover:bg-green-700"
+									className="w-full bg-green-600 font-semibold shadow-sm hover:bg-green-700 sm:w-auto"
 								>
-									<Zap className="mr-2 h-4 w-4" />
+									<Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
 									Automate Rest
 								</Button>
 							)}
 							<Button
 								variant="outline"
-								size="sm"
+								size="default"
 								onClick={handleRefresh}
 								disabled={isRefreshing}
+								className="w-full shadow-sm sm:w-auto"
 							>
 								<RefreshCw
-									className={`mr-2 h-4 w-4 ${
+									className={`mr-2 h-4 w-4 sm:h-5 sm:w-5 ${
 										isRefreshing ? "animate-spin" : ""
 									}`}
 								/>
@@ -363,11 +374,12 @@ export function EvaluationDashboard({
 							</Button>
 							<Button
 								variant="outline"
-								size="sm"
+								size="default"
 								onClick={onUploadMore}
 								disabled={isAutomating}
+								className="w-full shadow-sm sm:w-auto"
 							>
-								<Upload className="mr-2 h-4 w-4" />
+								<Upload className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
 								Upload More
 							</Button>
 						</div>
@@ -375,45 +387,44 @@ export function EvaluationDashboard({
 
 					{/* Progress Bar */}
 					{totalCount > 0 && (
-						<div className="space-y-2 pt-2">
-							<div className="flex items-center justify-between text-sm">
-								<span className="font-medium text-muted-foreground">
+						<div className="space-y-2 pt-2 sm:space-y-3 sm:pt-4">
+							<div className="flex items-center justify-between">
+								<span className="font-semibold text-muted-foreground text-sm sm:text-base">
 									Digitization Progress
 								</span>
-								<span className="font-semibold">
+								<span className="font-bold text-base sm:text-lg">
 									{Math.round(processingPercentage)}%
 								</span>
 							</div>
-							<Progress value={processingPercentage} className="h-2" />
+							<Progress value={processingPercentage} className="h-2 sm:h-3" />
 						</div>
 					)}
 				</CardHeader>
 			</Card>
-
 			{/* Calibration Banner */}
 			{calibrationPaperId && !isCalibrationVerified && hasAnyEvaluated && (
-				<Card className="border-amber-200 bg-amber-50 shadow-sm">
+				<Card className="border-2 border-amber-600 bg-gradient-to-r from-amber-950 to-amber-900 shadow-md">
 					<CardContent className="p-6">
 						<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
 							<div className="flex items-start gap-4">
-								<div className="rounded-full bg-amber-100 p-3">
-									<AlertCircle className="h-6 w-6 text-amber-600" />
+								<div className="rounded-full bg-amber-800 p-3">
+									<AlertCircle className="h-6 w-6 text-amber-200" />
 								</div>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<h3 className="font-semibold text-amber-900 text-lg">
+										<h3 className="font-semibold text-amber-100 text-lg">
 											Calibration Required
 										</h3>
 										<Badge
 											variant="outline"
-											className="border-amber-500 bg-amber-100 text-amber-700"
+											className="border-amber-400 bg-amber-800 text-amber-200"
 										>
 											Step 1 of 2
 										</Badge>
 									</div>
-									<p className="max-w-xl text-amber-800">
+									<p className="max-w-xl text-amber-200">
 										We've selected a random paper (
-										<span className="font-medium">
+										<span className="font-medium text-amber-100">
 											{
 												answerPapers.find((p) => p.id === calibrationPaperId)
 													?.student_name
@@ -431,32 +442,36 @@ export function EvaluationDashboard({
 									variant="outline"
 									onClick={handleReshuffle}
 									disabled={isAutomating || evaluatingPapers.size > 0}
-									className="border-amber-300 bg-white text-amber-900 hover:bg-amber-50 hover:text-amber-900"
+									className="border-amber-400 bg-amber-800 text-amber-200 hover:bg-amber-700 hover:text-amber-100"
 								>
 									<Dices className="mr-2 h-4 w-4" />
 									Reshuffle Paper
 								</Button>
 								<Button
 									variant="default"
-									onClick={handleVerifyClick}
-									className="bg-amber-600 text-white hover:bg-amber-700"
+									onClick={() => {
+										setIsCalibrationVerified(true);
+										toast.success(
+											"Calibration verified! Automate Rest button is now available.",
+										);
+									}}
+									className="bg-amber-600 text-white hover:bg-amber-500"
 								>
-									<Eye className="mr-2 h-4 w-4" />
-									Review & Verify
+									<CheckCircle2 className="mr-2 h-4 w-4" />
+									Verify & Save
 								</Button>
 							</div>
 						</div>
 					</CardContent>
 				</Card>
 			)}
-
 			{/* Answer Papers List */}
-			<Card>
-				<CardHeader>
+			<Card className="shadow-sm">
+				<CardHeader className="pb-6">
 					<div className="flex items-center justify-between">
-						<div>
-							<h2 className="font-semibold text-xl">Answer Papers</h2>
-							<p className="text-muted-foreground text-sm">
+						<div className="space-y-1">
+							<h2 className="font-bold text-2xl">Answer Papers</h2>
+							<p className="text-base text-muted-foreground">
 								Click on a digitized paper to view and verify details
 							</p>
 						</div>
@@ -510,8 +525,10 @@ export function EvaluationDashboard({
 													isDigitized
 														? "cursor-pointer hover:bg-muted/50"
 														: "opacity-60"
-												} ${isEvaluating ? "bg-blue-50" : ""} ${
-													isCalibrationTarget ? "bg-amber-50" : ""
+												} ${isEvaluating ? "bg-blue-950/20" : ""} ${
+													isCalibrationTarget
+														? "border-l-4 border-l-amber-600 bg-amber-950/30"
+														: ""
 												}`}
 												onClick={() => {
 													if (isDigitized && !isEvaluating) {
@@ -531,7 +548,7 @@ export function EvaluationDashboard({
 													{isCalibrationTarget && (
 														<Badge
 															variant="outline"
-															className="ml-2 border-amber-500 text-amber-700"
+															className="ml-2 border-amber-600 bg-amber-950 text-amber-200"
 														>
 															Calibration
 														</Badge>
@@ -654,62 +671,42 @@ export function EvaluationDashboard({
 					)}
 				</CardContent>
 			</Card>
-
 			{/* Action Buttons */}
-			{totalCount > 0 && (
-				<Card>
-					<CardContent className="p-6">
-						<div className="flex flex-col gap-4 sm:flex-row">
+			{totalCount > 0 && !isCalibrationVerified && (
+				<Card className="shadow-sm">
+					<CardContent className="p-4 sm:p-6 md:p-8">
+						<div className="flex justify-center">
 							<Button
 								variant="default"
 								size="lg"
 								onClick={handleVerifyClick}
 								disabled={!hasAnyEvaluated}
-								className={`flex-1 ${
-									calibrationPaperId && !isCalibrationVerified
-										? "bg-amber-600 hover:bg-amber-700"
-										: ""
-								}`}
+								className="w-full font-semibold text-sm shadow-md sm:min-w-[300px] sm:text-base md:py-6"
 							>
-								<Eye className="mr-2 h-5 w-5" />
-								{calibrationPaperId && !isCalibrationVerified
-									? "Verify Calibration Paper"
-									: "View Papers"}
+								<Eye className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+								Verify Calibration
 							</Button>
-							{hasAnyEvaluated && (
-								<Button
-									variant="outline"
-									size="lg"
-									onClick={() => router.push(`/quicks/tests/${testId}/report`)}
-									className="flex-1"
-								>
-									<BarChart3 className="mr-2 h-5 w-5" />
-									View Report
-								</Button>
-							)}
 						</div>
 					</CardContent>
 				</Card>
-			)}
-
+			)}{" "}
 			{/* Info Banners */}
 			{!isAllDigitized && totalCount > 0 && (
-				<Card className="border-blue-200 bg-blue-50">
-					<CardContent className="flex items-start gap-3 py-4">
-						<AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
-						<div className="text-sm">
-							<p className="font-medium text-blue-900">
+				<Card className="border-2 border-blue-600 bg-blue-950 shadow-sm">
+					<CardContent className="flex items-start gap-2 py-3 sm:gap-3 sm:py-4">
+						<AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400 sm:h-5 sm:w-5" />
+						<div className="text-xs sm:text-sm">
+							<p className="font-medium text-blue-100">
 								Papers are being digitized
 							</p>
-							<p className="text-blue-700">
+							<p className="text-blue-200">
 								The page will automatically refresh. You can start evaluation
 								once all papers are digitized.
 							</p>
 						</div>
 					</CardContent>
 				</Card>
-			)}
-
+			)}{" "}
 			{/* Delete Confirmation */}
 			<AlertDialog
 				open={deleteConfirm !== null}
