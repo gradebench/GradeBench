@@ -341,7 +341,7 @@ export default function QuicksDashboard() {
 								{/* Search Bar */}
 								<div className="mb-4">
 									<div className="relative">
-										<SearchIcon className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 										<Input
 											placeholder="Search tests..."
 											value={searchQuery}
@@ -549,7 +549,7 @@ export default function QuicksDashboard() {
 							<CardContent>
 								<div className="mb-4">
 									<div className="relative">
-										<SearchIcon className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 										<Input
 											placeholder="Search question papers..."
 											value={qpSearchQuery}
