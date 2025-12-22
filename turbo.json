@@ -1,22 +1,39 @@
 {
 	"$schema": "https://turborepo.com/schema.json",
+	"globalDependencies": ["**/env.*local"],
 	"ui": "tui",
+	"envMode": "loose",
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
 			"outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
 		},
 		"test": {
-			"dependsOn": ["^test"],
-			"inputs": ["$TURBO_DEFAULT$", "vitest.config.*"]
+			"dependsOn": ["^test"]
+		},
+		"test:unit": {
+			"dependsOn": ["^test:unit"]
+		},
+		"test:integration": {
+			"dependsOn": ["^test:integration"]
+		},
+		"test:coverage": {
+			"dependsOn": ["^test:coverage"],
+			"outputs": ["coverage/**"]
+		},
+		"test:watch": {
+			"dependsOn": ["^test:watch"],
+			"cache": false,
+			"persistent": true
 		},
 		"//#lint": {
-			"dependsOn": ["^lint"],
 			"cache": false
 		},
 		"check-types": {
-			"dependsOn": ["^check-types"]
+			"dependsOn": ["^check-types"],
+			"env": ["*"],
+			"inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
+			"outputs": ["**/*.tsbuildinfo"]
 		},
 		"dev": {
 			"cache": false,

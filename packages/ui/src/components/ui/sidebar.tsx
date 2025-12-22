@@ -1,28 +1,28 @@
 "use client";
 
-import { useIsMobile } from "@gb/ui/hooks/use-mobile";
-import { cn } from "@gb/ui/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
-import * as React from "react";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Separator } from "./separator";
+import { Button } from "@gb/ui/components/ui/button";
+import { Input } from "@gb/ui/components/ui/input";
+import { Separator } from "@gb/ui/components/ui/separator";
 import {
 	Sheet,
 	SheetContent,
 	SheetDescription,
 	SheetHeader,
 	SheetTitle,
-} from "./sheet";
-import { Skeleton } from "./skeleton";
+} from "@gb/ui/components/ui/sheet";
+import { Skeleton } from "@gb/ui/components/ui/skeleton";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from "./tooltip";
+} from "@gb/ui/components/ui/tooltip";
+import { useIsMobile } from "@gb/ui/hooks/use-mobile";
+import { cn } from "@gb/ui/lib/utils";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { PanelLeftIcon } from "lucide-react";
+import * as React from "react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -82,17 +82,16 @@ function SidebarProvider({
 			}
 
 			// This sets the cookie to keep the sidebar state.
-			// biome-ignore lint/suspicious/noDocumentCookie: shadcn
+			// biome-ignore lint/suspicious/noDocumentCookie: shadcn-ui pattern
 			document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 		},
 		[setOpenProp, open],
 	);
 
 	// Helper to toggle the sidebar.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: shadcn
 	const toggleSidebar = React.useCallback(() => {
 		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-	}, [isMobile, setOpen, setOpenMobile]);
+	}, [isMobile, setOpen]);
 
 	// Adds a keyboard shortcut to toggle the sidebar.
 	React.useEffect(() => {
@@ -114,7 +113,6 @@ function SidebarProvider({
 	// This makes it easier to style the sidebar with Tailwind classes.
 	const state = open ? "expanded" : "collapsed";
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: shadcn
 	const contextValue = React.useMemo<SidebarContextProps>(
 		() => ({
 			state,
@@ -125,7 +123,7 @@ function SidebarProvider({
 			setOpenMobile,
 			toggleSidebar,
 		}),
-		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+		[state, open, setOpen, isMobile, openMobile, toggleSidebar],
 	);
 
 	return (

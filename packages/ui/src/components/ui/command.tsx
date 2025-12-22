@@ -1,16 +1,16 @@
 "use client";
 
-import { cn } from "@gb/ui/lib/utils";
-import { Command as CommandPrimitive } from "cmdk";
-import { SearchIcon } from "lucide-react";
-import type * as React from "react";
 import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-} from "./dialog";
+} from "@gb/ui/components/ui/dialog";
+import { cn } from "@gb/ui/lib/utils";
+import { Command as CommandPrimitive } from "cmdk";
+import { SearchIcon } from "lucide-react";
+import type * as React from "react";
 
 function Command({
 	className,
@@ -173,11 +173,11 @@ function CommandShortcut({
 export {
 	Command,
 	CommandDialog,
+	CommandInput,
+	CommandList,
 	CommandEmpty,
 	CommandGroup,
-	CommandInput,
 	CommandItem,
-	CommandList,
-	CommandSeparator,
 	CommandShortcut,
+	CommandSeparator,
 };

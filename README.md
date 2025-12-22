@@ -123,6 +123,7 @@ npm run check-types
 
 Additional documentation can be found in the `/docs` directory:
 
+- [Engineering Constitution](./.specify/memory/constitution.md) - Core principles and governance (v0.1.0, 8 principles)
 - [Site Content](./docs/site.md) - Marketing website content and copy
 - [UI Guidelines](./docs/ui-prompt.md) - UI/UX design system and guidelines
 - [Testing Guide](./docs/test.md) - Testing strategies and examples
