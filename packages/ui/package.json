@@ -53,7 +53,7 @@
 	},
 	"devDependencies": {
 		"@gb/typescript-config": "*",
-		"@tailwindcss/postcss": "^4.1.11",
+		"@tailwindcss/postcss": "^4.1.18",
 		"@tailwindcss/typography": "^0.5.19",
 		"@types/node": "^22.17.1",
 		"@types/react": "^19.1.9",
