@@ -10,7 +10,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
-		"msw": "^2.12.2",
 		"turbo": "^2.5.6"
 	},
 	"engines": {
