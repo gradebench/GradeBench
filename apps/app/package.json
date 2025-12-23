@@ -1,0 +1,28 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"name": "app",
+	"version": "0.1.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack --port 3001",
+		"build": "next build",
+		"start": "next start",
+		"check-types": "tsc --noEmit --jsx preserve --emitDeclarationOnly false",
+		"test": "vitest run --coverage"
+	},
+	"dependencies": {
+		"@gb/design-system": "*",
+		"next": "16.0.10",
+		"react": "19.2.1",
+		"react-dom": "19.2.1"
+	},
+	"devDependencies": {
+		"@gb/typescript-config": "*",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"babel-plugin-react-compiler": "1.0.0",
+		"typescript": "^5"
+	}
+}

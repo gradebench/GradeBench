@@ -1,22 +1,16 @@
 {
-	"extends": "../typescript-config/react-library.json",
+	"extends": "@gb/typescript-config/nextjs.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "dist",
-		"rootDir": "src",
 		"plugins": [
 			{
 				"name": "next"
 			}
 		],
 		"paths": {
-			"@/*": [
-				"./src/*"
-			]
+			"@gb/design-system/*": ["./src/*"]
 		}
 	},
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"include": ["src"],
+	"exclude": ["node_modules"]
 }

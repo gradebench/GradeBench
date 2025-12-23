@@ -67,7 +67,14 @@
 	"[github-actions-workflow]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"cSpell.words": ["biomejs", "gradebench", "turbopack", "Turborepo"],
+	"cSpell.words": [
+		"biomejs",
+		"Embla",
+		"gradebench",
+		"turbopack",
+		"Turborepo",
+		"vaul"
+	],
 	"css.validate": false,
 	"css.lint.unknownAtRules": "ignore",
 	"typescript.preferGoToSourceDefinition": true,
