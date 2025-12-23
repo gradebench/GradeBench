@@ -206,19 +206,19 @@ const BellCurveChart = ({
 			</div>
 
 			<div
-				className="-translate-x-1/2 absolute top-2 transform rounded border border-destructive/20 bg-destructive/10 px-2 py-1 font-bold text-[10px] text-destructive shadow-sm"
+				className="absolute top-2 -translate-x-1/2 transform rounded border border-destructive/20 bg-destructive/10 px-2 py-1 font-bold text-[10px] text-destructive shadow-sm"
 				style={{ left: `${(studentScore / maxScore) * 100}%` }}
 			>
 				You ({studentScore})
 			</div>
 			<div
-				className="-translate-x-1/2 absolute top-10 transform rounded border border-border bg-muted px-2 py-1 font-bold text-[10px] text-muted-foreground shadow-sm"
+				className="absolute top-10 -translate-x-1/2 transform rounded border border-border bg-muted px-2 py-1 font-bold text-[10px] text-muted-foreground shadow-sm"
 				style={{ left: `${(avgScore / maxScore) * 100}%` }}
 			>
 				Avg ({avgScore})
 			</div>
 			<div
-				className="-translate-x-1/2 absolute top-0 transform rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 font-bold text-[10px] text-emerald-400 shadow-sm"
+				className="absolute top-0 -translate-x-1/2 transform rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 font-bold text-[10px] text-emerald-400 shadow-sm"
 				style={{ left: `${(topperScore / maxScore) * 100}%` }}
 			>
 				Topper ({topperScore})
