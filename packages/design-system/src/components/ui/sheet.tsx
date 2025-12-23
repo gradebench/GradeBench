@@ -1,41 +1,42 @@
 "use client";
 
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
+import { Button } from "@gb/design-system/components/ui/button";
+import { cn } from "@gb/design-system/lib/utils";
 import { XIcon } from "lucide-react";
 import type * as React from "react";
-import { Button } from "@/src/components/ui/button";
-import { cn } from "@/src/lib/utils";
 
-function Sheet({ ...props }: SheetPrimitive.Root.Props) {
+const Sheet = ({ ...props }: SheetPrimitive.Root.Props) => {
 	return <SheetPrimitive.Root data-slot="sheet" {...props} />;
-}
+};
 
-function SheetTrigger({ ...props }: SheetPrimitive.Trigger.Props) {
+const SheetTrigger = ({ ...props }: SheetPrimitive.Trigger.Props) => {
 	return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
-}
+};
 
-function SheetClose({ ...props }: SheetPrimitive.Close.Props) {
+const SheetClose = ({ ...props }: SheetPrimitive.Close.Props) => {
 	return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
-}
+};
 
-function SheetPortal({ ...props }: SheetPrimitive.Portal.Props) {
+const SheetPortal = ({ ...props }: SheetPrimitive.Portal.Props) => {
 	return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
-}
+};
 
-function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
-	return (
-		<SheetPrimitive.Backdrop
-			data-slot="sheet-overlay"
-			className={cn(
-				"data-closed:fade-out-0 data-open:fade-in-0 fixed inset-0 z-50 bg-black/10 duration-100 data-closed:animate-out data-open:animate-in data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs",
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
+const SheetOverlay = ({
+	className,
+	...props
+}: SheetPrimitive.Backdrop.Props) => (
+	<SheetPrimitive.Backdrop
+		data-slot="sheet-overlay"
+		className={cn(
+			"data-closed:fade-out-0 data-open:fade-in-0 fixed inset-0 z-50 bg-black/10 duration-100 data-closed:animate-out data-open:animate-in data-ending-style:opacity-0 data-starting-style:opacity-0 supports-backdrop-filter:backdrop-blur-xs",
+			className,
+		)}
+		{...props}
+	/>
+);
 
-function SheetContent({
+const SheetContent = ({
 	className,
 	children,
 	side = "right",
@@ -44,7 +45,7 @@ function SheetContent({
 }: SheetPrimitive.Popup.Props & {
 	side?: "top" | "right" | "bottom" | "left";
 	showCloseButton?: boolean;
-}) {
+}) => {
 	return (
 		<SheetPortal>
 			<SheetOverlay />
@@ -76,9 +77,9 @@ function SheetContent({
 			</SheetPrimitive.Popup>
 		</SheetPortal>
 	);
-}
+};
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+const SheetHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="sheet-header"
@@ -86,9 +87,9 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+const SheetFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="sheet-footer"
@@ -96,9 +97,9 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
+const SheetTitle = ({ className, ...props }: SheetPrimitive.Title.Props) => {
 	return (
 		<SheetPrimitive.Title
 			data-slot="sheet-title"
@@ -106,12 +107,12 @@ function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
 			{...props}
 		/>
 	);
-}
+};
 
-function SheetDescription({
+const SheetDescription = ({
 	className,
 	...props
-}: SheetPrimitive.Description.Props) {
+}: SheetPrimitive.Description.Props) => {
 	return (
 		<SheetPrimitive.Description
 			data-slot="sheet-description"
@@ -119,15 +120,15 @@ function SheetDescription({
 			{...props}
 		/>
 	);
-}
+};
 
 export {
 	Sheet,
-	SheetTrigger,
 	SheetClose,
 	SheetContent,
-	SheetHeader,
-	SheetFooter,
-	SheetTitle,
 	SheetDescription,
+	SheetFooter,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
 };

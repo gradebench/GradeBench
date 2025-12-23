@@ -1,12 +1,15 @@
 "use client";
 
+import { Label } from "@gb/design-system/components/ui/label";
+import { Separator } from "@gb/design-system/components/ui/separator";
+import { cn } from "@gb/design-system/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useMemo } from "react";
-import { Label } from "@/src/components/ui/label";
-import { Separator } from "@/src/components/ui/separator";
-import { cn } from "@/src/lib/utils";
 
-function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
+const FieldSet = ({
+	className,
+	...props
+}: React.ComponentProps<"fieldset">) => {
 	return (
 		<fieldset
 			data-slot="field-set"
@@ -17,13 +20,13 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldLegend({
+const FieldLegend = ({
 	className,
 	variant = "legend",
 	...props
-}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
+}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) => {
 	return (
 		<legend
 			data-slot="field-legend"
@@ -35,9 +38,9 @@ function FieldLegend({
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
+const FieldGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="field-group"
@@ -48,7 +51,7 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
 const fieldVariants = cva(
 	"data-[invalid=true]:text-destructive gap-3 group/field flex w-full",
@@ -68,11 +71,11 @@ const fieldVariants = cva(
 	},
 );
 
-function Field({
+const Field = ({
 	className,
 	orientation = "vertical",
 	...props
-}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
+}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) => {
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: shadcn
 		<div
@@ -83,9 +86,9 @@ function Field({
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
+const FieldContent = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="field-content"
@@ -96,12 +99,12 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldLabel({
+const FieldLabel = ({
 	className,
 	...props
-}: React.ComponentProps<typeof Label>) {
+}: React.ComponentProps<typeof Label>) => {
 	return (
 		<Label
 			data-slot="field-label"
@@ -113,9 +116,9 @@ function FieldLabel({
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
+const FieldTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="field-label"
@@ -126,9 +129,12 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+const FieldDescription = ({
+	className,
+	...props
+}: React.ComponentProps<"p">) => {
 	return (
 		<p
 			data-slot="field-description"
@@ -141,15 +147,15 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function FieldSeparator({
+const FieldSeparator = ({
 	children,
 	className,
 	...props
 }: React.ComponentProps<"div"> & {
 	children?: React.ReactNode;
-}) {
+}) => {
 	return (
 		<div
 			data-slot="field-separator"
@@ -171,16 +177,16 @@ function FieldSeparator({
 			)}
 		</div>
 	);
-}
+};
 
-function FieldError({
+const FieldError = ({
 	className,
 	children,
 	errors,
 	...props
 }: React.ComponentProps<"div"> & {
 	errors?: Array<{ message?: string } | undefined>;
-}) {
+}) => {
 	const content = useMemo(() => {
 		if (children) {
 			return children;
@@ -222,17 +228,17 @@ function FieldError({
 			{content}
 		</div>
 	);
-}
+};
 
 export {
 	Field,
-	FieldLabel,
+	FieldContent,
 	FieldDescription,
 	FieldError,
 	FieldGroup,
+	FieldLabel,
 	FieldLegend,
 	FieldSeparator,
 	FieldSet,
-	FieldContent,
 	FieldTitle,
 };

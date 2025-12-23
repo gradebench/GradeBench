@@ -27,7 +27,7 @@ export const SolutionSection = () => {
 				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 					{heroSolutionCards.map((card, index) => (
 						<Card
-							className="shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+							className="hover:-translate-y-2 shadow-lg transition-all duration-300 hover:shadow-xl"
 							key={index}
 							data-testid="card"
 						>

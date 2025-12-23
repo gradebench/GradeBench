@@ -1,10 +1,9 @@
 "use client";
 
+import { cn } from "@gb/design-system/lib/utils";
 import type * as React from "react";
 
-import { cn } from "@/src/lib/utils";
-
-function Label({ className, ...props }: React.ComponentProps<"label">) {
+const Label = ({ className, ...props }: React.ComponentProps<"label">) => {
 	return (
 		// biome-ignore lint/a11y/noLabelWithoutControl: shadcn
 		<label
@@ -16,6 +15,6 @@ function Label({ className, ...props }: React.ComponentProps<"label">) {
 			{...props}
 		/>
 	);
-}
+};
 
 export { Label };

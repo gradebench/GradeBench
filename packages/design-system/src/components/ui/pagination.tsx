@@ -1,27 +1,30 @@
+import { Button } from "@gb/design-system/components/ui/button";
+import { cn } from "@gb/design-system/lib/utils";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	MoreHorizontalIcon,
 } from "lucide-react";
 import type * as React from "react";
-import { Button } from "@/src/components/ui/button";
-import { cn } from "@/src/lib/utils";
 
-function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => {
 	return (
+		// biome-ignore lint/a11y/useSemanticElements: shadcn
 		<nav
+			// biome-ignore lint/a11y/noRedundantRoles: shadcn
+			role="navigation"
 			aria-label="pagination"
 			data-slot="pagination"
 			className={cn("mx-auto flex w-full justify-center", className)}
 			{...props}
 		/>
 	);
-}
+};
 
-function PaginationContent({
+const PaginationContent = ({
 	className,
 	...props
-}: React.ComponentProps<"ul">) {
+}: React.ComponentProps<"ul">) => {
 	return (
 		<ul
 			data-slot="pagination-content"
@@ -29,23 +32,23 @@ function PaginationContent({
 			{...props}
 		/>
 	);
-}
+};
 
-function PaginationItem({ ...props }: React.ComponentProps<"li">) {
+const PaginationItem = ({ ...props }: React.ComponentProps<"li">) => {
 	return <li data-slot="pagination-item" {...props} />;
-}
+};
 
 type PaginationLinkProps = {
 	isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
 	React.ComponentProps<"a">;
 
-function PaginationLink({
+const PaginationLink = ({
 	className,
 	isActive,
 	size = "icon",
 	...props
-}: PaginationLinkProps) {
+}: PaginationLinkProps) => {
 	return (
 		<Button
 			variant={isActive ? "outline" : "ghost"}
@@ -62,12 +65,12 @@ function PaginationLink({
 			}
 		/>
 	);
-}
+};
 
-function PaginationPrevious({
+const PaginationPrevious = ({
 	className,
 	...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.ComponentProps<typeof PaginationLink>) => {
 	return (
 		<PaginationLink
 			aria-label="Go to previous page"
@@ -79,12 +82,12 @@ function PaginationPrevious({
 			<span className="hidden sm:block">Previous</span>
 		</PaginationLink>
 	);
-}
+};
 
-function PaginationNext({
+const PaginationNext = ({
 	className,
 	...props
-}: React.ComponentProps<typeof PaginationLink>) {
+}: React.ComponentProps<typeof PaginationLink>) => {
 	return (
 		<PaginationLink
 			aria-label="Go to next page"
@@ -96,12 +99,12 @@ function PaginationNext({
 			<ChevronRightIcon data-icon="inline-end" />
 		</PaginationLink>
 	);
-}
+};
 
-function PaginationEllipsis({
+const PaginationEllipsis = ({
 	className,
 	...props
-}: React.ComponentProps<"span">) {
+}: React.ComponentProps<"span">) => {
 	return (
 		<span
 			aria-hidden
@@ -116,7 +119,7 @@ function PaginationEllipsis({
 			<span className="sr-only">More pages</span>
 		</span>
 	);
-}
+};
 
 export {
 	Pagination,

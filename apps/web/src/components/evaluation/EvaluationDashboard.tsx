@@ -489,7 +489,7 @@ export function EvaluationDashboard({
 									onClick={() => router.push("/quicks")}
 									className="group h-9 gap-2 rounded-lg border-muted-foreground/20 px-3 shadow-sm transition-all hover:border-primary hover:bg-primary/5 hover:shadow-md"
 								>
-									<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+									<ArrowLeft className="group-hover:-translate-x-0.5 h-4 w-4 transition-transform" />
 									<span className="hidden sm:inline">Back to Tests</span>
 								</Button>
 								<div className="h-8 w-px bg-border" />

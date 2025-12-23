@@ -8,7 +8,7 @@
 			}
 		],
 		"paths": {
-			"@/*": ["./*"]
+			"@gb/design-system/*": ["./src/*"]
 		}
 	},
 	"include": ["src"],

@@ -1,31 +1,31 @@
 "use client";
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { Button } from "@gb/design-system/components/ui/button";
+import { cn } from "@gb/design-system/lib/utils";
 import { XIcon } from "lucide-react";
 import type * as React from "react";
-import { Button } from "@/src/components/ui/button";
-import { cn } from "@/src/lib/utils";
 
-function Dialog({ ...props }: DialogPrimitive.Root.Props) {
+const Dialog = ({ ...props }: DialogPrimitive.Root.Props) => {
 	return <DialogPrimitive.Root data-slot="dialog" {...props} />;
-}
+};
 
-function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
+const DialogTrigger = ({ ...props }: DialogPrimitive.Trigger.Props) => {
 	return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
-}
+};
 
-function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
+const DialogPortal = ({ ...props }: DialogPrimitive.Portal.Props) => {
 	return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
-}
+};
 
-function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
+const DialogClose = ({ ...props }: DialogPrimitive.Close.Props) => {
 	return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
-}
+};
 
-function DialogOverlay({
+const DialogOverlay = ({
 	className,
 	...props
-}: DialogPrimitive.Backdrop.Props) {
+}: DialogPrimitive.Backdrop.Props) => {
 	return (
 		<DialogPrimitive.Backdrop
 			data-slot="dialog-overlay"
@@ -36,23 +36,23 @@ function DialogOverlay({
 			{...props}
 		/>
 	);
-}
+};
 
-function DialogContent({
+const DialogContent = ({
 	className,
 	children,
 	showCloseButton = true,
 	...props
 }: DialogPrimitive.Popup.Props & {
 	showCloseButton?: boolean;
-}) {
+}) => {
 	return (
 		<DialogPortal>
 			<DialogOverlay />
 			<DialogPrimitive.Popup
 				data-slot="dialog-content"
 				className={cn(
-					"data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl bg-background p-6 text-sm outline-none ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in sm:max-w-md",
+					"data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 -translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] gap-6 rounded-xl bg-background p-6 text-sm outline-none ring-1 ring-foreground/10 duration-100 data-closed:animate-out data-open:animate-in sm:max-w-md",
 					className,
 				)}
 				{...props}
@@ -76,9 +76,9 @@ function DialogContent({
 			</DialogPrimitive.Popup>
 		</DialogPortal>
 	);
-}
+};
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
 	return (
 		<div
 			data-slot="dialog-header"
@@ -86,16 +86,16 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
 			{...props}
 		/>
 	);
-}
+};
 
-function DialogFooter({
+const DialogFooter = ({
 	className,
 	showCloseButton = false,
 	children,
 	...props
 }: React.ComponentProps<"div"> & {
 	showCloseButton?: boolean;
-}) {
+}) => {
 	return (
 		<div
 			data-slot="dialog-footer"
@@ -113,9 +113,9 @@ function DialogFooter({
 			)}
 		</div>
 	);
-}
+};
 
-function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => {
 	return (
 		<DialogPrimitive.Title
 			data-slot="dialog-title"
@@ -123,12 +123,12 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
 			{...props}
 		/>
 	);
-}
+};
 
-function DialogDescription({
+const DialogDescription = ({
 	className,
 	...props
-}: DialogPrimitive.Description.Props) {
+}: DialogPrimitive.Description.Props) => {
 	return (
 		<DialogPrimitive.Description
 			data-slot="dialog-description"
@@ -139,7 +139,7 @@ function DialogDescription({
 			{...props}
 		/>
 	);
-}
+};
 
 export {
 	Dialog,

@@ -1,5 +1,7 @@
 "use client";
 
+import { Button, buttonVariants } from "@gb/design-system/components/ui/button";
+import { cn } from "@gb/design-system/lib/utils";
 import {
 	ChevronDownIcon,
 	ChevronLeftIcon,
@@ -11,10 +13,8 @@ import {
 	DayPicker,
 	getDefaultClassNames,
 } from "react-day-picker";
-import { Button, buttonVariants } from "@/src/components/ui/button";
-import { cn } from "@/src/lib/utils";
 
-function Calendar({
+const Calendar = ({
 	className,
 	classNames,
 	showOutsideDays = true,
@@ -25,7 +25,7 @@ function Calendar({
 	...props
 }: React.ComponentProps<typeof DayPicker> & {
 	buttonVariant?: React.ComponentProps<typeof Button>["variant"];
-}) {
+}) => {
 	const defaultClassNames = getDefaultClassNames();
 
 	return (
@@ -179,14 +179,14 @@ function Calendar({
 			{...props}
 		/>
 	);
-}
+};
 
-function CalendarDayButton({
+const CalendarDayButton = ({
 	className,
 	day,
 	modifiers,
 	...props
-}: React.ComponentProps<typeof DayButton>) {
+}: React.ComponentProps<typeof DayButton>) => {
 	const defaultClassNames = getDefaultClassNames();
 
 	const ref = React.useRef<HTMLButtonElement>(null);
@@ -216,6 +216,6 @@ function CalendarDayButton({
 			{...props}
 		/>
 	);
-}
+};
 
 export { Calendar, CalendarDayButton };

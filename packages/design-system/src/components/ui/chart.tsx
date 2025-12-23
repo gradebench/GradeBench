@@ -1,9 +1,8 @@
 "use client";
 
+import { cn } from "@gb/design-system/lib/utils";
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
-
-import { cn } from "@/src/lib/utils";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -24,7 +23,7 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
-function useChart() {
+const useChart = () => {
 	const context = React.useContext(ChartContext);
 
 	if (!context) {
@@ -32,9 +31,9 @@ function useChart() {
 	}
 
 	return context;
-}
+};
 
-function ChartContainer({
+const ChartContainer = ({
 	id,
 	className,
 	children,
@@ -45,7 +44,7 @@ function ChartContainer({
 	children: React.ComponentProps<
 		typeof RechartsPrimitive.ResponsiveContainer
 	>["children"];
-}) {
+}) => {
 	const uniqueId = React.useId();
 	const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
@@ -67,7 +66,7 @@ function ChartContainer({
 			</div>
 		</ChartContext.Provider>
 	);
-}
+};
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 	const colorConfig = Object.entries(config).filter(
@@ -105,7 +104,7 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
-function ChartTooltipContent({
+const ChartTooltipContent = ({
 	active,
 	payload,
 	className,
@@ -126,7 +125,7 @@ function ChartTooltipContent({
 		indicator?: "line" | "dot" | "dashed";
 		nameKey?: string;
 		labelKey?: string;
-	}) {
+	}) => {
 	const { config } = useChart();
 
 	const tooltipLabel = React.useMemo(() => {
@@ -205,7 +204,7 @@ function ChartTooltipContent({
 											!hideIndicator && (
 												<div
 													className={cn(
-														"shrink-0 rounded-[2px] border-border bg-(--color-bg)",
+														"shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)",
 														{
 															"h-2.5 w-2.5": indicator === "dot",
 															"w-1": indicator === "line",
@@ -249,11 +248,11 @@ function ChartTooltipContent({
 			</div>
 		</div>
 	);
-}
+};
 
 const ChartLegend = RechartsPrimitive.Legend;
 
-function ChartLegendContent({
+const ChartLegendContent = ({
 	className,
 	hideIcon = false,
 	payload,
@@ -263,7 +262,7 @@ function ChartLegendContent({
 	Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
 		hideIcon?: boolean;
 		nameKey?: string;
-	}) {
+	}) => {
 	const { config } = useChart();
 
 	if (!payload?.length) {
@@ -307,13 +306,13 @@ function ChartLegendContent({
 				})}
 		</div>
 	);
-}
+};
 
-function getPayloadConfigFromPayload(
+const getPayloadConfigFromPayload = (
 	config: ChartConfig,
 	payload: unknown,
 	key: string,
-) {
+) => {
 	if (typeof payload !== "object" || payload === null) {
 		return undefined;
 	}
@@ -345,13 +344,13 @@ function getPayloadConfigFromPayload(
 	return configLabelKey in config
 		? config[configLabelKey]
 		: config[key as keyof typeof config];
-}
+};
 
 export {
 	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
 	ChartLegend,
 	ChartLegendContent,
 	ChartStyle,
+	ChartTooltip,
+	ChartTooltipContent,
 };
