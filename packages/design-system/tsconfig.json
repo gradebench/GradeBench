@@ -2,11 +2,6 @@
 	"extends": "@gb/typescript-config/nextjs.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
 		"paths": {
 			"@gb/design-system/*": ["./src/*"]
 		}

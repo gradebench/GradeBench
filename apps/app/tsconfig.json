@@ -2,14 +2,10 @@
 	"extends": "@gb/typescript-config/nextjs.json",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb/design-system/*": ["../../packages/design-system/src/*"]
+			"@gb/design-system/*": ["../../packages/design-system/src/*"],
+			"@gb/query/*": ["../../packages/query/src/*"]
 		}
 	},
 	"include": [
@@ -19,6 +15,5 @@
 		".next/types/**/*.ts",
 		".next/dev/types/**/*.ts",
 		"**/*.mts"
-	],
-	"exclude": ["node_modules"]
+	]
 }

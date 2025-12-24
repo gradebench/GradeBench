@@ -1,14 +1,11 @@
 import { Button } from "@gb/design-system/components/ui/button";
+import { H1 } from "@gb/design-system/components/ui/typography";
 
-export default function Home() {
+export default async function Page() {
 	return (
-		<>
-			<Button variant="default">Default</Button>
-			<Button variant="secondary">Secondary</Button>
-			<Button variant="outline">Outline</Button>
-			<Button variant="ghost">Ghost</Button>
-			<Button variant="destructive">Destructive</Button>
-			<Button variant="link">Link</Button>
-		</>
+		<main>
+			<H1 className="">GradeBench</H1>
+			<Button>Click me</Button>
+		</main>
 	);
 }
