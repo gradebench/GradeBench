@@ -16,7 +16,7 @@
 		"@gb/design-system": "*",
 		"@gb/query": "*",
 		"lucide-react": "^0.475.0",
-		"next": "16.0.10",
+		"next": "16.1.1",
 		"react": "19.2.1",
 		"react-dom": "19.2.1"
 	},
