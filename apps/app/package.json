@@ -13,6 +13,8 @@
 	},
 	"dependencies": {
 		"@gb/design-system": "*",
+		"@gb/query": "*",
+		"lucide-react": "^0.475.0",
 		"next": "16.0.10",
 		"react": "19.2.1",
 		"react-dom": "19.2.1"
@@ -23,6 +25,7 @@
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"babel-plugin-react-compiler": "1.0.0",
+		"tailwindcss": "^4.1.18",
 		"typescript": "^5"
 	}
 }
