@@ -1,16 +1,6 @@
 "use client";
 
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
-import {
-	AccountView,
-	AuthView,
-	OrganizationView,
-} from "@daveyplate/better-auth-ui";
-import {
-	accountViewPaths,
-	authViewPaths,
-	organizationViewPaths,
-} from "@daveyplate/better-auth-ui/server";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -39,18 +29,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 					slug,
 				}}
 				Link={Link}
+				social={{
+					providers: ["google"],
+				}}
+				multiSession={true}
+				captcha={{
+					provider: "google-recaptcha-v3",
+					siteKey: "6Lf5CzksAAAAAKRtUCQCAY3mY7qDApxIeaKK31f7",
+				}}
 			>
 				{children}
 			</AuthUIProviderTanstack>
 		</AuthQueryProvider>
 	);
-};
-
-export {
-	AccountView,
-	accountViewPaths,
-	AuthView,
-	authViewPaths,
-	OrganizationView,
-	organizationViewPaths,
 };

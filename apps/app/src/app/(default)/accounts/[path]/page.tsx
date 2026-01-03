@@ -1,4 +1,4 @@
-import { AccountView, accountViewPaths } from "@gb/auth/provider";
+import { AccountView, accountViewPaths } from "@gb/auth/index";
 
 export const dynamicParams = false;
 

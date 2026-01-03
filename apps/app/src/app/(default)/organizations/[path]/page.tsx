@@ -1,4 +1,4 @@
-import { OrganizationView, organizationViewPaths } from "@gb/auth/provider";
+import { OrganizationView, organizationViewPaths } from "@gb/auth/index";
 
 export const dynamicParams = false;
 

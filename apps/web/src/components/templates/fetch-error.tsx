@@ -1,14 +1,5 @@
 "use client";
 
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "@gb/ui/src/components/ui/alert-dialog";
 import { CircleAlertIcon } from "lucide-react";
 
 export const UnhandledFetchError = () => {

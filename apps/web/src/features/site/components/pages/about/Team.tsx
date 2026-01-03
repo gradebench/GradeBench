@@ -3,8 +3,8 @@ import {
 	CardContent,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/src/components/ui/card";
-import { H2, Muted, P } from "@gb/ui/src/components/ui/typography";
+} from "@gb/design-system/components/ui/card";
+import { H2, Muted, P } from "@gb/design-system/components/ui/typography";
 import { aboutTeamInfo } from "@/features/site/configs/cards";
 
 export const AboutTeam = () => {
@@ -51,7 +51,7 @@ const TeamCard = ({
 			data-testid="card"
 		>
 			<CardHeader className="pb-6 text-center">
-				<div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-gradient-to-br from-primary/64 to-primary/80">
+				<div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-4xl bg-linear-to-br from-primary/64 to-primary/80">
 					<span className="font-bold text-2xl text-white">{fallback}</span>
 				</div>
 				<CardTitle className="font-bold text-xl">{name}</CardTitle>

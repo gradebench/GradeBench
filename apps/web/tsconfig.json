@@ -4,9 +4,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
-			"@gb-kits/*": ["../../kits/*"],
-			"@gb-element/*": ["../../elements/*"],
-			"@gb/*": ["../../packages/*"]
+			"@gb/design-system/*": ["../../packages/design-system/src/*"],
+			"@gb/query/*": ["../../packages/query/src/*"]
 		}
 	},
 	"include": [

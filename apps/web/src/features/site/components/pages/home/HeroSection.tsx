@@ -1,10 +1,10 @@
-import { Button } from "@gb/ui/src/components/ui/button";
-import { H1, Lead } from "@gb/ui/src/components/ui/typography";
+import { Button } from "@gb/design-system/components/ui/button";
+import { H1, Lead } from "@gb/design-system/components/ui/typography";
 import Link from "next/link";
 
 export const HomeHeroSection = () => {
 	return (
-		<section className="grid min-h-screen place-items-center bg-gradient-to-br from-primary/20 via-background to-primary/20 px-4 py-20 sm:px-6 lg:px-8">
+		<section className="grid min-h-screen place-items-center bg-linear-to-br from-primary/20 via-background to-primary/20 px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-3xl text-center">
 				<H1 className="mb-4" data-testid="headline">
 					<span className="text-primary">Grade</span>
@@ -21,12 +21,7 @@ export const HomeHeroSection = () => {
 					<Button size="lg" data-testid="primary-cta">
 						See GradeBench in Action
 					</Button>
-					<Button
-						variant="outline"
-						size="lg"
-						data-testid="secondary-cta"
-						asChild
-					>
+					<Button variant="outline" size="lg" data-testid="secondary-cta">
 						<Link href={"/site/features"}>Explore the Features</Link>
 					</Button>
 				</div>

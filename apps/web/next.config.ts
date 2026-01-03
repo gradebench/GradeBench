@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
 	/* config options here */
 	reactCompiler: true,
-	transpilePackages: ["@gb/ui", "@gb-element/quicks"],
+	transpilePackages: ["@gb/design-system", "@gb/query"],
 	async rewrites() {
 		return [
 			{

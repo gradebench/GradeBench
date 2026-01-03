@@ -10,7 +10,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 	return (
 		<>
 			<AuthProvider>{children}</AuthProvider>
-			<Toaster />
+			<Toaster position="top-right" />
 		</>
 	);
 };

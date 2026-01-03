@@ -1,22 +1,21 @@
-import { Button } from "@gb/ui/src/components/ui/button";
+import { Button } from "@gb/design-system/components/ui/button";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
-} from "@gb/ui/src/components/ui/navigation-menu";
+} from "@gb/design-system/components/ui/navigation-menu";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@gb/ui/src/components/ui/popover";
-import { Separator } from "@gb/ui/src/components/ui/separator";
-import { H3, P } from "@gb/ui/src/components/ui/typography";
+} from "@gb/design-system/components/ui/popover";
+import { Separator } from "@gb/design-system/components/ui/separator";
+import { H3, P } from "@gb/design-system/components/ui/typography";
 import { Award, CheckCircle, Mail, Menu, Shield } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { GradeBench } from "@/components/anim/GradeBench";
-import { DefaultRootLayout } from "@/components/templates/layouts";
 import { siteConfig } from "../configs/site";
 import type {
 	HeaderCTAType,
@@ -92,12 +91,12 @@ export const RightNav = ({
 }) => {
 	return (
 		<div className="flex items-center gap-2">
-			<Button asChild size="sm" className="max-md:hidden">
+			<Button size="sm" className="max-md:hidden">
 				<Link href={cta.href}>{cta.label}</Link>
 			</Button>
 
 			<Popover>
-				<PopoverTrigger asChild>
+				<PopoverTrigger>
 					<Button size={"icon"} variant={"ghost"} className="md:hidden">
 						<Menu />
 					</Button>
@@ -121,9 +120,9 @@ export const RightNav = ({
 };
 
 export const SiteFooter = ({
-	quicklinks = siteConfig.footer.quicklinks,
+	quickLinks = siteConfig.footer.quickLinks,
 }: {
-	quicklinks?: NavigationMenuItemType[];
+	quickLinks?: NavigationMenuItemType[];
 }) => {
 	return (
 		<footer className="bg-slate-900">
@@ -154,7 +153,7 @@ export const SiteFooter = ({
 							Quick Links
 						</H3>
 						<ul className="space-y-2">
-							{quicklinks.map((link, index) => (
+							{quickLinks.map((link, index) => (
 								<li key={index}>
 									<Link
 										href={link.href}

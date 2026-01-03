@@ -12,6 +12,8 @@ export const ThemeProvider = ({
 		defaultTheme="system"
 		disableTransitionOnChange
 		enableSystem
+		storageKey="gradebench-theme"
+		enableColorScheme
 		{...properties}
 	>
 		{children}

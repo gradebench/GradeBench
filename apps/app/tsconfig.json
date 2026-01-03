@@ -4,9 +4,9 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
+			"@gb/auth/*": ["../../packages/auth/src/*"],
 			"@gb/design-system/*": ["../../packages/design-system/src/*"],
-			"@gb/query/*": ["../../packages/query/src/*"],
-			"@gb/auth/*": ["../../packages/auth/src/*"]
+			"@gb/query/*": ["../../packages/query/src/*"]
 		}
 	},
 	"include": [

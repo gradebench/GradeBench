@@ -1,9 +1,9 @@
-import { Button } from "@gb/ui/src/components/ui/button";
-import { H2, P } from "@gb/ui/src/components/ui/typography";
+import { Button } from "@gb/design-system/components/ui/button";
+import { H2, P } from "@gb/design-system/components/ui/typography";
 
 export const FinalCTA = () => {
 	return (
-		<section className="bg-gradient-to-r from-primary to-blue-500/50 px-4 py-20 sm:px-6 lg:px-8">
+		<section className="bg-linear-to-r from-primary to-blue-500/50 px-4 py-20 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-4xl text-center">
 				<H2 className="mb-6" data-testid="headline">
 					Ready to Revolutionize Your Grading?

@@ -4,7 +4,8 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@gb/ui/src/components/ui/card";
+} from "@gb/design-system/components/ui/card";
+import { P } from "@gb/design-system/components/ui/typography";
 import { AlertTriangleIcon } from "lucide-react";
 
 export default function NotFound() {
@@ -21,9 +22,9 @@ export default function NotFound() {
 					<CardDescription className="text-lg">Page Not Found</CardDescription>
 				</CardHeader>
 				<CardContent className="text-center">
-					<p className="text-muted-foreground">
+					<P className="text-muted-foreground">
 						Sorry, the page you are looking for could not be found.
-					</p>
+					</P>
 				</CardContent>
 			</Card>
 		</main>
