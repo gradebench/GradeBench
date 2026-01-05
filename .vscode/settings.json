@@ -69,13 +69,26 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.words": [
+    "Aspora",
+    "Bengaluru",
     "biomejs",
+    "cmdk",
+    "daveyplate",
     "Embla",
+    "Goyal",
     "gradebench",
+    "Hackathon",
+    "Harti",
+    "NMIMS",
+    "nums",
+    "Sameer",
+    "Samkalp",
     "turbopack",
     "Turborepo",
     "ultracite",
-    "vaul"
+    "UPSC",
+    "vaul",
+    "Yash"
   ],
   "css.validate": false,
   "css.lint.unknownAtRules": "ignore",

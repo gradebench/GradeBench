@@ -129,7 +129,7 @@ export const aboutTeamInfo = [
     role: "Co-Founder",
     expertise: "Business & Finance",
     description:
-      "Leveraging his experience from the YC W22 fintech company Aspora and his education from NMIMS Mumbai, Yash architects our business strategy for sustainable growth.",
+      "Leveraging his experience from the YC W22 FinTech company Aspora and his education from NMIMS Mumbai, Yash architects our business strategy for sustainable growth.",
   },
   {
     name: "Rishi Harti",
@@ -185,7 +185,7 @@ export const featuresDetailInfo = [
     title: "The Personal Touch, Scaled",
     subtitle: "Human-Like Digital Annotation",
     description:
-      "Go beyond simple checkmarks. Our AI provides nuanced, handwritten-style feedback and annotations directly on the answer sheet, guiding students with the clarity and personal touch of an experienced educator.",
+      "Go beyond simple check marks. Our AI provides nuanced, handwritten-style feedback and annotations directly on the answer sheet, guiding students with the clarity and personal touch of an experienced educator.",
     card: {
       icon: <Award className="mx-auto mb-4 h-16 w-16" />,
       title: "Personal Annotations",

@@ -13,7 +13,7 @@ import {
  * This function configures TanStack Query with optimized settings for:
  * - **Caching Strategy**: 2-minute stale time, 10-minute garbage collection
  * - **Error Handling**: Smart retry logic that distinguishes client vs server errors
- * - **Network Awareness**: Only fetches when online, refetches on reconnect
+ * - **Network Awareness**: Only fetches when online, re-fetches on reconnect
  * - **SSR Support**: Dehydrates pending queries for seamless server-to-client transitions
  *
  * The configuration is designed to balance performance, reliability, and user experience
