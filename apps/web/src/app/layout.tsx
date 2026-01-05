@@ -7,22 +7,18 @@ import type { ReactNode } from "react";
 const geistSans = Geist({
 	variable: "--font-geist-sans",
 	subsets: ["latin"],
-	display: "swap",
-	preload: true,
 });
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
 	subsets: ["latin"],
-	display: "swap",
-	preload: true,
 });
 
-type WebRootLayoutProps = {
+type RootLayoutProps = {
 	readonly children: ReactNode;
 };
 
-const WebRootLayout = ({ children }: WebRootLayoutProps) => {
+const RootLayout = ({ children }: RootLayoutProps) => {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
@@ -36,4 +32,4 @@ const WebRootLayout = ({ children }: WebRootLayoutProps) => {
 	);
 };
 
-export default WebRootLayout;
+export default RootLayout;
