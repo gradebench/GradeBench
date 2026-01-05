@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { env } from "@/configs/env.config";
 
 const robots = (): MetadataRoute.Robots => {
 	return {
@@ -7,12 +8,8 @@ const robots = (): MetadataRoute.Robots => {
 				userAgent: "*",
 				allow: "/",
 			},
-			{
-				userAgent: "*",
-				allow: "/site/",
-			},
 		],
-		sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
+		sitemap: `https://www.${env.server.BASE_DOMAIN}/sitemap.xml`,
 	};
 };
 

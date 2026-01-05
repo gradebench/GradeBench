@@ -38,7 +38,7 @@ GradeBench/
 ### Packages
 
 - **@gb/auth**: Authentication library built with better-auth
-- **@gb/ui**: Shared UI component library built with React, Tailwind CSS, and Radix UI
+- **@gb/design-system**: Shared UI component library built with React, Tailwind CSS, and Base UI
 - **@gb/typescript-config**: Shared TypeScript configuration presets
 
 ### Elements

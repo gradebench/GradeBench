@@ -1,12 +1,10 @@
 import {
 	ThemeProvider as NextThemeProvider,
 	type ThemeProviderProps,
+	useTheme,
 } from "next-themes";
 
-export const ThemeProvider = ({
-	children,
-	...properties
-}: ThemeProviderProps) => (
+const ThemeProvider = ({ children, ...properties }: ThemeProviderProps) => (
 	<NextThemeProvider
 		attribute="class"
 		defaultTheme="system"
@@ -19,3 +17,5 @@ export const ThemeProvider = ({
 		{children}
 	</NextThemeProvider>
 );
+
+export { ThemeProvider, useTheme };

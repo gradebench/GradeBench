@@ -14,14 +14,14 @@
 	},
 	"dependencies": {
 		"@daveyplate/better-auth-tanstack": "^1.3.6",
-		"@daveyplate/better-auth-ui": "^3.3.9",
-		"better-auth": "^1.4.9",
-		"next": "^15.5.9",
+		"@daveyplate/better-auth-ui": "^3.3.12",
+		"better-auth": "^1.4.10",
+		"next": "^16.1.1",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3"
 	},
 	"devDependencies": {
 		"@gb/typescript-config": "*",
-		"typescript": "^5.8.3"
+		"typescript": "^5.9.3"
 	}
 }

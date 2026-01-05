@@ -1,5 +1,6 @@
 "use client";
-import { cn } from "@gb/ui/src/lib/utils";
+
+import { cn } from "@gb/design-system/lib/utils";
 import { motion } from "motion/react";
 
 export const GradeBench = ({ className }: { className?: string }) => {

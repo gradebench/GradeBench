@@ -17,7 +17,7 @@
 		}
 	},
 	"devDependencies": {
-		"@gb/typescript-config": "^1.0.0",
+		"@gb/typescript-config": "*",
 		"tsc-alias": "^1.8.16",
 		"typescript": "^5.9.3"
 	}

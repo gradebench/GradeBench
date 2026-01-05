@@ -3,6 +3,7 @@
 	"biome.requireConfiguration": true,
 	"biome.enabled": true,
 	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true,
 	"editor.defaultFormatter": "biomejs.biome",
 	"notebook.defaultFormatter": "biomejs.biome",
 	"editor.cursorBlinking": "expand",

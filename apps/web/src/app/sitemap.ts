@@ -1,11 +1,33 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/features/site/configs/site";
+import { env } from "@/configs/env.config";
 
 const sitemap = (): MetadataRoute.Sitemap => {
-	const siteSitemap = Object.values(siteConfig.pages).flatMap(
-		(value) => value.sitemap,
-	);
-	return [...siteSitemap];
+	return [
+		{
+			url: `https://www.${env.server.BASE_DOMAIN}`,
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 1,
+		},
+		{
+			url: `https://www.${env.server.BASE_DOMAIN}/about`,
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 1,
+		},
+		{
+			url: `https://www.${env.server.BASE_DOMAIN}/features`,
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 1,
+		},
+		{
+			url: `https://www.${env.server.BASE_DOMAIN}/solutions`,
+			lastModified: new Date(),
+			changeFrequency: "weekly",
+			priority: 1,
+		},
+	];
 };
 
 export default sitemap;

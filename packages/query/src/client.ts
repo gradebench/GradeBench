@@ -37,9 +37,9 @@ const makeQueryClient = () => {
 				staleTime: 1000 * 60 * 2, // 2 minutes
 				gcTime: 1000 * 60 * 10, // 10 minutes
 
-				retry: (failureCount, error) => {
-					if ((error as any)?.status >= 400 && (error as any)?.status < 500)
-						return false;
+				retry: (failureCount, _error) => {
+					/* if (error?.status >= 400 && error?.status < 500)
+						return false; */
 
 					return failureCount < 3;
 				},
@@ -58,10 +58,10 @@ const makeQueryClient = () => {
 				placeholderData: (previousData: unknown) => previousData,
 			},
 			mutations: {
-				retry: (failureCount, error) => {
-					if ((error as any)?.status >= 500 || !(error as any)?.status) {
+				retry: (_failureCount, _error) => {
+					/* if ((error as any)?.status >= 500 || !(error as any)?.status) {
 						return failureCount < 2;
-					}
+					} */
 					return false;
 				},
 				retryDelay: 1000 * 2, // 2 seconds
