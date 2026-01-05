@@ -6,37 +6,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@gb/design-system/components/ui/card";
-import { heroProblemCards } from "@/configs/cards.config";
 import { motion } from "motion/react";
+import { heroProblemCards } from "@/configs/cards.config";
 
 export function StatsSection() {
   return (
-    <section className="py-20 md:py-32 overflow-hidden">
+    <section className="overflow-hidden py-20 md:py-32">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <h2 className="mb-4 font-bold text-3xl tracking-tight md:text-4xl">
             Don't Let Grading Overwhelm Your Institution
           </h2>
-          <p className="text-xl text-muted-foreground">
-            Manual grading is more than just a task; it's a significant operational drain that costs time and money.
+          <p className="text-muted-foreground text-xl">
+            Manual grading is more than just a task; it's a significant
+            operational drain that costs time and money.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid gap-8 md:grid-cols-3">
           {heroProblemCards.map((card, index) => (
             <motion.div
-              key={card.title}
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              key={card.title}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
             >
-              <Card className="h-full border-border/50 shadow-sm hover:shadow-md transition-shadow">
+              <Card className="h-full border-border/50 shadow-sm transition-shadow hover:shadow-md">
                 <CardHeader className="text-center md:text-left">
-                  <div className="mb-4 inline-flex">
-                    {card.icon}
-                  </div>
-                  <CardTitle className="text-2xl font-bold mb-2">{card.title}</CardTitle>
+                  <div className="mb-4 inline-flex">{card.icon}</div>
+                  <CardTitle className="mb-2 font-bold text-2xl">
+                    {card.title}
+                  </CardTitle>
                   <CardDescription className="text-base">
                     {card.content}
                   </CardDescription>

@@ -1,6 +1,6 @@
-import { FeaturesClient } from "./client";
-import { env } from "@/configs/env.config";
 import type { Metadata } from "next";
+import { env } from "@/configs/env.config";
+import { FeaturesClient } from "./client";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.${env.server.BASE_DOMAIN}`),

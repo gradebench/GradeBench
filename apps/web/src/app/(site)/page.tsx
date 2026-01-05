@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CTASection } from "@/components/home/cta-section";
 import { FeaturesPreviewSection } from "@/components/home/features-preview-section";
 import { HeroSection } from "@/components/home/hero-section";
@@ -5,7 +6,6 @@ import { PartnersSection } from "@/components/home/partners-section";
 import { StatsSection } from "@/components/home/stats-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { env } from "@/configs/env.config";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://www.${env.server.BASE_DOMAIN}`),
