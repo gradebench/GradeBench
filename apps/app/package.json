@@ -1,33 +1,33 @@
 {
-	"$schema": "https://json.schemastore.org/package",
-	"name": "app",
-	"version": "0.1.0",
-	"type": "module",
-	"private": true,
-	"scripts": {
-		"dev": "next dev --turbopack --port 3001",
-		"build": "next build",
-		"start": "next start",
-		"check-types": "tsc --noEmit --jsx preserve --emitDeclarationOnly false",
-		"test": "vitest run --coverage"
-	},
-	"dependencies": {
-		"@gb/auth": "*",
-		"@gb/design-system": "*",
-		"@gb/query": "*",
-		"lucide-react": "^0.475.0",
-		"next": "^16.1.1",
-		"react": "^19.2.3",
-		"react-dom": "^19.2.3",
-		"zod": "^4.3.5"
-	},
-	"devDependencies": {
-		"@gb/typescript-config": "*",
-		"@types/node": "^25.0.3",
-		"@types/react": "^19.2.7",
-		"@types/react-dom": "^19.2.3",
-		"babel-plugin-react-compiler": "^1.0.0",
-		"tailwindcss": "^4.1.18",
-		"typescript": "^5.9.3"
-	}
+  "$schema": "https://json.schemastore.org/package",
+  "name": "app",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "check-types": "tsc --noEmit --jsx preserve --emitDeclarationOnly false",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@gb/auth": "*",
+    "@gb/design-system": "*",
+    "@gb/query": "*",
+    "lucide-react": "^0.475.0",
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@gb/typescript-config": "*",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  }
 }

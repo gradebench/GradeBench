@@ -1,15 +1,15 @@
 {
-	"$schema": "https://json.schemastore.org/package",
-	"name": "@gb/vitest-config",
-	"version": "1.0.0",
-	"private": true,
-	"type": "module",
-	"publishConfig": {
-		"access": "public"
-	},
-	"devDependencies": {
-		"@vitest/coverage-v8": "^4.0.16",
-		"vite": "^7.3.0",
-		"vitest": "^4.0.16"
-	}
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@gb/vitest-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.16",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
+  }
 }

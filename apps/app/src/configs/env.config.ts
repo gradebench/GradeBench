@@ -1,29 +1,29 @@
 import z from "zod";
 
 const serverSchema = z.object({
-	NODE_ENV: z
-		.enum(["development", "production", "test"])
-		.default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
 });
 
 const clientSchema = z.object({
-	NEXT_PUBLIC_API_URL: z.url().min(1, "NEXT_PUBLIC_API_URL is required"),
+  NEXT_PUBLIC_API_URL: z.url().min(1, "NEXT_PUBLIC_API_URL is required"),
 });
 
 const parsedServerEnv = serverSchema.safeParse(process.env);
 const parsedClientEnv = clientSchema.safeParse(process.env);
 
-if (!parsedServerEnv.success || !parsedClientEnv.success) {
-	const serverErrors = parsedServerEnv.error?.flatten().fieldErrors;
-	const clientErrors = parsedClientEnv.error?.flatten().fieldErrors;
-	console.error("Invalid or missing environment variables", {
-		server: serverErrors,
-		client: clientErrors,
-	});
-	process.exit(1);
+if (!(parsedServerEnv.success && parsedClientEnv.success)) {
+  const serverErrors = parsedServerEnv.error?.flatten().fieldErrors;
+  const clientErrors = parsedClientEnv.error?.flatten().fieldErrors;
+  console.error("Invalid or missing environment variables", {
+    server: serverErrors,
+    client: clientErrors,
+  });
+  process.exit(1);
 }
 
 export const env = Object.freeze({
-	client: parsedClientEnv.data,
-	server: parsedServerEnv.data,
+  client: parsedClientEnv.data,
+  server: parsedServerEnv.data,
 });

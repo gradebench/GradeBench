@@ -1,9 +1,9 @@
 import {
-	defaultShouldDehydrateQuery,
-	isServer,
-	MutationCache,
-	QueryCache,
-	QueryClient,
+  defaultShouldDehydrateQuery,
+  isServer,
+  MutationCache,
+  QueryCache,
+  QueryClient,
 } from "@tanstack/react-query";
 
 /**
@@ -31,67 +31,69 @@ import {
  * ```
  */
 const makeQueryClient = () => {
-	return new QueryClient({
-		defaultOptions: {
-			queries: {
-				staleTime: 1000 * 60 * 2, // 2 minutes
-				gcTime: 1000 * 60 * 10, // 10 minutes
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 2, // 2 minutes
+        gcTime: 1000 * 60 * 10, // 10 minutes
 
-				retry: (failureCount, _error) => {
-					/* if (error?.status >= 400 && error?.status < 500)
+        retry: (failureCount, _error) => {
+          /* if (error?.status >= 400 && error?.status < 500)
 						return false; */
 
-					return failureCount < 3;
-				},
-				retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+          return failureCount < 3;
+        },
+        retryDelay: (attemptIndex) =>
+          Math.min(1000 * 2 ** attemptIndex, 30_000),
 
-				refetchOnWindowFocus: true,
-				refetchOnReconnect: true,
-				refetchOnMount: true,
-				refetchInterval: false,
-				refetchIntervalInBackground: false,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMount: true,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
 
-				networkMode: "online",
+        networkMode: "online",
 
-				throwOnError: false,
+        throwOnError: false,
 
-				placeholderData: (previousData: unknown) => previousData,
-			},
-			mutations: {
-				retry: (_failureCount, _error) => {
-					/* if ((error as any)?.status >= 500 || !(error as any)?.status) {
+        placeholderData: (previousData: unknown) => previousData,
+      },
+      mutations: {
+        retry: (_failureCount, _error) => {
+          /* if ((error as any)?.status >= 500 || !(error as any)?.status) {
 						return failureCount < 2;
 					} */
-					return false;
-				},
-				retryDelay: 1000 * 2, // 2 seconds
+          return false;
+        },
+        retryDelay: 1000 * 2, // 2 seconds
 
-				networkMode: "online",
+        networkMode: "online",
 
-				throwOnError: false,
-			},
-			dehydrate: {
-				shouldDehydrateQuery: (query) =>
-					defaultShouldDehydrateQuery(query) ||
-					query.state.status === "pending",
+        throwOnError: false,
+      },
+      dehydrate: {
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === "pending",
 
-				shouldDehydrateMutation: () => false,
+        shouldDehydrateMutation: () => false,
 
-				shouldRedactErrors: () => true,
-			},
-		},
+        shouldRedactErrors: () => true,
+      },
+    },
 
-		queryCache: new QueryCache({
-			onError(error, query) {
-				if (query.state.data !== undefined)
-					console.error("Query Error:", error);
-			},
-		}),
+    queryCache: new QueryCache({
+      onError(error, query) {
+        if (query.state.data !== undefined) {
+          console.error("Query Error:", error);
+        }
+      },
+    }),
 
-		mutationCache: new MutationCache({
-			onError: (error) => console.error("Mutation error:", error),
-		}),
-	});
+    mutationCache: new MutationCache({
+      onError: (error) => console.error("Mutation error:", error),
+    }),
+  });
 };
 
 /**
@@ -172,15 +174,16 @@ let browserQueryClient: QueryClient | undefined;
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr | TanStack Query SSR Guide}
  */
 export const getQueryClient = () => {
-	if (isServer) {
-		// Server: always make a new query client
-		return makeQueryClient();
-	} else {
-		// Browser: make a new query client if we don't already have one
-		// This is very important, so we don't re-make a new client if React
-		// suspends during the initial render. This may not be needed if we
-		// have a suspense boundary BELOW the creation of the query client
-		if (!browserQueryClient) browserQueryClient = makeQueryClient();
-		return browserQueryClient;
-	}
+  if (isServer) {
+    // Server: always make a new query client
+    return makeQueryClient();
+  }
+  // Browser: make a new query client if we don't already have one
+  // This is very important, so we don't re-make a new client if React
+  // suspends during the initial render. This may not be needed if we
+  // have a suspense boundary BELOW the creation of the query client
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();
+  }
+  return browserQueryClient;
 };

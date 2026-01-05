@@ -18,76 +18,76 @@ import { defineConfig, mergeConfig } from "vitest/config";
  * @returns {import('vitest/config').UserConfig}
  */
 export const vitestConfig = (options = {}) => {
-	const {
-		setupFile = "./vitest.setup.ts",
-		setupFiles,
-		testTimeout = 10000,
-		coverage = {},
-		alias = {},
-		isolate = true,
-		poolOptions = {},
-	} = options;
+  const {
+    setupFile = "./vitest.setup.ts",
+    setupFiles,
+    testTimeout = 10_000,
+    coverage = {},
+    alias = {},
+    isolate = true,
+    poolOptions = {},
+  } = options;
 
-	const defaultConfig = defineConfig({
-		test: {
-			// Only discover tests from the standard `tests/` locations.
-			// This enforces repo convention: unit tests in `tests/unit`, integration in `tests/integration`.
-			include: ["**/tests/**/*.test.{js,ts}", "**/tests/**/*.spec.{js,ts}"],
-			globals: true,
-			environment: "node",
-			setupFiles: setupFiles || [setupFile],
-			testTimeout,
-			env: loadEnv("test", process.cwd(), ""),
-			isolate,
-			poolOptions: {
-				threads: {
-					singleThread: false,
-					...poolOptions.threads,
-				},
-			},
-			coverage: {
-				enabled: false,
-				provider: "v8",
-				all: false,
-				reporter: ["text", "json", "html", "lcov"],
-				include: ["**/src/**/*.ts"],
-				exclude: [
-					"node_modules/**",
-					"dist/**",
-					"build/**",
-					"coverage/**",
-					"**/*.config.ts",
-					"**/*.config.js",
-					"**/*.d.ts",
-					"**/index.ts",
-					"**/*.test.ts",
-					"**/*.spec.ts",
-					"**/tests/**",
-					"**/examples/**",
-					"**/docs/**",
-					"**/*.schema.ts",
-					"**/migrations/**",
-					"**/types/**",
-				],
-				thresholds: {
-					branches: 80,
-					functions: 80,
-					lines: 80,
-					statements: 80,
-					...coverage.thresholds,
-				},
-				...coverage,
-			},
-		},
-		resolve: {
-			alias: {
-				"@": resolve("./src"),
-				...alias,
-			},
-		},
-	});
+  const defaultConfig = defineConfig({
+    test: {
+      // Only discover tests from the standard `tests/` locations.
+      // This enforces repo convention: unit tests in `tests/unit`, integration in `tests/integration`.
+      include: ["**/tests/**/*.test.{js,ts}", "**/tests/**/*.spec.{js,ts}"],
+      globals: true,
+      environment: "node",
+      setupFiles: setupFiles || [setupFile],
+      testTimeout,
+      env: loadEnv("test", process.cwd(), ""),
+      isolate,
+      poolOptions: {
+        threads: {
+          singleThread: false,
+          ...poolOptions.threads,
+        },
+      },
+      coverage: {
+        enabled: false,
+        provider: "v8",
+        all: false,
+        reporter: ["text", "json", "html", "lcov"],
+        include: ["**/src/**/*.ts"],
+        exclude: [
+          "node_modules/**",
+          "dist/**",
+          "build/**",
+          "coverage/**",
+          "**/*.config.ts",
+          "**/*.config.js",
+          "**/*.d.ts",
+          "**/index.ts",
+          "**/*.test.ts",
+          "**/*.spec.ts",
+          "**/tests/**",
+          "**/examples/**",
+          "**/docs/**",
+          "**/*.schema.ts",
+          "**/migrations/**",
+          "**/types/**",
+        ],
+        thresholds: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+          ...coverage.thresholds,
+        },
+        ...coverage,
+      },
+    },
+    resolve: {
+      alias: {
+        "@": resolve("./src"),
+        ...alias,
+      },
+    },
+  });
 
-	return defaultConfig;
+  return defaultConfig;
 };
 
 /**
@@ -99,5 +99,5 @@ export const vitestConfig = (options = {}) => {
  * @returns {import('vitest/config').ViteUserConfig}
  */
 export const createVitestConfig = (customConfig = {}, options = {}) => {
-	return mergeConfig(vitestConfig(options), customConfig);
+  return mergeConfig(vitestConfig(options), customConfig);
 };

@@ -2,17 +2,17 @@ import { AuthProvider } from "@gb/auth/provider";
 import { Toaster } from "@gb/design-system/components/ui/sonner";
 import type { ReactNode } from "react";
 
-type DashboardLayoutProps = {
-	readonly children: ReactNode;
-};
+interface DashboardLayoutProps {
+  readonly children: ReactNode;
+}
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-	return (
-		<>
-			<AuthProvider>{children}</AuthProvider>
-			<Toaster />
-		</>
-	);
+  return (
+    <>
+      <AuthProvider>{children}</AuthProvider>
+      <Toaster />
+    </>
+  );
 };
 
 export default DashboardLayout;

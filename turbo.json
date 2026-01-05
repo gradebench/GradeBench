@@ -1,43 +1,46 @@
 {
-	"$schema": "https://turborepo.com/schema.json",
-	"globalDependencies": ["**/env.*local"],
-	"ui": "tui",
-	"envMode": "loose",
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
-		},
-		"test": {
-			"dependsOn": ["^test"]
-		},
-		"test:unit": {
-			"dependsOn": ["^test:unit"]
-		},
-		"test:integration": {
-			"dependsOn": ["^test:integration"]
-		},
-		"test:coverage": {
-			"dependsOn": ["^test:coverage"],
-			"outputs": ["coverage/**"]
-		},
-		"test:watch": {
-			"dependsOn": ["^test:watch"],
-			"cache": false,
-			"persistent": true
-		},
-		"//#lint": {
-			"cache": false
-		},
-		"check-types": {
-			"dependsOn": ["^check-types"],
-			"env": ["*"],
-			"inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
-			"outputs": ["**/*.tsbuildinfo"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
-		}
-	}
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["**/env.*local"],
+  "ui": "tui",
+  "envMode": "loose",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "test:unit": {
+      "dependsOn": ["^test:unit"]
+    },
+    "test:integration": {
+      "dependsOn": ["^test:integration"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^test:coverage"],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "dependsOn": ["^test:watch"],
+      "cache": false,
+      "persistent": true
+    },
+    "//#lint": {
+      "cache": false
+    },
+    "//#lint:fix": {
+      "cache": false
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"],
+      "env": ["*"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
+      "outputs": ["**/*.tsbuildinfo"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
 }

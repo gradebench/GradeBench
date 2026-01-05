@@ -1,19 +1,19 @@
 {
-	"extends": "@gb/typescript-config/nextjs.json",
-	"compilerOptions": {
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./src/*"],
-			"@gb/design-system/*": ["../../packages/design-system/src/*"],
-			"@gb/query/*": ["../../packages/query/src/*"]
-		}
-	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		".next/dev/types/**/*.ts",
-		"**/*.mts"
-	]
+  "extends": "@gb/typescript-config/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@gb/design-system/*": ["../../packages/design-system/src/*"],
+      "@gb/query/*": ["../../packages/query/src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ]
 }

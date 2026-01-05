@@ -3,21 +3,21 @@ import { AccountView, accountViewPaths } from "@gb/auth/index";
 export const dynamicParams = false;
 
 export const generateStaticParams = () => {
-	return Object.values(accountViewPaths).map((path) => ({ path }));
+  return Object.values(accountViewPaths).map((path) => ({ path }));
 };
 
 const AccountPage = async ({
-	params,
+  params,
 }: {
-	params: Promise<{ path: string }>;
+  params: Promise<{ path: string }>;
 }) => {
-	const { path } = await params;
+  const { path } = await params;
 
-	return (
-		<main className="container p-4 md:p-6">
-			<AccountView path={path} />
-		</main>
-	);
+  return (
+    <main className="container p-4 md:p-6">
+      <AccountView path={path} />
+    </main>
+  );
 };
 
 export default AccountPage;

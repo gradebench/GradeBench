@@ -1,24 +1,24 @@
 {
-	"$schema": "https://ui.shadcn.com/schema.json",
-	"style": "base-vega",
-	"rsc": true,
-	"tsx": true,
-	"tailwind": {
-		"config": "",
-		"css": "src/styles/globals.css",
-		"baseColor": "neutral",
-		"cssVariables": true,
-		"prefix": ""
-	},
-	"iconLibrary": "lucide",
-	"aliases": {
-		"components": "@gb/design-system/components",
-		"utils": "@gb/design-system/lib/utils",
-		"ui": "@gb/design-system/components/ui",
-		"lib": "@gb/design-system/lib",
-		"hooks": "@gb/design-system/hooks"
-	},
-	"menuColor": "default",
-	"menuAccent": "subtle",
-	"registries": {}
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-vega",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@gb/design-system/components",
+    "utils": "@gb/design-system/lib/utils",
+    "ui": "@gb/design-system/components/ui",
+    "lib": "@gb/design-system/lib",
+    "hooks": "@gb/design-system/hooks"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
 }

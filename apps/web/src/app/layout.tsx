@@ -5,31 +5,31 @@ import { Geist, Geist_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
-type RootLayoutProps = {
-	readonly children: ReactNode;
-};
+interface RootLayoutProps {
+  readonly children: ReactNode;
+}
 
 const RootLayout = ({ children }: RootLayoutProps) => {
-	return (
-		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<ThemeProvider>
-					<QueryProvider>{children}</QueryProvider>
-				</ThemeProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ThemeProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 };
 
 export default RootLayout;

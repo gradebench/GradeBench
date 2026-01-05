@@ -1,27 +1,27 @@
 {
-	"$schema": "https://json.schemastore.org/package",
-	"name": "@gb/auth",
-	"version": "0.0.0",
-	"private": true,
-	"type": "module",
-	"scripts": {},
-	"exports": {
-		".": "./src/index.ts",
-		"./client": "./src/client.ts",
-		"./server": "./src/server.ts",
-		"./providers": "./src/providers.ts",
-		"./styles.css": "./src/styles.css"
-	},
-	"dependencies": {
-		"@daveyplate/better-auth-tanstack": "^1.3.6",
-		"@daveyplate/better-auth-ui": "^3.3.12",
-		"better-auth": "^1.4.10",
-		"next": "^16.1.1",
-		"react": "^19.2.3",
-		"react-dom": "^19.2.3"
-	},
-	"devDependencies": {
-		"@gb/typescript-config": "*",
-		"typescript": "^5.9.3"
-	}
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@gb/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {},
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./server": "./src/server.ts",
+    "./providers": "./src/providers.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "dependencies": {
+    "@daveyplate/better-auth-tanstack": "^1.3.6",
+    "@daveyplate/better-auth-ui": "^3.3.12",
+    "better-auth": "^1.4.10",
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@gb/typescript-config": "*",
+    "typescript": "^5.9.3"
+  }
 }

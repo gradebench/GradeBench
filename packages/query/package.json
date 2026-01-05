@@ -1,33 +1,33 @@
 {
-	"$schema": "https://json.schemastore.org/package",
-	"name": "@gb/query",
-	"version": "0.0.0",
-	"type": "module",
-	"private": true,
-	"scripts": {},
-	"exports": {
-		".": {
-			"import": "./src/index.ts",
-			"types": "./src/index.ts"
-		},
-		"./client": {
-			"import": "./src/client.ts",
-			"types": "./src/client.ts"
-		},
-		"./provider": {
-			"import": "./src/provider.ts",
-			"types": "./src/provider.ts"
-		}
-	},
-	"dependencies": {
-		"@tanstack/react-query": "^5.90.16",
-		"react": "^19.2.3",
-		"react-dom": "^19.2.3"
-	},
-	"devDependencies": {
-		"@gb/typescript-config": "*",
-		"@tanstack/react-query-devtools": "^5.91.2",
-		"@types/react": "^19.2.7",
-		"@types/react-dom": "^19.2.3"
-	}
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@gb/query",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {},
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./client": {
+      "import": "./src/client.ts",
+      "types": "./src/client.ts"
+    },
+    "./provider": {
+      "import": "./src/provider.ts",
+      "types": "./src/provider.ts"
+    }
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.16",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@gb/typescript-config": "*",
+    "@tanstack/react-query-devtools": "^5.91.2",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3"
+  }
 }
