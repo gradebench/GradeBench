@@ -4,11 +4,11 @@ const serverSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+  BASE_DOMAIN: z.string().min(1, "BASE_DOMAIN is required"),
+  CAPTCHA_SITE_KEY: z.string().min(1, "CAPTCHA_SITE_KEY is required"),
 });
 
-const clientSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.url().min(1, "NEXT_PUBLIC_API_URL is required"),
-});
+const clientSchema = z.object({});
 
 const parsedServerEnv = serverSchema.safeParse(process.env);
 const parsedClientEnv = clientSchema.safeParse(process.env);

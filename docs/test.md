@@ -145,7 +145,7 @@
   - Upload JUnit & coverage artifacts
 
 - **E2E (slow, infra)** — run on `staging` branch or scheduled:
-  - Build affected apps `npx turbo run build --filter=...`
+  - Build affected apps `npx turbo run build --workspace=...`
   - Spin up docker-compose / ephemeral infra (DB, redis)
   - `npx playwright install` + `npx playwright test --workers=4`
   - Collect traces/screenshots

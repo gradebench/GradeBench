@@ -1,98 +1,98 @@
 {
-  "typescript.tsdk": "node_modules\\typescript\\lib",
-  "biome.requireConfiguration": true,
-  "biome.enabled": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-  "editor.defaultFormatter": "biomejs.biome",
-  "notebook.defaultFormatter": "biomejs.biome",
-  "editor.cursorBlinking": "expand",
-  "editor.cursorSmoothCaretAnimation": "on",
-  "editor.smoothScrolling": true,
-  "workbench.list.smoothScrolling": true,
-  "terminal.integrated.smoothScrolling": true,
-  "editor.wordWrap": "on",
-  "workbench.colorTheme": "One Dark Pro Night Flat",
-  "python.analysis.autoImportCompletions": false,
-  "docker.languageserver.formatter.ignoreMultilineInstructions": false,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit",
-    "source.fixAll.biome": "explicit",
-    "source.action.useSortedKeys.biome": "explicit"
-  },
-  "chat.promptFilesRecommendations": {
-    "speckit.constitution": true,
-    "speckit.specify": true,
-    "speckit.plan": true,
-    "speckit.tasks": true,
-    "speckit.implement": true
-  },
-  "chat.tools.terminal.autoApprove": {
-    ".specify/scripts/bash/": true,
-    ".specify/scripts/powershell/": true
-  },
-  "editor.defaultFoldingRangeProvider": "biomejs.biome",
-  "[chatagent]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[terraform]": {
-    "editor.defaultFormatter": "hashicorp.terraform"
-  },
-  "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
-  },
-  "[terraform-vars]": {
-    "editor.defaultFormatter": "hashicorp.terraform"
-  },
-  "[github-actions-workflow]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "cSpell.words": [
-    "Aspora",
-    "Bengaluru",
-    "biomejs",
-    "cmdk",
-    "daveyplate",
-    "Embla",
-    "Goyal",
-    "gradebench",
-    "Hackathon",
-    "Harti",
-    "NMIMS",
-    "nums",
-    "Sameer",
-    "Samkalp",
-    "turbopack",
-    "Turborepo",
-    "ultracite",
-    "UPSC",
-    "vaul",
-    "Yash"
-  ],
-  "css.validate": false,
-  "css.lint.unknownAtRules": "ignore",
-  "javascript.preferGoToSourceDefinition": true,
-  "typescript.preferGoToSourceDefinition": true,
-  "editor.definitionLinkOpensInPeek": false
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "biome.requireConfiguration": true,
+    "biome.enabled": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "notebook.defaultFormatter": "biomejs.biome",
+    "editor.cursorBlinking": "expand",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.smoothScrolling": true,
+    "workbench.list.smoothScrolling": true,
+    "terminal.integrated.smoothScrolling": true,
+    "editor.wordWrap": "on",
+    "workbench.colorTheme": "One Dark Pro Night Flat",
+    "python.analysis.autoImportCompletions": false,
+    "docker.languageserver.formatter.ignoreMultilineInstructions": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit",
+        "source.fixAll.biome": "explicit",
+        "source.action.useSortedKeys.biome": "explicit"
+    },
+    "chat.promptFilesRecommendations": {
+        "speckit.constitution": true,
+        "speckit.specify": true,
+        "speckit.plan": true,
+        "speckit.tasks": true,
+        "speckit.implement": true
+    },
+    "chat.tools.terminal.autoApprove": {
+        ".specify/scripts/bash/": true,
+        ".specify/scripts/powershell/": true
+    },
+    "editor.defaultFoldingRangeProvider": "biomejs.biome",
+    "[chatagent]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[terraform]": {
+        "editor.defaultFormatter": "hashicorp.terraform"
+    },
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+    },
+    "[terraform-vars]": {
+        "editor.defaultFormatter": "hashicorp.terraform"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "cSpell.words": [
+        "Aspora",
+        "Bengaluru",
+        "biomejs",
+        "cmdk",
+        "daveyplate",
+        "Embla",
+        "Goyal",
+        "gradebench",
+        "Hackathon",
+        "Harti",
+        "NMIMS",
+        "nums",
+        "Sameer",
+        "Samkalp",
+        "turbopack",
+        "Turborepo",
+        "ultracite",
+        "UPSC",
+        "vaul",
+        "Yash"
+    ],
+    "css.validate": false,
+    "css.lint.unknownAtRules": "ignore",
+    "javascript.preferGoToSourceDefinition": true,
+    "typescript.preferGoToSourceDefinition": true,
+    "editor.definitionLinkOpensInPeek": false
 }

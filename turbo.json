@@ -29,7 +29,7 @@
     "//#lint": {
       "cache": false
     },
-    "//#lint:fix": {
+    "//#format": {
       "cache": false
     },
     "check-types": {
