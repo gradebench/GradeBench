@@ -20,14 +20,14 @@
 		}
 	},
 	"dependencies": {
-		"@tanstack/react-query": "^5.90.12",
-		"react": "^19.2.3",
-		"react-dom": "^19.2.3"
+		"@tanstack/react-query": "^5.90.20",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4"
 	},
 	"devDependencies": {
 		"@gb/typescript-config": "*",
-		"@tanstack/react-query-devtools": "^5.91.1",
-		"@types/react": "^19.2.7",
+		"@tanstack/react-query-devtools": "^5.91.3",
+		"@types/react": "^19.2.13",
 		"@types/react-dom": "^19.2.3"
 	}
 }
