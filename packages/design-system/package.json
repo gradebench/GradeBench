@@ -25,8 +25,8 @@
 	},
 	"devDependencies": {
 		"@gb/typescript-config": "*",
-		"@tailwindcss/postcss": "^4.1.18",
-		"tailwindcss": "^4.1.18"
+		"@tailwindcss/postcss": "^4.2.1",
+		"tailwindcss": "^4.2.1"
 	},
 	"exports": {
 		"./components/*": "./src/components/ui/*",
